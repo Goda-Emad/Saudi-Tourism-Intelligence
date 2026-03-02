@@ -654,6 +654,7 @@ with covid_col:
         (t["domestic"], "47.81M", "42.11M", "86.16M", "-11.9%", "+104.6%"),
         (t["total"],    "65.33M", "46.25M","115.89M", "-29.2%", "+150.6%"),
     ]
+    
     table_html = f"""
     <table class='covid-table'>
       <thead>
@@ -662,4 +663,4 @@ with covid_col:
           <th>{t['pre_covid']}</th>
           <th>{t['during_covid']}</th>
           <th>{t['post_covid']}</th>
-          <th>2019→2020
+          <th>2019→2020</
