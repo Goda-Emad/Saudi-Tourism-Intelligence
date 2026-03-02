@@ -51,6 +51,23 @@ def get_image_base64(image_path):
     except:
         return ""
 
+def resize_image_base64(base64_string, max_width=200, max_height=150):
+    """إضافة CSS لتحجيم الصورة"""
+    return f"""
+    <style>
+    .hero-image {{
+        max-width: {max_width}px;
+        max-height: {max_height}px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }}
+    </style>
+    <img src='data:image/png;base64,{base64_string}' class='hero-image'>
+    """
+
 # ═══════════════════════════════════════════════════════
 # PAGE CONFIG
 # ═══════════════════════════════════════════════════════
@@ -78,7 +95,23 @@ def load_css():
         with open(css_file, 'r', encoding='utf-8') as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     else:
-        st.warning("⚠️ ملف CSS غير موجود، يتم استخدام التنسيق الافتراضي")
+        st.markdown("""
+        <style>
+        /* Fallback CSS if file not found */
+        .hero-banner {
+            background: linear-gradient(135deg, #1B5E20 0%, #00838F 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            background: #132336;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
 load_css()
 
@@ -170,20 +203,25 @@ T = {
 # SIDEBAR
 # ═══════════════════════════════════════════════════════
 with st.sidebar:
-    # Logo with custom styling
-    try:
-        st.image("assets/logo.png", use_column_width=True)
-    except:
+    # Logo with proper sizing
+    logo_base64 = get_image_base64("assets/logo.png")
+    if logo_base64:
+        st.markdown(f"""
+        <div style='text-align: center; padding: 0.5rem;'>
+            <img src='data:image/png;base64,{logo_base64}' style='max-width: 180px; height: auto;'>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
         st.markdown("""
         <div style='text-align:center; padding: 1rem;'>
-            <span style='font-size: 3rem;'>🇸🇦</span>
-            <div style='color: var(--desert-gold-light); font-weight: 700;'>Saudi Tourism</div>
-            <div style='color: var(--white); font-weight: 600;'>INTELLIGENCE</div>
+            <span style='font-size: 2.5rem;'>🇸🇦</span>
+            <div style='color: #D4A017; font-weight: 700; font-size: 1.2rem;'>Saudi Tourism</div>
+            <div style='color: white; font-weight: 600;'>INTELLIGENCE</div>
         </div>
         """, unsafe_allow_html=True)
     
     st.markdown(f"""
-    <div style='text-align:center; font-size:0.8rem; color: var(--text-secondary); margin-bottom: 1rem;'>
+    <div style='text-align:center; font-size:0.8rem; color: #94A3B8; margin-bottom: 1rem;'>
         {T[st.session_state.lang]['app_subtitle']}
     </div>
     """, unsafe_allow_html=True)
@@ -205,7 +243,7 @@ with st.sidebar:
     
     # Navigation
     st.markdown(f"""
-    <div style='font-size:0.7rem; font-weight:600; color: var(--text-secondary); text-transform:uppercase; margin-bottom:0.5rem;'>
+    <div style='font-size:0.7rem; font-weight:600; color: #94A3B8; text-transform:uppercase; margin-bottom:0.5rem;'>
         {T[st.session_state.lang]['nav_title']}
     </div>
     """, unsafe_allow_html=True)
@@ -231,12 +269,12 @@ with st.sidebar:
     
     # Data info
     st.markdown(f"""
-    <div style='font-size:0.7rem; color: var(--text-secondary);'>
+    <div style='font-size:0.7rem; color: #94A3B8;'>
         <div style='margin-bottom:0.5rem;'>
-            <span style='color: var(--saudi-green-light);'>📊</span> {T[st.session_state.lang]['data_source']}
+            <span style='color: #43A047;'>📊</span> {T[st.session_state.lang]['data_source']}
         </div>
         <div>
-            <span style='color: var(--saudi-green-light);'>🔄</span> {T[st.session_state.lang]['last_updated']}
+            <span style='color: #43A047;'>🔄</span> {T[st.session_state.lang]['last_updated']}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -247,7 +285,7 @@ with st.sidebar:
     st.markdown(f"""
     <div style='
         background: linear-gradient(135deg, rgba(27,94,32,0.2) 0%, rgba(0,131,143,0.2) 100%);
-        border: 1px solid var(--border-accent);
+        border: 1px solid rgba(0,131,143,0.4);
         border-radius: 16px;
         padding: 1.2rem;
         margin: 0.5rem 0;
@@ -255,7 +293,7 @@ with st.sidebar:
     '>
         <div style='
             font-size: 0.8rem;
-            color: var(--text-secondary);
+            color: #94A3B8;
             margin-bottom: 0.3rem;
         '>
             {T[st.session_state.lang]['built_by']}
@@ -263,7 +301,7 @@ with st.sidebar:
         <div style='
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--desert-gold-light);
+            color: #D4A017;
             font-family: "Playfair Display", serif;
             margin-bottom: 0.8rem;
         '>
@@ -278,13 +316,12 @@ with st.sidebar:
         '>
             <a href="{DEV_GITHUB}" target="_blank" style='
                 text-decoration: none;
-                background: var(--bg-card);
-                color: var(--text-primary);
+                background: #132336;
+                color: #F0F4F8;
                 padding: 0.4rem 1rem;
                 border-radius: 20px;
                 font-size: 0.75rem;
-                border: 1px solid var(--border-accent);
-                transition: all 0.3s ease;
+                border: 1px solid rgba(0,131,143,0.4);
                 display: inline-flex;
                 align-items: center;
                 gap: 4px;
@@ -293,13 +330,12 @@ with st.sidebar:
             </a>
             <a href="{DEV_LINKEDIN}" target="_blank" style='
                 text-decoration: none;
-                background: var(--bg-card);
-                color: var(--text-primary);
+                background: #132336;
+                color: #F0F4F8;
                 padding: 0.4rem 1rem;
                 border-radius: 20px;
                 font-size: 0.75rem;
-                border: 1px solid var(--border-accent);
-                transition: all 0.3s ease;
+                border: 1px solid rgba(0,131,143,0.4);
                 display: inline-flex;
                 align-items: center;
                 gap: 4px;
@@ -331,78 +367,90 @@ except Exception as e:
     st.error(f"⚠️ خطأ في تحميل البيانات: {str(e)}")
     st.session_state.data_loaded = False
 
-# Hero Banner with Hero Image
+# Hero Banner with properly sized Hero Image
 hero_base64 = get_image_base64("assets/hero.png")
 
-if hero_base64:
-    # مع وجود الصورة
-    col_hero1, col_hero2 = st.columns([2, 1])
-    
-    with col_hero1:
-        st.markdown(f"""
-        <div>
-            <h1 style='margin:0; font-size:2.2rem; background: linear-gradient(135deg, var(--white), var(--desert-gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>{T[st.session_state.lang]['app_title']}</h1>
-            <p style='font-size:1rem; color: var(--text-secondary); max-width:600px; margin-top:0.5rem;'>
-                {T[st.session_state.lang]['welcome']}
-            </p>
-            <div style='
-                background: rgba(255,255,255,0.05);
-                border-radius: 30px;
-                padding: 0.5rem 1.2rem;
-                border: 1px solid var(--border-accent);
-                display: inline-block;
-                margin-top: 0.5rem;
-            '>
-                <span style='color: var(--text-secondary); font-size:0.8rem;'>{T[st.session_state.lang]['built_by']}: </span>
-                <span style='color: var(--desert-gold-light); font-weight:700;'>{DEV_NAME}</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_hero2:
-        st.markdown(f"""
-        <div style='text-align: center;'>
-            <img src='data:image/png;base64,{hero_base64}' style='width: 100%; max-height: 150px; object-fit: contain;'>
-        </div>
-        """, unsafe_allow_html=True)
-else:
-    # من غير الصورة
+# Hero section with two columns
+col_hero_left, col_hero_right = st.columns([3, 1])
+
+with col_hero_left:
     st.markdown(f"""
-    <div class='hero-banner' style='
-        background: linear-gradient(135deg,
-            rgba(27,94,32,0.3) 0%,
-            rgba(0,131,143,0.2) 50%,
-            rgba(184,134,11,0.2) 100%);
-        border: 1px solid var(--border-accent);
-        border-radius: 16px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        position: relative;
-        overflow: hidden;
-    '>
-        <div style='display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;'>
-            <div>
-                <h1 style='margin:0; font-size:2.2rem; background: linear-gradient(135deg, var(--white), var(--desert-gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>{T[st.session_state.lang]['app_title']}</h1>
-                <p style='font-size:1rem; color: var(--text-secondary); max-width:600px; margin-top:0.5rem;'>
-                    {T[st.session_state.lang]['welcome']}
-                </p>
-            </div>
-            <div style='
-                background: rgba(255,255,255,0.05);
-                border-radius: 30px;
-                padding: 0.5rem 1.2rem;
-                border: 1px solid var(--border-accent);
-            '>
-                <span style='color: var(--text-secondary); font-size:0.8rem;'>{T[st.session_state.lang]['built_by']}: </span>
-                <span style='color: var(--desert-gold-light); font-weight:700;'>{DEV_NAME}</span>
-            </div>
+    <div style='padding: 1rem 0;'>
+        <h1 style='
+            margin:0; 
+            font-size:2.2rem; 
+            background: linear-gradient(135deg, #FFFFFF, #D4A017);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        '>{T[st.session_state.lang]['app_title']}</h1>
+        <p style='font-size:1rem; color: #94A3B8; max-width:600px; margin: 1rem 0;'>
+            {T[st.session_state.lang]['welcome']}
+        </p>
+        <div style='
+            background: rgba(255,255,255,0.05);
+            border-radius: 30px;
+            padding: 0.5rem 1.2rem;
+            border: 1px solid rgba(0,131,143,0.4);
+            display: inline-block;
+        '>
+            <span style='color: #94A3B8; font-size:0.8rem;'>{T[st.session_state.lang]['built_by']}: </span>
+            <span style='color: #D4A017; font-weight:700;'>{DEV_NAME}</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
+with col_hero_right:
+    if hero_base64:
+        # صورة بحجم مناسب ومضبوط
+        st.markdown(f"""
+        <div style='display: flex; justify-content: center; align-items: center; height: 100%; padding: 0.5rem;'>
+            <img src='data:image/png;base64,{hero_base64}' 
+                 style='
+                    max-width: 180px;
+                    max-height: 140px;
+                    width: auto;
+                    height: auto;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                 '>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div style='display: flex; justify-content: center; align-items: center; height: 100%;'>
+            <div style='text-align:center; padding: 1rem; background: #132336; border-radius: 12px;'>
+                <span style='font-size: 3rem;'>🏝️</span>
+                <p style='color: #94A3B8; margin:0;'>Saudi Tourism</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
 # Key Metrics Row (if data loaded)
 if st.session_state.data_loaded:
     kpis = calculate_kpis(tourist_data, spending_data, overnight_data)
+    
+    # Custom CSS for metrics
+    st.markdown("""
+    <style>
+    [data-testid="stMetric"] {
+        background: #132336;
+        border: 1px solid rgba(0,131,143,0.4);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    [data-testid="stMetricLabel"] {
+        color: #94A3B8 !important;
+        font-size: 0.75rem !important;
+    }
+    [data-testid="stMetricValue"] {
+        color: #D4A017 !important;
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     
     col1, col2, col3, col4, col5 = st.columns(5)
     
@@ -449,19 +497,18 @@ if st.session_state.data_loaded:
     st.divider()
 
 # ═══════════════════════════════════════════════════════
-# PAGE ROUTING - FIXED IMPORTS (No numbers in filenames)
+# PAGE ROUTING
 # ═══════════════════════════════════════════════════════
 
 current_page = st.session_state.current_page
 
 if current_page == "overview":
-    # الصفحة الرئيسية - نظرة عامة
     if st.session_state.data_loaded:
         try:
             from pages.overview import show_overview
             show_overview(tourist_data, spending_data, overnight_data, carbon_data, st.session_state.lang, st.session_state.theme)
         except ImportError as e:
-            st.info(f"📊 صفحة Overview جاري تجهيزها... {e}")
+            st.info(f"📊 صفحة Overview جاري تجهيزها...")
     else:
         st.info("📊 يرجى التأكد من وجود ملفات البيانات في المجلد data/clean/")
         
@@ -470,227 +517,101 @@ elif current_page == "trends":
         from pages.tourist_trends import show_trends
         show_trends(tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
-        st.info(f"📈 صفحة Tourist Trends جاري تجهيزها... {e}")
+        st.info(f"📈 صفحة Tourist Trends جاري تجهيزها...")
     
 elif current_page == "seasonality":
     try:
         from pages.seasonality import show_seasonality
         show_seasonality(tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
-        st.info(f"📅 صفحة Seasonality جاري تجهيزها... {e}")
+        st.info(f"📅 صفحة Seasonality جاري تجهيزها...")
     
 elif current_page == "spending":
     try:
         from pages.spending import show_spending
         show_spending(spending_data, tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
-        st.info(f"💰 صفحة Spending جاري تجهيزها... {e}")
+        st.info(f"💰 صفحة Spending جاري تجهيزها...")
     
 elif current_page == "overnight":
     try:
         from pages.overnight_stays import show_overnight
         show_overnight(overnight_data, tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
-        st.info(f"🏨 صفحة Overnight Stays جاري تجهيزها... {e}")
+        st.info(f"🏨 صفحة Overnight Stays جاري تجهيزها...")
     
 elif current_page == "forecast":
     try:
         from pages.forecasting import show_forecast
         show_forecast(tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
-        st.info(f"🔮 صفحة Forecasting جاري تجهيزها... {e}")
+        st.info(f"🔮 صفحة Forecasting جاري تجهيزها...")
     
 elif current_page == "segmentation":
     try:
         from pages.segmentation import show_segmentation
         show_segmentation(tourist_data, spending_data, overnight_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
-        st.info(f"🎯 صفحة Segmentation جاري تجهيزها... {e}")
+        st.info(f"🎯 صفحة Segmentation جاري تجهيزها...")
     
 elif current_page == "carbon":
     try:
         from pages.carbon_impact import show_carbon
         show_carbon(carbon_data, tourist_data, overnight_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
-        st.info(f"🌱 صفحة Carbon Impact جاري تجهيزها... {e}")
+        st.info(f"🌱 صفحة Carbon Impact جاري تجهيزها...")
 
 # ═══════════════════════════════════════════════════════
-# PROFESSIONAL FOOTER WITH DEVELOPER SIGNATURE
+# PROFESSIONAL FOOTER
 # ═══════════════════════════════════════════════════════
 st.divider()
 
-# Signature Section
+# Footer with proper links
 st.markdown(f"""
 <div style='
     background: linear-gradient(135deg, rgba(27,94,32,0.05) 0%, rgba(0,131,143,0.05) 100%);
-    border: 1px solid var(--border-accent);
-    border-radius: 20px;
-    padding: 2rem 1.5rem;
-    margin: 2rem 0 1rem 0;
-    position: relative;
-    overflow: hidden;
+    border: 1px solid rgba(0,131,143,0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0 0.5rem 0;
 '>
-    <!-- Decorative Elements -->
-    <div style='
-        position: absolute;
-        top: -30px; right: -30px;
-        width: 150px; height: 150px;
-        background: var(--saudi-green-light);
-        opacity: 0.05;
-        border-radius: 50%;
-    '></div>
-    <div style='
-        position: absolute;
-        bottom: -30px; left: -30px;
-        width: 120px; height: 120px;
-        background: var(--red-sea-teal);
-        opacity: 0.05;
-        border-radius: 50%;
-    '></div>
-    
-    <!-- Main Signature Content -->
+    <!-- Navigation Links -->
     <div style='
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        position: relative;
-        z-index: 2;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
     '>
-        <!-- Developer Badge -->
-        <div style='
-            background: linear-gradient(135deg, var(--saudi-green), var(--red-sea-teal));
-            padding: 0.3rem 1.2rem;
-            border-radius: 30px;
-            margin-bottom: 1rem;
-            display: inline-block;
-        '>
-            <span style='
-                color: white;
-                font-size: 0.8rem;
-                font-weight: 600;
-                letter-spacing: 1px;
-            '>🚀 LEAD DEVELOPER</span>
+        <a href="#overview" style='color: #94A3B8; text-decoration: none; font-size: 0.85rem;'>Overview</a>
+        <a href="#results" style='color: #94A3B8; text-decoration: none; font-size: 0.85rem;'>Results</a>
+        <a href="#data" style='color: #94A3B8; text-decoration: none; font-size: 0.85rem;'>Data</a>
+        <a href="#insights" style='color: #94A3B8; text-decoration: none; font-size: 0.85rem;'>Insights</a>
+        <a href="#comparison" style='color: #94A3B8; text-decoration: none; font-size: 0.85rem;'>Comparison</a>
+        <a href="#forecast" style='color: #94A3B8; text-decoration: none; font-size: 0.85rem;'>Forecast</a>
+    </div>
+    
+    <!-- Developer Signature -->
+    <div style='text-align: center;'>
+        <div style='color: #D4A017; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;'>{DEV_NAME}</div>
+        <div style='color: #94A3B8; font-size: 0.8rem; margin-bottom: 0.5rem;'>
+            🐙 <a href="{DEV_GITHUB}" target="_blank" style='color: #00ACC1; text-decoration: none;'>GitHub</a> · 
+            💼 <a href="{DEV_LINKEDIN}" target="_blank" style='color: #00ACC1; text-decoration: none;'>LinkedIn</a>
         </div>
-        
-        <!-- Developer Name -->
-        <div style='
-            font-family: "Playfair Display", serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--desert-gold-light), var(--saudi-green-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        '>
-            {DEV_NAME}
+        <div style='color: #94A3B8; font-size: 0.7rem;'>
+            {T[st.session_state.lang]['data_source']} · {T[st.session_state.lang]['last_updated']}
         </div>
-        
-        <!-- Title -->
-        <div style='
-            color: var(--text-secondary);
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-        '>
-            AI & Data Science Engineer · Tourism Intelligence Specialist
-        </div>
-        
-        <!-- Social Links -->
-        <div style='
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        '>
-            <a href="{DEV_GITHUB}" target="_blank" style='
-                text-decoration: none;
-                background: var(--bg-card);
-                color: var(--text-primary);
-                padding: 0.6rem 1.5rem;
-                border-radius: 30px;
-                font-size: 0.9rem;
-                border: 1px solid var(--border-accent);
-                transition: all 0.3s ease;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-            ' onmouseover="this.style.background='var(--saudi-green)'; this.style.transform='translateY(-2px)';" 
-               onmouseout="this.style.background='var(--bg-card)'; this.style.transform='translateY(0)';">
-                <span style='font-size:1.2rem;'>🐙</span> GitHub Repository
-            </a>
-            <a href="{DEV_LINKEDIN}" target="_blank" style='
-                text-decoration: none;
-                background: var(--bg-card);
-                color: var(--text-primary);
-                padding: 0.6rem 1.5rem;
-                border-radius: 30px;
-                font-size: 0.9rem;
-                border: 1px solid var(--border-accent);
-                transition: all 0.3s ease;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-            ' onmouseover="this.style.background='var(--red-sea-teal)'; this.style.transform='translateY(-2px)';"
-               onmouseout="this.style.background='var(--bg-card)'; this.style.transform='translateY(0)';">
-                <span style='font-size:1.2rem;'>💼</span> LinkedIn Profile
-            </a>
-        </div>
-        
-        <!-- Stats -->
-        <div style='
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
-        '>
-            <div style='text-align: center;'>
-                <div style='font-size: 1.3rem; font-weight: 700; color: var(--desert-gold-light);'>8</div>
-                <div style='font-size: 0.7rem; color: var(--text-secondary);'>Dashboard Pages</div>
-            </div>
-            <div style='text-align: center;'>
-                <div style='font-size: 1.3rem; font-weight: 700; color: var(--saudi-green-light);'>3</div>
-                <div style='font-size: 0.7rem; color: var(--text-secondary);'>ML Models</div>
-            </div>
-            <div style='text-align: center;'>
-                <div style='font-size: 1.3rem; font-weight: 700; color: var(--red-sea-light);'>10+</div>
-                <div style='font-size: 0.7rem; color: var(--text-secondary);'>Years of Data</div>
-            </div>
+        <div style='color: #5A6F8C; font-size: 0.65rem; margin-top: 0.5rem;'>
+            {T[st.session_state.lang]['footer_text']}
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Footer with mini logo
-logo_base64 = get_image_base64("assets/logo.png")
-if logo_base64:
-    st.markdown(f"""
-    <div style='display: flex; justify-content: center; align-items: center; gap: 10px; margin: 1rem 0;'>
-        <img src='data:image/png;base64,{logo_base64}' style='height: 30px; opacity: 0.7;'>
-        <span style='color: var(--text-secondary); font-size: 0.7rem;'>{T[st.session_state.lang]['footer_text']}</span>
-    </div>
-    """, unsafe_allow_html=True)
-else:
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown(f"""
-        <div style='
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.7rem;
-            padding: 1rem 0;
-        '>
-            {T[st.session_state.lang]['footer_text']}<br>
-            <span style='font-size:0.6rem;'>DataSaudi · Ministry of Tourism · 2015-2024</span><br>
-            <span style='font-size:0.6rem; color: var(--desert-gold-light);'>Developed with 🇸🇦 by {DEV_NAME}</span>
-        </div>
-        """, unsafe_allow_html=True)
-
 # ═══════════════════════════════════════════════════════
 # RUN
 # ═══════════════════════════════════════════════════════
 if __name__ == "__main__":
-    # تم التشغيل بالفعل
     pass
