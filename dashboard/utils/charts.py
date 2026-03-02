@@ -1,164 +1,317 @@
-# utils/kpis.py
+# utils/charts.py
 """
-KPIs and Metrics Calculation Functions
-دوال حساب المؤشرات الرئيسية
+Chart Creation Functions
+دوال إنشاء الرسوم البيانية
 """
 
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
-from pathlib import Path
-import streamlit as st
 
 # ═══════════════════════════════════════════════════════
-# MAIN DATA LOADER
+# BASE CHARTS
 # ═══════════════════════════════════════════════════════
-@st.cache_data
-def load_all_data():
-    """تحميل جميع البيانات من المجلد clean"""
-    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
-    
-    data = {}
-    files = {
-        'tourists': '01_Tourists_CLEAN.csv',
-        'overnight': '02_Overnight_CLEAN.csv',
-        'kpi': '03_KPI_CLEAN.csv',
-        'expenditure': '04_Expenditure_CLEAN.csv',
-        'carbon': '05_Carbon_Impact.csv'
-    }
-    
-    for key, filename in files.items():
-        file_path = base_path / filename
-        if file_path.exists():
-            data[key] = pd.read_csv(file_path)
-        else:
-            data[key] = pd.DataFrame()
-            print(f"Warning: {filename} not found")
-    
-    return data
+def create_trend_chart(df, x_col, y_col, title, color=None, template="plotly_dark"):
+    """إنشاء رسم بياني للاتجاهات"""
+    fig = px.line(
+        df, x=x_col, y=y_col,
+        title=title,
+        color=color,
+        template=template
+    )
+    fig.update_layout(
+        margin=dict(l=10, r=10, t=30, b=10),
+        legend=dict(orientation="h", y=-0.2)
+    )
+    return fig
 
-# ═══════════════════════════════════════════════════════
-# KPI CALCULATIONS
-# ═══════════════════════════════════════════════════════
-def calculate_kpis(tourist_df=None, spending_df=None, overnight_df=None):
-    """حساب جميع المؤشرات الرئيسية"""
-    
-    kpis = {}
-    
-    # بيانات افتراضية من business_case.pdf (لو مفيش ملفات)
-    kpis['total_tourists_2024'] = 115.8  # مليون
-    kpis['inbound_2024'] = 29.7  # مليون
-    kpis['domestic_2024'] = 86.2  # مليون
-    kpis['total_nights_2024'] = 1.1  # مليار
-    kpis['avg_spend_2024'] = 5622  # ريال
-    
-    kpis['tourists_growth'] = 8.1  # %
-    kpis['inbound_growth'] = 8.4  # %
-    kpis['domestic_growth'] = 5.2  # %
-    kpis['nights_growth'] = 18.2  # %
-    kpis['spend_growth'] = 12.8  # %
-    
-    kpis['covid_drop_2020'] = -29.2  # %
-    kpis['recovery_rate'] = 72.0  # %
-    
-    return kpis
+def create_bar_chart(df, x_col, y_col, title, color=None, barmode='group', template="plotly_dark"):
+    """إنشاء رسم بياني أعمدة"""
+    fig = px.bar(
+        df, x=x_col, y=y_col,
+        title=title,
+        color=color,
+        barmode=barmode,
+        template=template
+    )
+    fig.update_layout(
+        margin=dict(l=10, r=10, t=30, b=10),
+        legend=dict(orientation="h", y=-0.2)
+    )
+    return fig
 
-def format_number(num, format_type='millions'):
-    """تنسيق الأرقام للعرض"""
-    if format_type == 'millions':
-        return f"{num/1000:.1f}M" if num > 1000 else f"{num:.1f}M"
-    elif format_type == 'billions':
-        return f"{num:.1f}B"
-    elif format_type == 'currency':
-        return f"{num:,.0f} SAR"
-    else:
-        return f"{num:,}"
+def create_line_chart(df, x_col, y_col, title, color=None, template="plotly_dark"):
+    """إنشاء رسم بياني خطي"""
+    fig = px.line(
+        df, x=x_col, y=y_col,
+        title=title,
+        color=color,
+        template=template
+    )
+    fig.update_layout(
+        margin=dict(l=10, r=10, t=30, b=10),
+        legend=dict(orientation="h", y=-0.2)
+    )
+    return fig
 
-def get_yoy_growth(current, previous):
-    """حساب النمو السنوي"""
-    if previous == 0:
-        return 0
-    return ((current - previous) / previous) * 100
+def create_area_chart(df, x_col, y_col, title, color=None, template="plotly_dark"):
+    """إنشاء رسم بياني مساحي"""
+    fig = px.area(
+        df, x=x_col, y=y_col,
+        title=title,
+        color=color,
+        template=template
+    )
+    fig.update_layout(
+        margin=dict(l=10, r=10, t=30, b=10),
+        legend=dict(orientation="h", y=-0.2)
+    )
+    return fig
 
-def calculate_growth_rate(series):
-    """حساب معدل النمو لسلسلة زمنية"""
-    if len(series) < 2:
-        return 0
-    first = series.iloc[0]
-    last = series.iloc[-1]
-    if first == 0:
-        return 0
-    return ((last - first) / first) * 100
+def create_pie_chart(values, labels, title, colors=None, template="plotly_dark"):
+    """إنشاء رسم بياني دائري"""
+    fig = go.Figure(data=[go.Pie(
+        labels=labels,
+        values=values,
+        hole=0.4,
+        marker=dict(colors=colors) if colors else None,
+        textinfo='label+percent',
+        textposition='auto'
+    )])
+    fig.update_layout(
+        title=title,
+        template=template,
+        margin=dict(l=10, r=10, t=30, b=10)
+    )
+    return fig
 
-def get_peak_month(monthly_data):
-    """الحصول على شهر الذروة"""
-    if monthly_data.empty:
-        return "N/A"
-    max_idx = monthly_data.argmax()
-    months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-              'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
-    return months[max_idx] if max_idx < len(months) else "N/A"
+def create_heatmap(data, x_labels, y_labels, title, colorscale='Viridis', template="plotly_dark"):
+    """إنشاء خريطة حرارية"""
+    fig = go.Figure(data=go.Heatmap(
+        z=data,
+        x=x_labels,
+        y=y_labels,
+        colorscale=colorscale,
+        text=[[f"{val:.1f}" for val in row] for row in data],
+        texttemplate="%{text}",
+        textfont=dict(size=9),
+        hovertemplate="<b>%{y}</b><br>%{x}: %{z:.1f}<extra></extra>"
+    ))
+    fig.update_layout(
+        title=title,
+        template=template,
+        margin=dict(l=10, r=10, t=30, b=10)
+    )
+    return fig
 
-def get_seasonal_factors(monthly_data):
-    """حساب العوامل الموسمية"""
-    if monthly_data.empty:
-        return []
-    avg = monthly_data.mean()
-    return [round(x/avg, 2) for x in monthly_data]
-
-# ═══════════════════════════════════════════════════════
-# CARBON CALCULATIONS
-# ═══════════════════════════════════════════════════════
-def calculate_carbon_metrics(tourists, nights, transport_km=3500):
-    """حساب مؤشرات الكربون"""
-    # Emission factors (kg CO2 per unit)
-    FLIGHT_EMISSION = 0.12  # kg per km per tourist
-    HOTEL_EMISSION = 15.0   # kg per night
-    LOCAL_TRANSPORT = 5.0   # kg per day
-    
-    flight_emissions = tourists * transport_km * FLIGHT_EMISSION / 1000  # to tons
-    hotel_emissions = nights * HOTEL_EMISSION
-    local_emissions = nights * LOCAL_TRANSPORT
-    
-    total = (flight_emissions + hotel_emissions + local_emissions) / 1e6  # to megatons
-    
-    return {
-        'total_mt': total,
-        'flight_mt': flight_emissions / 1e6,
-        'hotel_mt': hotel_emissions / 1e6,
-        'local_mt': local_emissions / 1e6
-    }
-
-def trees_equivalent(co2_tons):
-    """تحويل الكربون إلى ما يعادل أشجار"""
-    # Each tree absorbs ~20 kg CO2 per year
-    trees = (co2_tons * 1000) / 20
-    return int(trees)
+def create_radar_chart(categories, values, title, color=None, template="plotly_dark"):
+    """إنشاء رسم بياني رادار"""
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=values,
+        theta=categories,
+        fill='toself',
+        line=dict(color=color) if color else None,
+        marker=dict(color=color) if color else None
+    ))
+    fig.update_layout(
+        title=title,
+        template=template,
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, max(values)*1.1]
+            )
+        ),
+        margin=dict(l=40, r=40, t=30, b=10)
+    )
+    return fig
 
 # ═══════════════════════════════════════════════════════
-# SEGMENTATION METRICS
+# COMPARISON CHARTS
 # ═══════════════════════════════════════════════════════
-def get_segment_metrics():
-    """بيانات تجزئة السياح"""
-    return {
-        'high_value': {
-            'pct': 18,
-            'spend': 12500,
-            'stay': 12.5,
-            'frequency': 1.8,
-            'color': '#F0A500'
-        },
-        'mid_value': {
-            'pct': 37,
-            'spend': 6200,
-            'stay': 6.8,
-            'frequency': 2.5,
-            'color': '#3A86FF'
-        },
-        'budget': {
-            'pct': 45,
-            'spend': 2800,
-            'stay': 3.2,
-            'frequency': 4.2,
-            'color': '#00C9B1'
+def create_comparison_chart(inbound_data, domestic_data, years, title, template="plotly_dark"):
+    """مقارنة بين الوافدين والمحليين"""
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(
+        x=years,
+        y=inbound_data,
+        name='Inbound',
+        marker_color='#3A86FF',
+        text=[f"{v:.1f}M" for v in inbound_data],
+        textposition='outside'
+    ))
+    
+    fig.add_trace(go.Bar(
+        x=years,
+        y=domestic_data,
+        name='Domestic',
+        marker_color='#00C9B1',
+        text=[f"{v:.1f}M" for v in domestic_data],
+        textposition='outside'
+    ))
+    
+    fig.update_layout(
+        title=title,
+        template=template,
+        barmode='group',
+        margin=dict(l=10, r=10, t=30, b=10),
+        legend=dict(orientation="h", y=-0.2),
+        xaxis=dict(tickangle=-45)
+    )
+    return fig
+
+# ═══════════════════════════════════════════════════════
+# FORECAST CHARTS
+# ═══════════════════════════════════════════════════════
+def create_forecast_chart(historical, forecast, dates, title, template="plotly_dark"):
+    """إنشاء رسم بياني للتوقعات"""
+    fig = go.Figure()
+    
+    # Historical data
+    fig.add_trace(go.Scatter(
+        x=dates[:len(historical)],
+        y=historical,
+        name='Historical',
+        line=dict(color='#3A86FF', width=3),
+        mode='lines+markers',
+        marker=dict(size=6)
+    ))
+    
+    # Forecast data
+    forecast_dates = dates[len(historical)-1:]
+    forecast_values = [historical[-1]] + forecast
+    
+    fig.add_trace(go.Scatter(
+        x=forecast_dates,
+        y=forecast_values,
+        name='Forecast',
+        line=dict(color='#F0A500', width=3, dash='dash'),
+        mode='lines+markers',
+        marker=dict(size=6)
+    ))
+    
+    fig.update_layout(
+        title=title,
+        template=template,
+        margin=dict(l=10, r=10, t=30, b=10),
+        legend=dict(orientation="h", y=-0.2),
+        xaxis=dict(tickangle=-45)
+    )
+    return fig
+
+# ═══════════════════════════════════════════════════════
+# CARBON CHARTS
+# ═══════════════════════════════════════════════════════
+def create_carbon_chart(years, emissions, title, template="plotly_dark"):
+    """إنشاء رسم بياني للكربون"""
+    fig = go.Figure()
+    
+    colors = ['#FF5252' if i > 0 else '#00E676' for i in range(len(emissions))]
+    
+    fig.add_trace(go.Bar(
+        x=years,
+        y=emissions,
+        marker_color=colors,
+        text=[f"{e:.1f} Mt" for e in emissions],
+        textposition='outside',
+        textfont=dict(size=10)
+    ))
+    
+    fig.update_layout(
+        title=title,
+        template=template,
+        margin=dict(l=10, r=10, t=30, b=10),
+        yaxis=dict(title="CO₂ (Megatons)", gridcolor='rgba(128,128,128,0.2)'),
+        xaxis=dict(tickangle=-45)
+    )
+    return fig
+
+def create_sustainability_scenarios(years, scenarios, title, template="plotly_dark"):
+    """إنشاء رسم بياني لسيناريوهات الاستدامة"""
+    fig = go.Figure()
+    
+    colors = ['#FF5252', '#F0A500', '#00C9B1', '#3A86FF']
+    
+    for i, (name, data) in enumerate(scenarios.items()):
+        fig.add_trace(go.Scatter(
+            x=years,
+            y=data,
+            name=name,
+            line=dict(color=colors[i % len(colors)], width=2.5),
+            mode='lines+markers',
+            marker=dict(size=6)
+        ))
+    
+    fig.update_layout(
+        title=title,
+        template=template,
+        margin=dict(l=10, r=10, t=30, b=10),
+        legend=dict(orientation="h", y=-0.2),
+        xaxis=dict(tickangle=-45),
+        yaxis=dict(title="CO₂ (Megatons)")
+    )
+    return fig
+
+# ═══════════════════════════════════════════════════════
+# SEGMENTATION CHARTS
+# ═══════════════════════════════════════════════════════
+def create_segment_chart(segments, values, title, colors=None, template="plotly_dark"):
+    """إنشاء رسم بياني للشرائح"""
+    if colors is None:
+        colors = ['#F0A500', '#3A86FF', '#00C9B1']
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(
+        x=segments,
+        y=values,
+        marker_color=colors,
+        text=[f"{v:.0f}" for v in values],
+        textposition='outside',
+        textfont=dict(size=11)
+    ))
+    
+    fig.update_layout(
+        title=title,
+        template=template,
+        margin=dict(l=10, r=10, t=30, b=10),
+        xaxis=dict(tickangle=-15),
+        yaxis=dict(gridcolor='rgba(128,128,128,0.2)')
+    )
+    return fig
+
+# ═══════════════════════════════════════════════════════
+# GAUGE CHART
+# ═══════════════════════════════════════════════════════
+def create_gauge_chart(value, title, max_value=100, template="plotly_dark"):
+    """إنشاء مقياس (Gauge)"""
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=value,
+        title={'text': title},
+        domain={'x': [0, 1], 'y': [0, 1]},
+        gauge={
+            'axis': {'range': [None, max_value]},
+            'bar': {'color': "#00C9B1"},
+            'steps': [
+                {'range': [0, max_value/3], 'color': "#FF5252"},
+                {'range': [max_value/3, 2*max_value/3], 'color': "#F0A500"},
+                {'range': [2*max_value/3, max_value], 'color': "#00E676"}
+            ],
+            'threshold': {
+                'line': {'color': "white", 'width': 4},
+                'thickness': 0.75,
+                'value': value
+            }
         }
-    }
+    ))
+    
+    fig.update_layout(
+        template=template,
+        margin=dict(l=10, r=10, t=30, b=10)
+    )
+    return fig
