@@ -70,3 +70,24 @@ __all__ = [
     'get_data_summary',
     'validate_data'
 ]
+# أضف في نهاية قائمة imports
+from .data_loader import (
+    load_tourist_data,
+    load_spending_data,
+    load_overnight_data,
+    load_carbon_data,
+    load_forecast_data,        # ✅ جديد
+    load_segments_data,        # ✅ جديد
+    load_all_datasets,
+    get_data_summary,
+    validate_data
+)
+
+# أضف في نهاية __all__
+__all__ = [
+    # ... (الموجود)
+    
+    # New data loaders
+    'load_forecast_data',       # ✅ جديد
+    'load_segments_data'        # ✅ جديد
+]
