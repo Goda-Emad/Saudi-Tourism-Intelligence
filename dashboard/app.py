@@ -252,7 +252,7 @@ colors = get_colors()
 # ═══════════════════════════════════════════════════════
 def get_custom_css():
     """Generate custom CSS based on theme"""
-    return f"""
+    css = f"""
     <style>
         /* Main app background */
         .stApp {{
@@ -305,52 +305,60 @@ def get_custom_css():
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }}
-        
-        /* Direction for Arabic */
-        {f"""
-        [dir="rtl"] .stMarkdown {{
+    """
+    
+    # Add RTL support for Arabic
+    if st.session_state.lang == 'AR':
+        css += """
+        [dir="rtl"] .stMarkdown {
             text-align: right;
-        }}
-        """ if st.session_state.lang == 'AR' else ''}
-        
+        }
+        """
+    
+    css += """
         /* Hero image responsive */
-        .hero-image {{
+        .hero-image {
             max-width: 100%;
             height: auto;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
-        }}
+        }
         
-        @media (max-width: 768px) {{
-            .hero-image {{
+        @media (max-width: 768px) {
+            .hero-image {
                 max-width: 120px;
                 margin: 0 auto;
-            }}
-        }}
+            }
+        }
         
         /* Headers */
-        h1 {{
-            color: {colors['accent']};
+        h1 {
+            color: {accent_color};
             font-size: 2.2rem;
             font-weight: 700;
-        }}
+        }
         
-        h2 {{
-            color: {colors['text']};
+        h2 {
+            color: {text_color};
             font-size: 1.5rem;
             font-weight: 600;
-        }}
+        }
         
         /* Divider */
-        hr {{
+        hr {
             border: none;
             height: 1px;
-            background: linear-gradient(90deg, transparent, {colors['accent']}, transparent);
+            background: linear-gradient(90deg, transparent, {accent_color}, transparent);
             margin: 2rem 0;
-        }}
+        }
     </style>
-    """
+    """.format(
+        accent_color=colors['accent'],
+        text_color=colors['text']
+    )
+    
+    return css
 
 # Apply custom CSS
 st.markdown(get_custom_css(), unsafe_allow_html=True)
