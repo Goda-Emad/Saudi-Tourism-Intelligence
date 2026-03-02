@@ -99,18 +99,21 @@ T = {
         "page_forecast":  "🔮 التوقعات",
         "page_segment":   "🎯 تقسيم السياح",
         "page_carbon":    "🌱 الأثر الكربوني",
+        # KPIs
         "total_2024":     "إجمالي السياح 2024",
         "inbound_2024":   "الوافدون 2024",
         "domestic_2024":  "المحليون 2024",
         "yoy_growth":     "نمو سنوي 2024",
         "covid_drop":     "انخفاض كوفيد 2020",
         "recovery":       "معدل التعافي ×",
+        # Sections
         "annual_trend":   "الاتجاه السنوي للسياحة 2015–2024",
         "by_purpose":     "السياح حسب الغرض (سنوي)",
         "inbound_vs_dom": "الوافدون مقابل المحليون",
         "monthly_trend":  "التوزيع الشهري للسياح",
         "purpose_heatmap":"خريطة الغرض السياحي حسب السنة",
         "covid_analysis": "تحليل تأثير كوفيد-19",
+        # Labels
         "total":          "الإجمالي",
         "inbound":        "وافد",
         "domestic":       "محلي",
@@ -665,55 +668,4 @@ with covid_col:
       </thead>
       <tbody>
     """
-    for row in covid_rows:
-        color_d = accent_red
-        color_r = accent_green
-        table_html += f"""
-        <tr>
-          <td style='font-weight:700;color:{text_primary};font-family:Sora,sans-serif;'>{row[0]}</td>
-          <td>{row[1]}</td>
-          <td>{row[2]}</td>
-          <td style='color:{accent_teal};font-weight:700;'>{row[3]}</td>
-          <td style='color:{color_d};font-weight:700;'>{row[4]}</td>
-          <td style='color:{color_r};font-weight:700;'>{row[5]}</td>
-        </tr>"""
-    table_html += "</tbody></table>"
-    st.markdown(table_html, unsafe_allow_html=True)
-
-# ══════════════════════════════════════════
-# KEY INSIGHTS
-# ══════════════════════════════════════════
-st.markdown(f"<div class='section-title'>💡 {t['insight_title']}</div>", unsafe_allow_html=True)
-
-insights = [
-    ("🏆", t["i1"], accent_teal),
-    ("🏠", t["i2"], accent_gold),
-    ("🏖️", t["i3"], accent_blue),
-    ("😷", t["i4"], accent_red),
-]
-cols_ins = st.columns(2)
-for i, (icon, text, color) in enumerate(insights):
-    with cols_ins[i % 2]:
-        st.markdown(f"""
-        <div class='insight-card' style='border-left:3px solid {color}; margin-bottom:10px;'>
-          <div class='insight-icon'>{icon}</div>
-          <div class='insight-text'>{text}</div>
-        </div>""", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════
-# FOOTER
-# ══════════════════════════════════════════
-st.markdown(f"""
-<div class='footer-bar'>
-  <div>
-    <div class='footer-name'>Eng. Goda Emad — Saudi Tourism Intelligence</div>
-    <div class='footer-link'>Data: DataSaudi · Ministry of Economy & Planning · 2015–2024</div>
-  </div>
-  <div style='display:flex;gap:14px;'>
-    <div class='footer-link'><a href='https://github.com/Goda-Emad/Saudi-Tourism-Intelligence/tree/main' target='_blank'>🐙 GitHub</a></div>
-    <div class='footer-link'><a href='https://www.linkedin.com/in/goda-emad/' target='_blank'>💼 LinkedIn</a></div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-
+    for row in
