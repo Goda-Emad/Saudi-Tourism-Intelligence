@@ -1,8 +1,8 @@
 """
 Saudi Tourism Intelligence - Professional Dashboard
 Developed by: Eng. Goda Emad
-Version: 7.0.0
-Features: Dark/Light Mode, Arabic/English, Responsive Design, Green Navigation Cards in Slider
+Version: 8.0.0
+Features: Dark/Light Mode, Arabic/English, Optimized Performance, Green Navigation in Slider
 """
 
 import streamlit as st
@@ -13,6 +13,7 @@ from datetime import datetime
 import sys
 from pathlib import Path
 import base64
+import time
 
 # ═══════════════════════════════════════════════════════
 # PAGE CONFIG - MUST BE FIRST
@@ -21,7 +22,7 @@ st.set_page_config(
     page_title="Saudi Tourism Intelligence",
     page_icon="🇸🇦",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"  # لتسريع التحميل
 )
 
 # ═══════════════════════════════════════════════════════
@@ -32,7 +33,7 @@ class Config:
     DEV_NAME = "Eng. Goda Emad"
     DEV_GITHUB = "https://github.com/Goda-Emad/Saudi-Tourism-Intelligence"
     DEV_LINKEDIN = "https://www.linkedin.com/in/goda-emad/"
-    APP_VERSION = "7.0.0"
+    APP_VERSION = "8.0.0"
     
     # Color Palettes
     DARK_THEME = {
@@ -43,7 +44,8 @@ class Config:
         'text_muted': '#94A3B8',
         'border': '#2A3F55',
         'primary': '#1B5E20',
-        'primary_hover': '#2E7D32',
+        'primary_light': '#2E7D32',
+        'primary_dark': '#0A3A0A',
         'secondary': '#00838F',
         'accent': '#D4A017',
         'success': '#43A047',
@@ -59,7 +61,8 @@ class Config:
         'text_muted': '#4A6080',
         'border': '#CBD5E0',
         'primary': '#2E7D32',
-        'primary_hover': '#1B5E20',
+        'primary_light': '#4CAF50',
+        'primary_dark': '#1B5E20',
         'secondary': '#00ACC1',
         'accent': '#E08C00',
         'success': '#2E7D32',
@@ -138,32 +141,34 @@ TRANSLATIONS = {
 }
 
 # ═══════════════════════════════════════════════════════
-# INITIALIZE SESSION STATE
+# INITIALIZE SESSION STATE (مبسط وسريع)
 # ═══════════════════════════════════════════════════════
-def init_session_state():
-    """Initialize all session state variables"""
-    defaults = {
-        'lang': 'EN',
-        'theme': 'dark',
-        'data_loaded': False,
-        'current_page': 'overview',
-        'tourist_data': None,
-        'spending_data': None,
-        'overnight_data': None,
-        'carbon_data': None,
-        'kpis': {}
+if "lang" not in st.session_state:
+    st.session_state.lang = "EN"
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+if "data_loaded" not in st.session_state:
+    st.session_state.data_loaded = False
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "overview"
+if "kpis" not in st.session_state:
+    st.session_state.kpis = {
+        'total_tourists_2024': 115.8,
+        'inbound_2024': 29.7,
+        'domestic_2024': 86.2,
+        'total_nights_2024': 1.1,
+        'avg_spend_2024': 5622,
+        'tourists_growth': 8.1,
+        'inbound_growth': 8.4,
+        'domestic_growth': 5.2,
+        'nights_growth': 18.2,
+        'spend_growth': 12.8
     }
-    
-    for key, value in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
-
-init_session_state()
 
 # ═══════════════════════════════════════════════════════
-# UTILITY FUNCTIONS
+# CACHED UTILITY FUNCTIONS (للسرعة)
 # ═══════════════════════════════════════════════════════
-@st.cache_data(ttl=86400)
+@st.cache_data(ttl=86400, show_spinner=False)
 def get_image_base64(image_path):
     """Convert image to base64 with caching"""
     try:
@@ -175,288 +180,156 @@ def get_image_base64(image_path):
         pass
     return None
 
-@st.cache_data(ttl=3600)
-def load_sample_data():
-    """Load sample data for demonstration"""
-    years = list(range(2015, 2025))
-    inbound = [17.99, 18.04, 16.11, 15.33, 17.53, 4.14, 3.48, 16.64, 27.18, 29.73]
-    domestic = [46.45, 45.04, 43.82, 43.26, 47.81, 42.11, 63.83, 77.84, 81.92, 86.16]
+@st.cache_data(ttl=86400, show_spinner=False)
+def get_custom_css(theme_colors, lang):
+    """Generate custom CSS based on theme and language"""
     
-    return {
-        'tourist': pd.DataFrame({
-            'Year': years,
-            'Inbound': inbound,
-            'Domestic': domestic,
-            'Total': [i+d for i,d in zip(inbound, domestic)]
-        }),
-        'kpis': {
-            'total_tourists_2024': 115.8,
-            'inbound_2024': 29.7,
-            'domestic_2024': 86.2,
-            'total_nights_2024': 1.1,
-            'avg_spend_2024': 5622,
-            'tourists_growth': 8.1,
-            'inbound_growth': 8.4,
-            'domestic_growth': 5.2,
-            'nights_growth': 18.2,
-            'spend_growth': 12.8
-        }
-    }
-
-# ═══════════════════════════════════════════════════════
-# LOAD DATA
-# ═══════════════════════════════════════════════════════
-def load_data():
-    """Load all required data"""
-    with st.spinner(TRANSLATIONS[st.session_state.lang]['loading']):
-        try:
-            # Try to load from utils
-            sys.path.append(str(Path(__file__).parent.parent))
-            from utils.data_loader import load_tourist_data, load_spending_data, load_overnight_data, load_carbon_data
-            from utils.kpis import calculate_kpis
-            
-            tourist_data = load_tourist_data()
-            spending_data = load_spending_data()
-            overnight_data = load_overnight_data()
-            carbon_data = load_carbon_data()
-            kpis = calculate_kpis(tourist_data, spending_data, overnight_data)
-            
-            return {
-                'tourist': tourist_data,
-                'spending': spending_data,
-                'overnight': overnight_data,
-                'carbon': carbon_data,
-                'kpis': kpis
-            }
-        except Exception as e:
-            # Fallback to sample data
-            return load_sample_data()
-
-# Load data if not loaded
-if not st.session_state.data_loaded:
-    data = load_data()
-    st.session_state.tourist_data = data.get('tourist')
-    st.session_state.spending_data = data.get('spending')
-    st.session_state.overnight_data = data.get('overnight')
-    st.session_state.carbon_data = data.get('carbon')
-    st.session_state.kpis = data.get('kpis', {})
-    st.session_state.data_loaded = True
-
-# ═══════════════════════════════════════════════════════
-# GET CURRENT THEME COLORS
-# ═══════════════════════════════════════════════════════
-def get_colors():
-    """Get colors based on current theme"""
-    return Config.DARK_THEME if st.session_state.theme == 'dark' else Config.LIGHT_THEME
-
-colors = get_colors()
-
-# ═══════════════════════════════════════════════════════
-# CUSTOM CSS
-# ═══════════════════════════════════════════════════════
-def get_custom_css():
-    """Generate custom CSS based on theme"""
     rtl_css = ""
-    if st.session_state.lang == 'AR':
+    if lang == 'AR':
         rtl_css = """
-        [dir="rtl"] .stMarkdown {
-            text-align: right;
-        }
-        
-        [data-testid="column"] {
-            direction: rtl;
-        }
+        [dir="rtl"] .stMarkdown { text-align: right; }
+        [data-testid="column"] { direction: rtl; }
         """
     
     return f"""
     <style>
-        /* Main app background */
-        .stApp {{
-            background-color: {colors['bg']};
-            color: {colors['text']};
-        }}
+        /* Fast loading optimizations */
+        .stApp {{ background-color: {theme_colors['bg']}; color: {theme_colors['text']}; }}
         
-        /* Metric cards */
+        /* Metric cards - fast transitions */
         [data-testid="stMetric"] {{
-            background-color: {colors['card']};
-            border: 1px solid {colors['border']};
+            background-color: {theme_colors['card']};
+            border: 1px solid {theme_colors['border']};
             border-radius: 12px;
             padding: 1rem;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
         }}
         
         [data-testid="stMetric"]:hover {{
             transform: translateY(-2px);
-            background-color: {colors['card_hover']};
+            background-color: {theme_colors['card_hover']};
         }}
         
         [data-testid="stMetricLabel"] {{
-            color: {colors['text_muted']} !important;
+            color: {theme_colors['text_muted']} !important;
             font-size: 0.75rem !important;
         }}
         
         [data-testid="stMetricValue"] {{
-            color: {colors['accent']} !important;
+            color: {theme_colors['accent']} !important;
             font-size: 1.5rem !important;
             font-weight: 700 !important;
         }}
         
-        /* Top bar with logo and controls */
-        .top-bar {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid {colors['border']};
+        /* Main Slider Container - أخضر */
+        .main-slider {{
+            background: linear-gradient(135deg, {theme_colors['primary']}15, {theme_colors['primary']}05);
+            border: 2px solid {theme_colors['primary']}40;
+            border-radius: 30px;
+            padding: 1.5rem;
+            margin: 1rem 0 2rem 0;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
         }}
         
-        .logo-container {{
+        /* Logo inside slider - في أعلى السلايدر */
+        .slider-logo {{
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid {theme_colors['primary']}30;
+        }}
+        
+        .slider-logo img {{
             max-width: 200px;
-        }}
-        
-        .logo-container img {{
-            max-width: 100%;
             height: auto;
         }}
         
-        .controls-container {{
+        /* Controls inside slider */
+        .slider-controls {{
             display: flex;
-            gap: 0.5rem;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 0.5rem;
         }}
         
         .control-btn {{
-            background: {colors['card']};
-            border: 1px solid {colors['border']};
+            background: {theme_colors['card']};
+            border: 1px solid {theme_colors['primary']}40;
             border-radius: 30px;
-            padding: 0.5rem 1.2rem;
-            color: {colors['text']};
+            padding: 0.6rem 1.5rem;
+            color: {theme_colors['text']};
             font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            flex: 1;
+            text-align: center;
         }}
         
         .control-btn:hover {{
-            border-color: {colors['primary']};
+            border-color: {theme_colors['primary']};
+            background: {theme_colors['primary']}20;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }}
         
-        /* Hero image - FULL WIDTH */
-        .hero-section {{
-            width: 100%;
-            margin: 1rem 0 2rem 0;
-        }}
-        
-        .hero-image-container {{
-            width: 100%;
-            background: linear-gradient(135deg, {colors['primary']}15, {colors['secondary']}15);
-            border-radius: 24px;
-            padding: 2rem;
-            text-align: center;
-            border: 1px solid {colors['border']};
-        }}
-        
-        .hero-image {{
-            max-width: 100%;
-            max-height: 350px;
-            width: auto;
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
-        }}
-        
-        /* Title under hero */
-        .main-title {{
-            text-align: center;
-            margin: 2rem 0 1rem 0;
-        }}
-        
-        .main-title h1 {{
-            color: {colors['accent']};
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }}
-        
-        .main-title p {{
-            color: {colors['text_muted']};
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }}
-        
-        /* Slider container - مربعات خضراء */
-        .slider-section {{
-            background: {colors['card']};
-            border: 1px solid {colors['border']};
-            border-radius: 24px;
-            padding: 1.5rem;
-            margin: 1rem 0 2rem 0;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-        }}
-        
-        .slider-header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid {colors['border']};
-        }}
-        
-        .slider-header h3 {{
-            color: {colors['text']};
-            font-size: 1.1rem;
+        /* Navigation Title */
+        .nav-title {{
+            color: {theme_colors['text']};
+            font-size: 1rem;
             font-weight: 600;
-            margin: 0;
+            margin: 1rem 0;
+            padding-left: 0.5rem;
         }}
         
+        /* Navigation Grid - أزرار خضراء */
         .nav-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 0.8rem;
+            margin: 1rem 0;
         }}
         
-        .nav-card {{
-            background: linear-gradient(135deg, {colors['primary']}15, {colors['primary']}05);
-            border: 1px solid {colors['primary']}30;
-            border-radius: 12px;
-            padding: 0.8rem;
-            text-align: center;
-            color: {colors['text']};
+        /* أزرار التنقل الخضراء */
+        .nav-btn {{
+            background: linear-gradient(135deg, {theme_colors['primary']}20, {theme_colors['primary_dark']}30);
+            border: 2px solid {theme_colors['primary']}40;
+            border-radius: 16px;
+            padding: 1rem 0.5rem;
+            color: {theme_colors['text']};
             font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }}
         
-        .nav-card:hover {{
-            background: linear-gradient(135deg, {colors['primary']}30, {colors['primary']}20);
-            border-color: {colors['accent']};
+        .nav-btn:hover {{
+            background: linear-gradient(135deg, {theme_colors['primary']}40, {theme_colors['primary']}30);
+            border-color: {theme_colors['accent']};
             transform: translateY(-3px);
             box-shadow: 0 8px 16px rgba(0,0,0,0.15);
         }}
         
-        .nav-card.active {{
-            background: linear-gradient(135deg, {colors['primary']}50, {colors['secondary']}30);
-            border-left: 4px solid {colors['primary']};
-            border-color: {colors['primary']};
-            font-weight: 600;
+        .nav-btn.active {{
+            background: linear-gradient(135deg, {theme_colors['primary']}60, {theme_colors['primary']}40);
+            border-color: {theme_colors['accent']};
+            border-left: 4px solid {theme_colors['accent']};
+            font-weight: 700;
         }}
         
-        /* Profile card */
+        /* Profile Card داخل السلايدر */
         .profile-card {{
-            background: linear-gradient(135deg, {colors['primary']}15, {colors['secondary']}15);
-            border: 1px solid {colors['border']};
+            background: linear-gradient(135deg, {theme_colors['primary']}20, {theme_colors['secondary']}20);
+            border: 1px solid {theme_colors['border']};
             border-radius: 20px;
             padding: 1.5rem;
-            margin: 1rem 0;
+            margin: 1.5rem 0 0.5rem 0;
             text-align: center;
         }}
         
         .profile-name {{
-            color: {colors['accent']};
+            color: {theme_colors['accent']};
             font-size: 1.2rem;
             font-weight: 700;
             margin-bottom: 0.3rem;
@@ -470,26 +343,67 @@ def get_custom_css():
         }}
         
         .profile-link {{
-            background: {colors['card']};
-            color: {colors['secondary']};
+            background: {theme_colors['card']};
+            color: {theme_colors['secondary']};
             text-decoration: none;
             font-size: 0.85rem;
             padding: 0.4rem 1rem;
             border-radius: 30px;
-            border: 1px solid {colors['border']};
-            transition: all 0.3s ease;
+            border: 1px solid {theme_colors['border']};
+            transition: all 0.2s ease;
         }}
         
         .profile-link:hover {{
-            color: {colors['accent']};
-            border-color: {colors['accent']};
+            color: {theme_colors['accent']};
+            border-color: {theme_colors['accent']};
             transform: translateY(-2px);
+        }}
+        
+        /* Hero Image - عرض كامل */
+        .hero-container {{
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, {theme_colors['primary']}10, {theme_colors['secondary']}10);
+            padding: 2rem 0;
+        }}
+        
+        .hero-image {{
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            object-position: center;
+        }}
+        
+        /* Title under hero */
+        .hero-title {{
+            text-align: center;
+            margin: 2rem 0;
+            padding: 0 1rem;
+        }}
+        
+        .hero-title h1 {{
+            color: {theme_colors['accent']};
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }}
+        
+        .hero-title p {{
+            color: {theme_colors['text_muted']};
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
         }}
         
         /* Footer */
         .footer {{
-            background: {colors['card']};
-            border: 1px solid {colors['border']};
+            background: {theme_colors['card']};
+            border: 1px solid {theme_colors['border']};
             border-radius: 20px;
             padding: 2rem;
             margin-top: 3rem;
@@ -501,51 +415,62 @@ def get_custom_css():
         
         /* Responsive */
         @media (max-width: 768px) {{
-            .hero-image {{
-                max-height: 200px;
-            }}
-            
-            .hero-image-container {{
-                padding: 1rem;
-            }}
-            
-            .main-title h1 {{
-                font-size: 1.8rem;
-            }}
-            
-            .nav-grid {{
-                grid-template-columns: 1fr;
-            }}
-            
-            .controls-container {{
-                flex-direction: column;
-            }}
+            .hero-title h1 {{ font-size: 1.8rem; }}
+            .nav-grid {{ grid-template-columns: 1fr; }}
+            .slider-controls {{ flex-direction: column; }}
         }}
     </style>
     """
 
-# Apply custom CSS
-st.markdown(get_custom_css(), unsafe_allow_html=True)
+# ═══════════════════════════════════════════════════════
+# GET COLORS BASED ON THEME
+# ═══════════════════════════════════════════════════════
+colors = Config.DARK_THEME if st.session_state.theme == 'dark' else Config.LIGHT_THEME
 
 # ═══════════════════════════════════════════════════════
-# TOP BAR WITH LOGO AND CONTROLS
+# APPLY CUSTOM CSS (مسكّت مؤقتاً)
 # ═══════════════════════════════════════════════════════
-st.markdown("<div class='top-bar'>", unsafe_allow_html=True)
+st.markdown(get_custom_css(colors, st.session_state.lang), unsafe_allow_html=True)
 
-col_logo, col_controls = st.columns([1, 1])
+# ═══════════════════════════════════════════════════════
+# HERO IMAGE - FULL WIDTH (أول حاجة)
+# ═══════════════════════════════════════════════════════
+hero_base64 = get_image_base64("assets/hero.png")
+if hero_base64:
+    st.markdown(
+        f"<div class='hero-container'>"
+        f"<img src='data:image/png;base64,{hero_base64}' class='hero-image'>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
 
-with col_logo:
+# ═══════════════════════════════════════════════════════
+# TITLE UNDER HERO
+# ═══════════════════════════════════════════════════════
+st.markdown(
+    f"<div class='hero-title'>"
+    f"<h1>{TRANSLATIONS[st.session_state.lang]['app_title']}</h1>"
+    f"<p>{TRANSLATIONS[st.session_state.lang]['welcome']}</p>"
+    f"</div>",
+    unsafe_allow_html=True
+)
+
+# ═══════════════════════════════════════════════════════
+# MAIN SLIDER - كل حاجة جواه
+# ═══════════════════════════════════════════════════════
+with st.container():
+    st.markdown("<div class='main-slider'>", unsafe_allow_html=True)
+    
+    # 1. اللوجو في أعلى السلايدر
     logo_base64 = get_image_base64("assets/logo.png")
     if logo_base64:
         st.markdown(
-            f"<div class='logo-container'><img src='data:image/png;base64,{logo_base64}'></div>",
+            f"<div class='slider-logo'><img src='data:image/png;base64,{logo_base64}'></div>",
             unsafe_allow_html=True
         )
-    else:
-        st.markdown(f"<h2 style='color:{colors['accent']};'>🇸🇦 STI</h2>", unsafe_allow_html=True)
-
-with col_controls:
-    st.markdown("<div class='controls-container'>", unsafe_allow_html=True)
+    
+    # 2. أزرار التحكم (ترجمة + Dark/Light)
+    st.markdown("<div class='slider-controls'>", unsafe_allow_html=True)
     col_btn1, col_btn2 = st.columns(2)
     
     with col_btn1:
@@ -562,90 +487,67 @@ with col_controls:
             st.rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ═══════════════════════════════════════════════════════
-# HERO IMAGE - FULL WIDTH
-# ═══════════════════════════════════════════════════════
-hero_base64 = get_image_base64("assets/hero.png")
-if hero_base64:
+    
+    # 3. عنوان NAVIGATION
+    st.markdown(f"<div class='nav-title'>{TRANSLATIONS[st.session_state.lang]['nav_title']}</div>", unsafe_allow_html=True)
+    
+    # 4. أزرار التنقل الخضراء (شبكة 2 عمود)
+    st.markdown("<div class='nav-grid'>", unsafe_allow_html=True)
+    
+    # تقسيم الأزرار إلى مجموعتين للعرض بشكل أفضل
+    for i in range(0, len(Config.PAGES), 2):
+        cols = st.columns(2)
+        for j in range(2):
+            if i + j < len(Config.PAGES):
+                page = Config.PAGES[i + j]
+                with cols[j]:
+                    page_name = page['en'] if st.session_state.lang == 'EN' else page['ar']
+                    active_class = "active" if st.session_state.current_page == page['id'] else ""
+                    
+                    # نستخدم button عادي مع CSS مخصص
+                    if st.button(
+                        page_name,
+                        key=f"nav_{page['id']}",
+                        use_container_width=True
+                    ):
+                        st.session_state.current_page = page['id']
+                        st.rerun()
+                    
+                    # إضافة class للزر النشط
+                    if st.session_state.current_page == page['id']:
+                        st.markdown(f"""
+                        <style>
+                            div[data-testid="stButton"]:has(button[key="nav_{page['id']}"]) button {{
+                                background: linear-gradient(135deg, {colors['primary']}60, {colors['primary']}40) !important;
+                                border-color: {colors['accent']} !important;
+                                border-left: 4px solid {colors['accent']} !important;
+                                font-weight: 700 !important;
+                            }}
+                        </style>
+                        """, unsafe_allow_html=True)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # 5. اسمي وحساباتي داخل السلايدر
     st.markdown(
-        f"<div class='hero-section'>"
-        f"<div class='hero-image-container'>"
-        f"<img src='data:image/png;base64,{hero_base64}' class='hero-image'>"
+        f"<div class='profile-card'>"
+        f"<div class='profile-name'>{Config.DEV_NAME}</div>"
+        f"<div style='color:{colors['text_muted']}; font-size:0.8rem; margin-bottom:1rem;'>"
+        f"{TRANSLATIONS[st.session_state.lang]['developed_by']}</div>"
+        f"<div class='profile-links'>"
+        f"<a href='{Config.DEV_GITHUB}' target='_blank' class='profile-link'>🐙 GitHub</a>"
+        f"<a href='{Config.DEV_LINKEDIN}' target='_blank' class='profile-link'>💼 LinkedIn</a>"
         f"</div>"
         f"</div>",
         unsafe_allow_html=True
     )
+    
+    st.markdown("</div>", unsafe_allow_html=True)  # Close main-slider
 
 # ═══════════════════════════════════════════════════════
-# MAIN TITLE UNDER HERO
+# KEY METRICS (بعد السلايدر)
 # ═══════════════════════════════════════════════════════
-st.markdown(
-    f"<div class='main-title'>"
-    f"<h1>{TRANSLATIONS[st.session_state.lang]['app_title']}</h1>"
-    f"<p>{TRANSLATIONS[st.session_state.lang]['welcome']}</p>"
-    f"</div>",
-    unsafe_allow_html=True
-)
-
-# ═══════════════════════════════════════════════════════
-# SLIDER SECTION WITH GREEN NAVIGATION CARDS
-# ═══════════════════════════════════════════════════════
-st.markdown("<div class='slider-section'>", unsafe_allow_html=True)
-
-# Slider header with title and controls
-st.markdown(
-    f"<div class='slider-header'>"
-    f"<h3>{TRANSLATIONS[st.session_state.lang]['nav_title']}</h3>"
-    f"</div>",
-    unsafe_allow_html=True
-)
-
-# Navigation grid
-st.markdown("<div class='nav-grid'>", unsafe_allow_html=True)
-
-nav_cols = st.columns(4)  # 4 columns for 8 pages (2 rows)
-
-for idx, page in enumerate(Config.PAGES):
-    col_idx = idx % 4
-    with nav_cols[col_idx]:
-        page_name = page['en'] if st.session_state.lang == 'EN' else page['ar']
-        btn_type = "primary" if st.session_state.current_page == page['id'] else "secondary"
-        
-        if st.button(
-            page_name,
-            key=f"nav_{page['id']}",
-            use_container_width=True,
-            type=btn_type
-        ):
-            st.session_state.current_page = page['id']
-            st.rerun()
-
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ═══════════════════════════════════════════════════════
-# PROFILE CARD
-# ═══════════════════════════════════════════════════════
-st.markdown(
-    f"<div class='profile-card'>"
-    f"<div class='profile-name'>{Config.DEV_NAME}</div>"
-    f"<div style='color:{colors['text_muted']}; font-size:0.8rem; margin-bottom:1rem;'>"
-    f"{TRANSLATIONS[st.session_state.lang]['developed_by']}</div>"
-    f"<div class='profile-links'>"
-    f"<a href='{Config.DEV_GITHUB}' target='_blank' class='profile-link'>🐙 GitHub</a>"
-    f"<a href='{Config.DEV_LINKEDIN}' target='_blank' class='profile-link'>💼 LinkedIn</a>"
-    f"</div>"
-    f"</div>",
-    unsafe_allow_html=True
-)
-
-# ═══════════════════════════════════════════════════════
-# KEY METRICS
-# ═══════════════════════════════════════════════════════
-if st.session_state.data_loaded and st.session_state.kpis:
+if st.session_state.data_loaded:
     kpis = st.session_state.kpis
     
     metrics = [
@@ -673,88 +575,44 @@ if st.session_state.data_loaded and st.session_state.kpis:
 st.divider()
 
 # ═══════════════════════════════════════════════════════
-# PAGE ROUTING
+# PAGE ROUTING (سريع)
 # ═══════════════════════════════════════════════════════
 def load_page(page_name):
     """Dynamically load and render page"""
     try:
-        if page_name == "overview" and st.session_state.data_loaded:
+        if page_name == "overview":
             from pages.overview import show_overview
-            show_overview(
-                st.session_state.tourist_data,
-                st.session_state.spending_data,
-                st.session_state.overnight_data,
-                st.session_state.carbon_data,
-                st.session_state.lang,
-                st.session_state.theme
-            )
+            show_overview(None, None, None, None, st.session_state.lang, st.session_state.theme)
         elif page_name == "trends":
             from pages.tourist_trends import show_trends
-            show_trends(
-                st.session_state.tourist_data,
-                st.session_state.lang,
-                st.session_state.theme
-            )
+            show_trends(None, st.session_state.lang, st.session_state.theme)
         elif page_name == "seasonality":
             from pages.seasonality import show_seasonality
-            show_seasonality(
-                st.session_state.tourist_data,
-                st.session_state.lang,
-                st.session_state.theme
-            )
+            show_seasonality(None, st.session_state.lang, st.session_state.theme)
         elif page_name == "spending":
             from pages.spending import show_spending
-            show_spending(
-                st.session_state.spending_data,
-                st.session_state.tourist_data,
-                st.session_state.lang,
-                st.session_state.theme
-            )
+            show_spending(None, None, st.session_state.lang, st.session_state.theme)
         elif page_name == "overnight":
             from pages.overnight_stays import show_overnight
-            show_overnight(
-                st.session_state.overnight_data,
-                st.session_state.tourist_data,
-                st.session_state.lang,
-                st.session_state.theme
-            )
+            show_overnight(None, None, st.session_state.lang, st.session_state.theme)
         elif page_name == "forecast":
             from pages.forecasting import show_forecast
-            show_forecast(
-                st.session_state.tourist_data,
-                st.session_state.lang,
-                st.session_state.theme
-            )
+            show_forecast(None, st.session_state.lang, st.session_state.theme)
         elif page_name == "segmentation":
             from pages.segmentation import show_segmentation
-            show_segmentation(
-                st.session_state.tourist_data,
-                st.session_state.spending_data,
-                st.session_state.overnight_data,
-                st.session_state.lang,
-                st.session_state.theme
-            )
+            show_segmentation(None, None, None, st.session_state.lang, st.session_state.theme)
         elif page_name == "carbon":
             from pages.carbon_impact import show_carbon
-            show_carbon(
-                st.session_state.carbon_data,
-                st.session_state.tourist_data,
-                st.session_state.overnight_data,
-                st.session_state.lang,
-                st.session_state.theme
-            )
-        else:
-            st.info(f"📄 {page_name} - {TRANSLATIONS[st.session_state.lang]['under_development']}")
+            show_carbon(None, None, None, st.session_state.lang, st.session_state.theme)
     except ImportError:
         st.info(f"📄 {page_name} - {TRANSLATIONS[st.session_state.lang]['under_development']}")
-    except Exception as e:
-        st.error(f"{TRANSLATIONS[st.session_state.lang]['error']}: {str(e)}")
 
-# Load current page
-load_page(st.session_state.current_page)
+# Load current page if not overview
+if st.session_state.current_page != "overview":
+    load_page(st.session_state.current_page)
 
 # ═══════════════════════════════════════════════════════
-# FOOTER
+# FOOTER (سريع)
 # ═══════════════════════════════════════════════════════
 st.divider()
 
@@ -770,9 +628,3 @@ st.markdown(
     f"</div>",
     unsafe_allow_html=True
 )
-
-# ═══════════════════════════════════════════════════════
-# RUN
-# ═══════════════════════════════════════════════════════
-if __name__ == "__main__":
-    pass
