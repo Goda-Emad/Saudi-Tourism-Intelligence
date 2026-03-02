@@ -272,3 +272,161 @@ def create_gauge_chart(value, title, max_value=100, template="plotly_dark"):
         margin=dict(l=10, r=10, t=30, b=10)
     )
     return fig
+    # ═══════════════════════════════════════════════════════
+# NEW DATA LOADERS for additional files
+# ═══════════════════════════════════════════════════════
+
+@st.cache_data
+def load_forecast_data():
+    """تحميل بيانات التوقعات 2025-2026"""
+    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
+    file_path = base_path / "06_Demand_Forecast_2025_2026.csv"
+    
+    df = load_csv_file(file_path)
+    
+    # إذا الملف مش موجود، نرجع بيانات افتراضية
+    if df.empty:
+        df = create_sample_forecast_data()
+    
+    return df
+
+@st.cache_data
+def load_segments_data():
+    """تحميل بيانات تجزئة السياح"""
+    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
+    file_path = base_path / "07_Tourist_Segments.csv"
+    
+    df = load_csv_file(file_path)
+    
+    if df.empty:
+        df = create_sample_segments_data()
+    
+    return df
+
+# ═══════════════════════════════════════════════════════
+# SAMPLE DATA CREATORS for new files
+# ═══════════════════════════════════════════════════════
+
+def create_sample_forecast_data():
+    """إنشاء بيانات توقعات تجريبية (من business_case.pdf)"""
+    
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    # 2025 forecast (thousands)
+    forecast_2025 = [12307, 11850, 12100, 11500, 11200, 11800,
+                     12200, 12100, 11600, 11400, 11800, 12500]
+    
+    # 2026 forecast (thousands)
+    forecast_2026 = [13680, 13100, 13350, 12700, 12350, 13000,
+                     13450, 13350, 12800, 12550, 13000, 13800]
+    
+    # Confidence intervals
+    lower_2025 = [int(f * 0.92) for f in forecast_2025]
+    upper_2025 = [int(f * 1.08) for f in forecast_2025]
+    lower_2026 = [int(f * 0.92) for f in forecast_2026]
+    upper_2026 = [int(f * 1.08) for f in forecast_2026]
+    
+    # Create dataframe
+    data = []
+    for i, month in enumerate(months):
+        # 2025
+        data.append({
+            'Month': month,
+            'Year': 2025,
+            'Forecast_Total': forecast_2025[i],
+            'Lower_Bound': lower_2025[i],
+            'Upper_Bound': upper_2025[i],
+            'Inbound_Pct': 28,
+            'Domestic_Pct': 72
+        })
+        # 2026
+        data.append({
+            'Month': month,
+            'Year': 2026,
+            'Forecast_Total': forecast_2026[i],
+            'Lower_Bound': lower_2026[i],
+            'Upper_Bound': upper_2026[i],
+            'Inbound_Pct': 30,
+            'Domestic_Pct': 70
+        })
+    
+    return pd.DataFrame(data)
+
+def create_sample_segments_data():
+    """إنشاء بيانات تجزئة السياح تجريبية"""
+    
+    segments = [
+        {
+            'Segment': 'High Value',
+            'Percentage': 18,
+            'Avg_Spend': 12500,
+            'Avg_Stay': 12.5,
+            'Frequency': 1.8,
+            'Inbound_Pct': 65,
+            'Domestic_Pct': 35,
+            'Religious_Pct': 45,
+            'Leisure_Pct': 28,
+            'Business_Pct': 15,
+            'VFR_Pct': 8,
+            'Other_Pct': 4,
+            'Winter_Pct': 38,
+            'Spring_Pct': 22,
+            'Summer_Pct': 18,
+            'Fall_Pct': 22
+        },
+        {
+            'Segment': 'Mid Value',
+            'Percentage': 37,
+            'Avg_Spend': 6200,
+            'Avg_Stay': 6.8,
+            'Frequency': 2.5,
+            'Inbound_Pct': 45,
+            'Domestic_Pct': 55,
+            'Religious_Pct': 38,
+            'Leisure_Pct': 32,
+            'Business_Pct': 12,
+            'VFR_Pct': 12,
+            'Other_Pct': 6,
+            'Winter_Pct': 28,
+            'Spring_Pct': 24,
+            'Summer_Pct': 26,
+            'Fall_Pct': 22
+        },
+        {
+            'Segment': 'Budget',
+            'Percentage': 45,
+            'Avg_Spend': 2800,
+            'Avg_Stay': 3.2,
+            'Frequency': 4.2,
+            'Inbound_Pct': 22,
+            'Domestic_Pct': 78,
+            'Religious_Pct': 22,
+            'Leisure_Pct': 35,
+            'Business_Pct': 8,
+            'VFR_Pct': 25,
+            'Other_Pct': 10,
+            'Winter_Pct': 20,
+            'Spring_Pct': 22,
+            'Summer_Pct': 40,
+            'Fall_Pct': 18
+        }
+    ]
+    
+    return pd.DataFrame(segments)
+
+# ═══════════════════════════════════════════════════════
+# UPDATE BULK LOADER
+# ═══════════════════════════════════════════════════════
+
+@st.cache_data
+def load_all_datasets():
+    """تحميل جميع مجموعات البيانات (محدث)"""
+    return {
+        'tourist': load_tourist_data(),
+        'spending': load_spending_data(),
+        'overnight': load_overnight_data(),
+        'carbon': load_carbon_data(),
+        'forecast': load_forecast_data(),      # ✅ جديد
+        'segments': load_segments_data()       # ✅ جديد
+    }
