@@ -397,7 +397,7 @@ if st.session_state.data_loaded:
     st.divider()
 
 # ═══════════════════════════════════════════════════════
-# PAGE ROUTING
+# PAGE ROUTING - FIXED IMPORTS (No numbers in filenames)
 # ═══════════════════════════════════════════════════════
 
 current_page = st.session_state.current_page
@@ -406,61 +406,61 @@ if current_page == "overview":
     # الصفحة الرئيسية - نظرة عامة
     if st.session_state.data_loaded:
         try:
-            from pages.01_Overview import show_overview
+            from pages.overview import show_overview
             show_overview(tourist_data, spending_data, overnight_data, carbon_data, lang, theme)
-        except ImportError:
-            st.info("📊 صفحة Overview جاري تجهيزها...")
+        except ImportError as e:
+            st.info(f"📊 صفحة Overview جاري تجهيزها... {e}")
     else:
         st.info("📊 يرجى التأكد من وجود ملفات البيانات في المجلد data/clean/")
         
 elif current_page == "trends":
     try:
-        from pages.02_Tourist_Trends import show_trends
+        from pages.tourist_trends import show_trends
         show_trends(tourist_data, lang, theme)
-    except ImportError:
-        st.info("📈 صفحة Tourist Trends جاري تجهيزها...")
+    except ImportError as e:
+        st.info(f"📈 صفحة Tourist Trends جاري تجهيزها... {e}")
     
 elif current_page == "seasonality":
     try:
-        from pages.03_Seasonality import show_seasonality
+        from pages.seasonality import show_seasonality
         show_seasonality(tourist_data, lang, theme)
-    except ImportError:
-        st.info("📅 صفحة Seasonality جاري تجهيزها...")
+    except ImportError as e:
+        st.info(f"📅 صفحة Seasonality جاري تجهيزها... {e}")
     
 elif current_page == "spending":
     try:
-        from pages.04_Spending import show_spending
+        from pages.spending import show_spending
         show_spending(spending_data, tourist_data, lang, theme)
-    except ImportError:
-        st.info("💰 صفحة Spending جاري تجهيزها...")
+    except ImportError as e:
+        st.info(f"💰 صفحة Spending جاري تجهيزها... {e}")
     
 elif current_page == "overnight":
     try:
-        from pages.05_Overnight_Stays import show_overnight
+        from pages.overnight_stays import show_overnight
         show_overnight(overnight_data, tourist_data, lang, theme)
-    except ImportError:
-        st.info("🏨 صفحة Overnight Stays جاري تجهيزها...")
+    except ImportError as e:
+        st.info(f"🏨 صفحة Overnight Stays جاري تجهيزها... {e}")
     
 elif current_page == "forecast":
     try:
-        from pages.06_Forecasting import show_forecast
+        from pages.forecasting import show_forecast
         show_forecast(tourist_data, lang, theme)
-    except ImportError:
-        st.info("🔮 صفحة Forecasting جاري تجهيزها...")
+    except ImportError as e:
+        st.info(f"🔮 صفحة Forecasting جاري تجهيزها... {e}")
     
 elif current_page == "segmentation":
     try:
-        from pages.07_Segmentation import show_segmentation
+        from pages.segmentation import show_segmentation
         show_segmentation(tourist_data, spending_data, overnight_data, lang, theme)
-    except ImportError:
-        st.info("🎯 صفحة Segmentation جاري تجهيزها...")
+    except ImportError as e:
+        st.info(f"🎯 صفحة Segmentation جاري تجهيزها... {e}")
     
 elif current_page == "carbon":
     try:
-        from pages.08_Carbon_Impact import show_carbon
+        from pages.carbon_impact import show_carbon
         show_carbon(carbon_data, tourist_data, overnight_data, lang, theme)
-    except ImportError:
-        st.info("🌱 صفحة Carbon Impact جاري تجهيزها...")
+    except ImportError as e:
+        st.info(f"🌱 صفحة Carbon Impact جاري تجهيزها... {e}")
 
 # ═══════════════════════════════════════════════════════
 # PROFESSIONAL FOOTER WITH DEVELOPER SIGNATURE
