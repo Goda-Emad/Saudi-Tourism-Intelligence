@@ -1,7 +1,44 @@
-streamlit==1.32.0
-pandas==2.2.0
-plotly==5.19.0
-scikit-learn==1.4.0
-prophet==1.1.5
-numpy==1.26.0
-```
+# ═══════════════════════════════════════════════════════
+# Saudi Tourism Intelligence - Simplified Requirements
+# ═══════════════════════════════════════════════════════
+
+# Core
+numpy
+pandas
+scipy
+
+# Machine Learning
+scikit-learn
+prophet
+xgboost
+
+# Visualization
+plotly
+matplotlib
+seaborn
+
+# Dashboard
+streamlit
+streamlit-option-menu
+streamlit-extras
+
+# Data Processing
+openpyxl
+xlrd
+tabulate
+
+# Utilities
+python-dotenv
+pyyaml
+joblib
+pytz
+
+# Prophet dependencies
+pystan
+holidays
+
+# Development (optional)
+jupyter
+ipykernel
+black
+pylint
