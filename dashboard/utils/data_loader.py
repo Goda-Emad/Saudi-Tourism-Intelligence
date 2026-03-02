@@ -1,280 +1,84 @@
-# utils/charts.py
+# utils/data_loader.py
 """
-Chart Creation Functions
-دوال إنشاء الرسوم البيانية
+Data Loading Functions
+دوال تحميل البيانات
 """
 
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
+from pathlib import Path
+import streamlit as st
 
 # ═══════════════════════════════════════════════════════
-# BASE CHARTS
+# BASE LOADER
 # ═══════════════════════════════════════════════════════
-def create_trend_chart(df, x_col, y_col, title, color=None, template="plotly_dark"):
-    """إنشاء رسم بياني للاتجاهات"""
-    fig = px.line(
-        df, x=x_col, y=y_col,
-        title=title,
-        color=color,
-        template=template
-    )
-    fig.update_layout(
-        margin=dict(l=10, r=10, t=30, b=10),
-        legend=dict(orientation="h", y=-0.2)
-    )
-    return fig
-
-def create_bar_chart(df, x_col, y_col, title, color=None, barmode='group', template="plotly_dark"):
-    """إنشاء رسم بياني أعمدة"""
-    fig = px.bar(
-        df, x=x_col, y=y_col,
-        title=title,
-        color=color,
-        barmode=barmode,
-        template=template
-    )
-    fig.update_layout(
-        margin=dict(l=10, r=10, t=30, b=10),
-        legend=dict(orientation="h", y=-0.2)
-    )
-    return fig
-
-def create_pie_chart(values, labels, title, colors=None, template="plotly_dark"):
-    """إنشاء رسم بياني دائري"""
-    fig = go.Figure(data=[go.Pie(
-        labels=labels,
-        values=values,
-        hole=0.4,
-        marker=dict(colors=colors) if colors else None
-    )])
-    fig.update_layout(
-        title=title,
-        template=template,
-        margin=dict(l=10, r=10, t=30, b=10)
-    )
-    return fig
-
-def create_heatmap(data, x_labels, y_labels, title, colorscale='Viridis', template="plotly_dark"):
-    """إنشاء خريطة حرارية"""
-    fig = go.Figure(data=go.Heatmap(
-        z=data,
-        x=x_labels,
-        y=y_labels,
-        colorscale=colorscale,
-        text=[[f"{val:.1f}" for val in row] for row in data],
-        texttemplate="%{text}",
-        textfont=dict(size=9)
-    ))
-    fig.update_layout(
-        title=title,
-        template=template,
-        margin=dict(l=10, r=10, t=30, b=10)
-    )
-    return fig
-
-def create_radar_chart(categories, values, title, color=None, template="plotly_dark"):
-    """إنشاء رسم بياني رادار"""
-    fig = go.Figure()
-    fig.add_trace(go.Scatterpolar(
-        r=values,
-        theta=categories,
-        fill='toself',
-        line=dict(color=color) if color else None
-    ))
-    fig.update_layout(
-        title=title,
-        template=template,
-        polar=dict(radialaxis=dict(visible=True, range=[0, max(values)*1.1])),
-        margin=dict(l=40, r=40, t=30, b=10)
-    )
-    return fig
+@st.cache_data
+def load_csv_file(file_path):
+    """تحميل ملف CSV مع معالجة الأخطاء"""
+    try:
+        if Path(file_path).exists():
+            return pd.read_csv(file_path)
+        else:
+            return pd.DataFrame()
+    except Exception as e:
+        print(f"Error loading {file_path}: {e}")
+        return pd.DataFrame()
 
 # ═══════════════════════════════════════════════════════
-# COMPARISON CHARTS
+# MAIN DATA LOADERS
 # ═══════════════════════════════════════════════════════
-def create_comparison_chart(inbound_data, domestic_data, years, title, template="plotly_dark"):
-    """مقارنة بين الوافدين والمحليين"""
-    fig = go.Figure()
+@st.cache_data
+def load_tourist_data():
+    """تحميل بيانات السياح"""
+    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
+    file_path = base_path / "01_Tourists_CLEAN.csv"
     
-    fig.add_trace(go.Bar(
-        x=years,
-        y=inbound_data,
-        name='Inbound',
-        marker_color='#3A86FF'
-    ))
+    df = load_csv_file(file_path)
     
-    fig.add_trace(go.Bar(
-        x=years,
-        y=domestic_data,
-        name='Domestic',
-        marker_color='#00C9B1'
-    ))
+    # إذا الملف مش موجود، نرجع بيانات افتراضية
+    if df.empty:
+        df = create_sample_tourist_data()
     
-    fig.update_layout(
-        title=title,
-        template=template,
-        barmode='group',
-        margin=dict(l=10, r=10, t=30, b=10),
-        legend=dict(orientation="h", y=-0.2)
-    )
-    return fig
+    return df
 
-def create_stacked_chart(df, x_col, y_cols, title, template="plotly_dark"):
-    """إنشاء رسم بياني مكدس"""
-    fig = go.Figure()
+@st.cache_data
+def load_spending_data():
+    """تحميل بيانات الإنفاق"""
+    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
+    file_path = base_path / "04_Expenditure_CLEAN.csv"
     
-    for col in y_cols:
-        fig.add_trace(go.Bar(
-            x=df[x_col],
-            y=df[col],
-            name=col
-        ))
+    df = load_csv_file(file_path)
     
-    fig.update_layout(
-        title=title,
-        template=template,
-        barmode='stack',
-        margin=dict(l=10, r=10, t=30, b=10),
-        legend=dict(orientation="h", y=-0.2)
-    )
-    return fig
+    if df.empty:
+        df = create_sample_spending_data()
+    
+    return df
 
-# ═══════════════════════════════════════════════════════
-# FORECAST CHARTS
-# ═══════════════════════════════════════════════════════
-def create_forecast_chart(historical, forecast, dates, title, template="plotly_dark"):
-    """إنشاء رسم بياني للتوقعات"""
-    fig = go.Figure()
+@st.cache_data
+def load_overnight_data():
+    """تحميل بيانات الإقامة"""
+    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
+    file_path = base_path / "02_Overnight_CLEAN.csv"
     
-    fig.add_trace(go.Scatter(
-        x=dates[:len(historical)],
-        y=historical,
-        name='Historical',
-        line=dict(color='#3A86FF', width=2)
-    ))
+    df = load_csv_file(file_path)
     
-    fig.add_trace(go.Scatter(
-        x=dates[len(historical)-1:],
-        y=[historical[-1]] + forecast,
-        name='Forecast',
-        line=dict(color='#F0A500', width=2, dash='dash')
-    ))
+    if df.empty:
+        df = create_sample_overnight_data()
     
-    fig.update_layout(
-        title=title,
-        template=template,
-        margin=dict(l=10, r=10, t=30, b=10),
-        legend=dict(orientation="h", y=-0.2)
-    )
-    return fig
+    return df
 
-# ═══════════════════════════════════════════════════════
-# CARBON CHARTS
-# ═══════════════════════════════════════════════════════
-def create_carbon_chart(years, emissions, title, template="plotly_dark"):
-    """إنشاء رسم بياني للكربون"""
-    fig = go.Figure()
+@st.cache_data
+def load_carbon_data():
+    """تحميل بيانات الكربون"""
+    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
+    file_path = base_path / "05_Carbon_Impact.csv"
     
-    colors = ['#FF5252' if e > 0 else '#00E676' for e in emissions]
+    df = load_csv_file(file_path)
     
-    fig.add_trace(go.Bar(
-        x=years,
-        y=emissions,
-        marker_color=colors,
-        text=[f"{e:.1f} Mt" for e in emissions],
-        textposition='outside'
-    ))
+    if df.empty:
+        df = create_sample_carbon_data()
     
-    fig.update_layout(
-        title=title,
-        template=template,
-        margin=dict(l=10, r=10, t=30, b=10),
-        yaxis=dict(title="CO₂ (Megatons)")
-    )
-    return fig
-
-def create_sustainability_scenarios(years, scenarios, title, template="plotly_dark"):
-    """إنشاء رسم بياني لسيناريوهات الاستدامة"""
-    fig = go.Figure()
-    
-    colors = ['#FF5252', '#F0A500', '#00C9B1', '#3A86FF']
-    
-    for i, (name, data) in enumerate(scenarios.items()):
-        fig.add_trace(go.Scatter(
-            x=years,
-            y=data,
-            name=name,
-            line=dict(color=colors[i % len(colors)], width=2.5)
-        ))
-    
-    fig.update_layout(
-        title=title,
-        template=template,
-        margin=dict(l=10, r=10, t=30, b=10),
-        legend=dict(orientation="h", y=-0.2)
-    )
-    return fig
-
-# ═══════════════════════════════════════════════════════
-# SEGMENTATION CHARTS
-# ═══════════════════════════════════════════════════════
-def create_segment_chart(segments, values, title, colors=None, template="plotly_dark"):
-    """إنشاء رسم بياني للشرائح"""
-    fig = go.Figure()
-    
-    fig.add_trace(go.Bar(
-        x=segments,
-        y=values,
-        marker_color=colors if colors else ['#F0A500', '#3A86FF', '#00C9B1'],
-        text=[f"{v:.0f}" for v in values],
-        textposition='outside'
-    ))
-    
-    fig.update_layout(
-        title=title,
-        template=template,
-        margin=dict(l=10, r=10, t=30, b=10),
-        xaxis=dict(tickangle=-15)
-    )
-    return fig
-
-# ═══════════════════════════════════════════════════════
-# SPECIALIZED CHARTS
-# ═══════════════════════════════════════════════════════
-def create_gauge_chart(value, title, max_value=100, template="plotly_dark"):
-    """إنشاء مقياس (Gauge)"""
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=value,
-        title={'text': title},
-        domain={'x': [0, 1], 'y': [0, 1]},
-        gauge={
-            'axis': {'range': [None, max_value]},
-            'bar': {'color': "#00C9B1"},
-            'steps': [
-                {'range': [0, max_value/3], 'color': "#FF5252"},
-                {'range': [max_value/3, 2*max_value/3], 'color': "#F0A500"},
-                {'range': [2*max_value/3, max_value], 'color': "#00E676"}
-            ],
-            'threshold': {
-                'line': {'color': "white", 'width': 4},
-                'thickness': 0.75,
-                'value': value
-            }
-        }
-    ))
-    
-    fig.update_layout(
-        template=template,
-        margin=dict(l=10, r=10, t=30, b=10)
-    )
-    return fig
-    # ═══════════════════════════════════════════════════════
-# NEW DATA LOADERS for additional files
-# ═══════════════════════════════════════════════════════
+    return df
 
 @st.cache_data
 def load_forecast_data():
@@ -284,7 +88,6 @@ def load_forecast_data():
     
     df = load_csv_file(file_path)
     
-    # إذا الملف مش موجود، نرجع بيانات افتراضية
     if df.empty:
         df = create_sample_forecast_data()
     
@@ -304,8 +107,66 @@ def load_segments_data():
     return df
 
 # ═══════════════════════════════════════════════════════
-# SAMPLE DATA CREATORS for new files
+# SAMPLE DATA CREATORS (للتجربة)
 # ═══════════════════════════════════════════════════════
+def create_sample_tourist_data():
+    """إنشاء بيانات سياحية تجريبية"""
+    years = list(range(2015, 2025))
+    inbound = [17.99, 18.04, 16.11, 15.33, 17.53, 4.14, 3.48, 16.64, 27.18, 29.73]
+    domestic = [46.45, 45.04, 43.82, 43.26, 47.81, 42.11, 63.83, 77.84, 81.92, 86.16]
+    
+    df = pd.DataFrame({
+        'Year': years,
+        'Inbound_M': inbound,
+        'Domestic_M': domestic,
+        'Total_M': [i + d for i, d in zip(inbound, domestic)]
+    })
+    
+    return df
+
+def create_sample_spending_data():
+    """إنشاء بيانات إنفاق تجريبية"""
+    years = [2019, 2020, 2021, 2022, 2023, 2024]
+    inbound_spend = [76.4, 12.8, 14.7, 90.9, 106.2, 119.8]
+    domestic_spend = [42.3, 37.6, 48.2, 59.7, 68.4, 76.5]
+    
+    df = pd.DataFrame({
+        'Year': years,
+        'Inbound_Spend_B': inbound_spend,
+        'Domestic_Spend_B': domestic_spend,
+        'Total_Spend_B': [i + d for i, d in zip(inbound_spend, domestic_spend)]
+    })
+    
+    return df
+
+def create_sample_overnight_data():
+    """إنشاء بيانات إقامة تجريبية"""
+    years = list(range(2015, 2025))
+    inbound_nights = [320, 325, 310, 305, 345, 82, 95, 380, 432, 560]
+    domestic_nights = [395, 400, 410, 415, 425, 380, 445, 475, 496, 539]
+    
+    df = pd.DataFrame({
+        'Year': years,
+        'Inbound_Nights_M': inbound_nights,
+        'Domestic_Nights_M': domestic_nights,
+        'Total_Nights_M': [i + d for i, d in zip(inbound_nights, domestic_nights)]
+    })
+    
+    return df
+
+def create_sample_carbon_data():
+    """إنشاء بيانات كربون تجريبية"""
+    years = list(range(2015, 2025))
+    carbon = [42.5, 43.2, 41.8, 40.9, 48.3, 28.1, 32.5, 51.2, 59.8, 68.17]
+    
+    df = pd.DataFrame({
+        'Year': years,
+        'Total_CO2_Mt': carbon,
+        'Inbound_CO2_Mt': [c * 0.58 for c in carbon],
+        'Domestic_CO2_Mt': [c * 0.42 for c in carbon]
+    })
+    
+    return df
 
 def create_sample_forecast_data():
     """إنشاء بيانات توقعات تجريبية (من business_case.pdf)"""
@@ -416,17 +277,56 @@ def create_sample_segments_data():
     return pd.DataFrame(segments)
 
 # ═══════════════════════════════════════════════════════
-# UPDATE BULK LOADER
+# BULK LOADER
 # ═══════════════════════════════════════════════════════
-
 @st.cache_data
 def load_all_datasets():
-    """تحميل جميع مجموعات البيانات (محدث)"""
+    """تحميل جميع مجموعات البيانات"""
     return {
         'tourist': load_tourist_data(),
         'spending': load_spending_data(),
         'overnight': load_overnight_data(),
         'carbon': load_carbon_data(),
-        'forecast': load_forecast_data(),      # ✅ جديد
-        'segments': load_segments_data()       # ✅ جديد
+        'forecast': load_forecast_data(),
+        'segments': load_segments_data()
     }
+
+# ═══════════════════════════════════════════════════════
+# DATA VALIDATION
+# ═══════════════════════════════════════════════════════
+def validate_data(df, required_columns):
+    """التحقق من صحة البيانات"""
+    if df.empty:
+        return False, "DataFrame is empty"
+    
+    missing = [col for col in required_columns if col not in df.columns]
+    if missing:
+        return False, f"Missing columns: {missing}"
+    
+    return True, "Data is valid"
+
+def get_data_summary(df):
+    """الحصول على ملخص البيانات"""
+    if df.empty:
+        return "No data available"
+    
+    summary = {
+        'rows': len(df),
+        'columns': list(df.columns),
+        'missing_values': df.isnull().sum().sum(),
+        'data_types': df.dtypes.to_dict()
+    }
+    
+    return summary
+
+# ═══════════════════════════════════════════════════════
+# DATA PROCESSING
+# ═══════════════════════════════════════════════════════
+def filter_by_year(df, year_col, start_year, end_year):
+    """تصفية البيانات حسب السنة"""
+    return df[(df[year_col] >= start_year) & (df[year_col] <= end_year)]
+
+def aggregate_monthly(df, date_col, value_col):
+    """تجميع البيانات الشهرية"""
+    df[date_col] = pd.to_datetime(df[date_col])
+    return df.groupby(df[date_col].dt.to_period('M'))[value_col].sum().reset_index()
