@@ -1,0 +1,91 @@
+Year,Trip Purpose,Type of tourist,Expenditure_Billions_SAR
+2014,Religious,Inbound,31.37
+2015,Religious,Inbound,47.77
+2016,Religious,Inbound,54.09
+2017,Religious,Inbound,70.91
+2018,Religious,Inbound,68.84
+2019,Religious,Inbound,68.08
+2020,Religious,Inbound,11.1
+2021,Religious,Inbound,1.78
+2022,Religious,Inbound,37.26
+2014,Leisure,Inbound,2.13
+2015,Leisure,Inbound,4.95
+2016,Leisure,Inbound,2.88
+2017,Leisure,Inbound,1.7
+2018,Leisure,Inbound,1.99
+2019,Leisure,Inbound,5.05
+2020,Leisure,Inbound,1.93
+2021,Leisure,Inbound,1.27
+2022,Leisure,Inbound,12.62
+2014,Business,Inbound,8.95
+2015,Business,Inbound,10.09
+2016,Business,Inbound,26.28
+2017,Business,Inbound,18.38
+2018,Business,Inbound,16.48
+2019,Business,Inbound,20.42
+2020,Business,Inbound,3.39
+2021,Business,Inbound,5.29
+2022,Business,Inbound,14.32
+2014,Visiting Friends & Relatives,Inbound,4.8
+2015,Visiting Friends & Relatives,Inbound,10.62
+2016,Visiting Friends & Relatives,Inbound,7.06
+2017,Visiting Friends & Relatives,Inbound,5.69
+2018,Visiting Friends & Relatives,Inbound,5.25
+2019,Visiting Friends & Relatives,Inbound,7.77
+2020,Visiting Friends & Relatives,Inbound,2.48
+2021,Visiting Friends & Relatives,Inbound,4.56
+2022,Visiting Friends & Relatives,Inbound,22.87
+2014,Other,Inbound,6.04
+2015,Other,Inbound,9.07
+2016,Other,Inbound,3.11
+2017,Other,Inbound,1.1
+2018,Other,Inbound,0.92
+2019,Other,Inbound,2.03
+2020,Other,Inbound,1.2
+2021,Other,Inbound,1.82
+2022,Other,Inbound,3.8
+2014,Religious,Domestic,10.24
+2015,Religious,Domestic,10.16
+2016,Religious,Domestic,11.72
+2017,Religious,Domestic,10.82
+2018,Religious,Domestic,9.96
+2019,Religious,Domestic,12.36
+2020,Religious,Domestic,5.46
+2021,Religious,Domestic,8.79
+2022,Religious,Domestic,0.0
+2014,Leisure,Domestic,13.39
+2015,Leisure,Domestic,21.18
+2016,Leisure,Domestic,24.32
+2017,Leisure,Domestic,19.01
+2018,Leisure,Domestic,19.05
+2019,Leisure,Domestic,29.15
+2020,Leisure,Domestic,23.19
+2021,Leisure,Domestic,47.08
+2022,Leisure,Domestic,0.0
+2014,Business,Domestic,3.03
+2015,Business,Domestic,3.25
+2016,Business,Domestic,1.89
+2017,Business,Domestic,1.94
+2018,Business,Domestic,2.25
+2019,Business,Domestic,2.25
+2020,Business,Domestic,2.15
+2021,Business,Domestic,3.61
+2022,Business,Domestic,0.0
+2014,Visiting Friends & Relatives,Domestic,12.12
+2015,Visiting Friends & Relatives,Domestic,9.77
+2016,Visiting Friends & Relatives,Domestic,14.02
+2017,Visiting Friends & Relatives,Domestic,12.74
+2018,Visiting Friends & Relatives,Domestic,15.08
+2019,Visiting Friends & Relatives,Domestic,15.76
+2020,Visiting Friends & Relatives,Domestic,11.07
+2021,Visiting Friends & Relatives,Domestic,19.12
+2022,Visiting Friends & Relatives,Domestic,0.0
+2014,Other,Domestic,4.3
+2015,Other,Domestic,4.06
+2016,Other,Domestic,3.49
+2017,Other,Domestic,1.59
+2018,Other,Domestic,1.78
+2019,Other,Domestic,1.68
+2020,Other,Domestic,1.48
+2021,Other,Domestic,2.31
+2022,Other,Domestic,0.0
