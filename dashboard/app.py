@@ -1,8 +1,8 @@
 """
 Saudi Tourism Intelligence - Professional Dashboard
 Developed by: Eng. Goda Emad
-Version: 3.0.0
-Features: Dark/Light Mode, Arabic/English, Responsive Design
+Version: 3.1.0
+Features: Dark/Light Mode, Arabic/English, Responsive Design, Optimized Performance
 """
 
 import streamlit as st
@@ -32,7 +32,7 @@ class Config:
     DEV_NAME = "Eng. Goda Emad"
     DEV_GITHUB = "https://github.com/Goda-Emad/Saudi-Tourism-Intelligence"
     DEV_LINKEDIN = "https://www.linkedin.com/in/goda-emad/"
-    APP_VERSION = "3.0.0"
+    APP_VERSION = "3.1.0"
     
     # Color Palettes
     DARK_THEME = {
@@ -224,7 +224,7 @@ def load_data():
                 'carbon': carbon_data,
                 'kpis': kpis
             }
-        except Exception:
+        except Exception as e:
             # Fallback to sample data
             return load_sample_data()
 
@@ -252,7 +252,15 @@ colors = get_colors()
 # ═══════════════════════════════════════════════════════
 def get_custom_css():
     """Generate custom CSS based on theme"""
-    css = f"""
+    rtl_css = ""
+    if st.session_state.lang == 'AR':
+        rtl_css = """
+        [dir="rtl"] .stMarkdown {
+            text-align: right;
+        }
+        """
+    
+    return f"""
     <style>
         /* Main app background */
         .stApp {{
@@ -305,60 +313,60 @@ def get_custom_css():
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }}
-    """
-    
-    # Add RTL support for Arabic
-    if st.session_state.lang == 'AR':
-        css += """
-        [dir="rtl"] .stMarkdown {
-            text-align: right;
-        }
-        """
-    
-    css += """
+        
+        /* RTL Support */
+        {rtl_css}
+        
         /* Hero image responsive */
-        .hero-image {
+        .hero-image {{
             max-width: 100%;
             height: auto;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
-        }
+        }}
         
-        @media (max-width: 768px) {
-            .hero-image {
+        @media (max-width: 768px) {{
+            .hero-image {{
                 max-width: 120px;
                 margin: 0 auto;
-            }
-        }
+            }}
+        }}
         
         /* Headers */
-        h1 {
-            color: {accent_color};
+        h1 {{
+            color: {colors['accent']};
             font-size: 2.2rem;
             font-weight: 700;
-        }
+            margin-bottom: 0.5rem;
+        }}
         
-        h2 {
-            color: {text_color};
+        h2 {{
+            color: {colors['text']};
             font-size: 1.5rem;
             font-weight: 600;
-        }
+        }}
         
         /* Divider */
-        hr {
+        hr {{
             border: none;
             height: 1px;
-            background: linear-gradient(90deg, transparent, {accent_color}, transparent);
+            background: linear-gradient(90deg, transparent, {colors['accent']}, transparent);
             margin: 2rem 0;
-        }
+        }}
+        
+        /* Loading spinner */
+        .stSpinner > div {{
+            border-top-color: {colors['accent']} !important;
+        }}
+        
+        /* Success/Error messages */
+        .stAlert {{
+            border-radius: 8px;
+            border-left: 4px solid {colors['accent']};
+        }}
     </style>
-    """.format(
-        accent_color=colors['accent'],
-        text_color=colors['text']
-    )
-    
-    return css
+    """
 
 # Apply custom CSS
 st.markdown(get_custom_css(), unsafe_allow_html=True)
@@ -463,7 +471,7 @@ with col1:
         f"<h1>{TRANSLATIONS[st.session_state.lang]['app_title']}</h1>"
         f"<p style='color:{colors['text_muted']}; font-size:1rem; margin:1rem 0;'>"
         f"{TRANSLATIONS[st.session_state.lang]['welcome']}</p>"
-        f"<div style='display:flex; gap:0.5rem; align-items:center;'>"
+        f"<div style='display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;'>"
         f"<span style='color:{colors['text_muted']};'>{TRANSLATIONS[st.session_state.lang]['built_by']}:</span>"
         f"<span style='color:{colors['accent']}; font-weight:700;'>{Config.DEV_NAME}</span>"
         f"</div>",
@@ -476,7 +484,14 @@ with col2:
         st.markdown(
             f"<div style='display:flex; justify-content:center; align-items:center; height:100%;'>"
             f"<img src='data:image/png;base64,{hero_base64}' class='hero-image' "
-            f"style='max-width:200px; max-height:160px; width:auto; height:auto;'>"
+            f"style='max-width:180px; max-height:140px; width:auto; height:auto; border-radius:10px;'>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            f"<div style='display:flex; justify-content:center; align-items:center; height:100%;'>"
+            f"<div style='font-size:4rem;'>🇸🇦</div>"
             f"</div>",
             unsafe_allow_html=True
         )
@@ -600,17 +615,21 @@ footer_col1, footer_col2, footer_col3 = st.columns([1, 2, 1])
 with footer_col2:
     st.markdown(
         f"<div style='background:{colors['card']}; border:1px solid {colors['border']}; "
-        f"border-radius:12px; padding:2rem; text-align:center;'>"
+        f"border-radius:16px; padding:2rem; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.1);'>"
         f"<div style='color:{colors['accent']}; font-weight:700; font-size:1.3rem; margin-bottom:0.5rem;'>"
         f"{Config.DEV_NAME}</div>"
         f"<div style='color:{colors['text_muted']}; font-size:0.9rem; margin-bottom:1rem;'>"
         f"{TRANSLATIONS[st.session_state.lang]['developed_by']} 🇸🇦</div>"
-        f"<div style='display:flex; justify-content:center; gap:2rem; margin:1.5rem 0;'>"
+        f"<div style='display:flex; justify-content:center; gap:2rem; margin:1.5rem 0; flex-wrap:wrap;'>"
         f"<a href='{Config.DEV_GITHUB}' target='_blank' style='color:{colors['secondary']}; "
-        f"text-decoration:none; font-size:1rem; display:flex; align-items:center; gap:0.5rem;'>"
+        f"text-decoration:none; font-size:1rem; display:flex; align-items:center; gap:0.5rem; "
+        f"transition:all 0.3s ease;' onmouseover='this.style.color=\"{colors['accent']}\"' "
+        f"onmouseout='this.style.color=\"{colors['secondary']}\"'>"
         f"🐙 {TRANSLATIONS[st.session_state.lang]['github']}</a>"
         f"<a href='{Config.DEV_LINKEDIN}' target='_blank' style='color:{colors['secondary']}; "
-        f"text-decoration:none; font-size:1rem; display:flex; align-items:center; gap:0.5rem;'>"
+        f"text-decoration:none; font-size:1rem; display:flex; align-items:center; gap:0.5rem; "
+        f"transition:all 0.3s ease;' onmouseover='this.style.color=\"{colors['accent']}\"' "
+        f"onmouseout='this.style.color=\"{colors['secondary']}\"'>"
         f"💼 {TRANSLATIONS[st.session_state.lang]['linkedin']}</a>"
         f"</div>"
         f"<div style='color:{colors['text_muted']}; font-size:0.7rem;'>"
