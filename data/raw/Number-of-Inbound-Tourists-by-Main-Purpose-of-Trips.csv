@@ -1,1 +1,601 @@
-
+"Year","Trip Purpose","Type of tourist","Tourists"
+2015,"Religious","Inbound",1188.6809566989714
+2015,"Leisure","Inbound",269.8304499705885
+2015,"Business","Inbound",21.932781379414003
+2015,"Visiting Friends & Relatives","Inbound",476.286009790692
+2015,"Other","Inbound",290.3785186082841
+2015,"Religious","Inbound",1102.4058608603245
+2015,"Leisure","Inbound",174.0804822284337
+2015,"Business","Inbound",40.23849895625202
+2015,"Visiting Friends & Relatives","Inbound",242.36035931114907
+2015,"Other","Inbound",145.16214172446698
+2015,"Religious","Inbound",978.1012836165687
+2015,"Leisure","Inbound",138.82422350112782
+2015,"Business","Inbound",35.979820235026
+2015,"Visiting Friends & Relatives","Inbound",208.49554965331666
+2015,"Other","Inbound",171.86539006941075
+2015,"Religious","Inbound",911.9304063655036
+2015,"Leisure","Inbound",93.75313782439987
+2015,"Business","Inbound",11.399366830000005
+2015,"Visiting Friends & Relatives","Inbound",205.23278434671997
+2015,"Other","Inbound",351.7082588511998
+2015,"Religious","Inbound",589.1222189912882
+2015,"Leisure","Inbound",111.26075411
+2015,"Business","Inbound",179.00686858814723
+2015,"Visiting Friends & Relatives","Inbound",253.9346836688721
+2015,"Other","Inbound",263.0437722978432
+2015,"Religious","Inbound",702.359865867405
+2015,"Leisure","Inbound",99.99062135000001
+2015,"Business","Inbound",289.3951149854083
+2015,"Visiting Friends & Relatives","Inbound",263.1318773879453
+2015,"Other","Inbound",179.7502883522402
+2015,"Religious","Inbound",570.4402969522005
+2015,"Leisure","Inbound",113.68139035200022
+2015,"Business","Inbound",192.44654227543967
+2015,"Visiting Friends & Relatives","Inbound",247.91681651750002
+2015,"Other","Inbound",223.92808366490016
+2015,"Religious","Inbound",156.19803093502827
+2015,"Leisure","Inbound",112.95437789590007
+2015,"Business","Inbound",198.01621786790014
+2015,"Visiting Friends & Relatives","Inbound",380.92737490478044
+2015,"Other","Inbound",208.04345903745966
+2015,"Religious","Inbound",1406.0218238781079
+2015,"Leisure","Inbound",135.0750682091996
+2015,"Business","Inbound",165.67850532170002
+2015,"Visiting Friends & Relatives","Inbound",202.22806612399995
+2015,"Other","Inbound",163.7463635064
+2015,"Religious","Inbound",8.394944467460999
+2015,"Leisure","Inbound",110.24034736096705
+2015,"Business","Inbound",224.78555464636398
+2015,"Visiting Friends & Relatives","Inbound",274.4126130374917
+2015,"Other","Inbound",151.536232127674
+2015,"Religious","Inbound",184.11434270219655
+2015,"Leisure","Inbound",90.01609479585404
+2015,"Business","Inbound",253.37768158750364
+2015,"Visiting Friends & Relatives","Inbound",271.0073724846415
+2015,"Other","Inbound",112.67952083507816
+2015,"Religious","Inbound",1016.0025672686938
+2015,"Leisure","Inbound",110.95811632332095
+2015,"Business","Inbound",268.31849943793156
+2015,"Visiting Friends & Relatives","Inbound",320.91293851729097
+2015,"Other","Inbound",130.52436917217216
+2016,"Religious","Inbound",989.9198562712875
+2016,"Leisure","Inbound",150.81692791817807
+2016,"Business","Inbound",278.773271654485
+2016,"Visiting Friends & Relatives","Inbound",301.7667654728041
+2016,"Other","Inbound",175.16491869365015
+2016,"Religious","Inbound",873.1949891989599
+2016,"Leisure","Inbound",168.0063002127311
+2016,"Business","Inbound",562.8427287367358
+2016,"Visiting Friends & Relatives","Inbound",389.83939309401677
+2016,"Other","Inbound",349.5972707717072
+2016,"Religious","Inbound",1064.5912820068438
+2016,"Leisure","Inbound",101.12619736848697
+2016,"Business","Inbound",287.9088208413314
+2016,"Visiting Friends & Relatives","Inbound",195.5579979429116
+2016,"Other","Inbound",59.927250956755024
+2016,"Religious","Inbound",967.4906831611528
+2016,"Leisure","Inbound",85.11223174314685
+2016,"Business","Inbound",289.79740989142556
+2016,"Visiting Friends & Relatives","Inbound",185.78826607287266
+2016,"Other","Inbound",51.37909906896195
+2016,"Religious","Inbound",739.6606252690071
+2016,"Leisure","Inbound",86.30365371930108
+2016,"Business","Inbound",342.439278592297
+2016,"Visiting Friends & Relatives","Inbound",279.58584689562326
+2016,"Other","Inbound",58.713795149102005
+2016,"Religious","Inbound",918.7213283821962
+2016,"Leisure","Inbound",119.55961580354521
+2016,"Business","Inbound",274.2194309338428
+2016,"Visiting Friends & Relatives","Inbound",283.95096461660273
+2016,"Other","Inbound",113.45423533902317
+2016,"Religious","Inbound",32.343919937248025
+2016,"Leisure","Inbound",94.485969725476
+2016,"Business","Inbound",273.87003869334956
+2016,"Visiting Friends & Relatives","Inbound",325.81123989714683
+2016,"Other","Inbound",86.29810128476198
+2016,"Religious","Inbound",48.950208526357954
+2016,"Leisure","Inbound",114.04054983634798
+2016,"Business","Inbound",250.69380480780634
+2016,"Visiting Friends & Relatives","Inbound",492.68641860711057
+2016,"Other","Inbound",79.72842534221711
+2016,"Religious","Inbound",1327.4026045497665
+2016,"Leisure","Inbound",104.02021674675714
+2016,"Business","Inbound",225.3909113645274
+2016,"Visiting Friends & Relatives","Inbound",267.04291870584257
+2016,"Other","Inbound",46.591066559318016
+2016,"Religious","Inbound",14.481912320365009
+2016,"Leisure","Inbound",75.25275944430017
+2016,"Business","Inbound",170.22387661745879
+2016,"Visiting Friends & Relatives","Inbound",165.39197997925837
+2016,"Other","Inbound",36.819382844353015
+2016,"Religious","Inbound",390.43754730745565
+2016,"Leisure","Inbound",64.48618425287994
+2016,"Business","Inbound",189.1325049916312
+2016,"Visiting Friends & Relatives","Inbound",165.57374596789367
+2016,"Other","Inbound",37.00778166731899
+2016,"Religious","Inbound",892.472869348567
+2016,"Leisure","Inbound",97.61149206161912
+2016,"Business","Inbound",861.2151646362316
+2016,"Visiting Friends & Relatives","Inbound",233.8539925170082
+2016,"Other","Inbound",135.82517167577126
+2017,"Religious","Inbound",841.224010241874
+2017,"Leisure","Inbound",93.906647867195
+2017,"Business","Inbound",250.69632113003806
+2017,"Visiting Friends & Relatives","Inbound",253.60323427398924
+2017,"Other","Inbound",65.473213943733
+2017,"Religious","Inbound",755.4328050348198
+2017,"Leisure","Inbound",74.17138027591994
+2017,"Business","Inbound",209.594103219891
+2017,"Visiting Friends & Relatives","Inbound",220.81572354903886
+2017,"Other","Inbound",40.602012632789005
+2017,"Religious","Inbound",935.9112705598179
+2017,"Leisure","Inbound",69.21145467042595
+2017,"Business","Inbound",224.95873335014312
+2017,"Visiting Friends & Relatives","Inbound",217.89427136153165
+2017,"Other","Inbound",37.482267900091955
+2017,"Religious","Inbound",1238.356129245995
+2017,"Leisure","Inbound",81.78962398473791
+2017,"Business","Inbound",213.49487253361676
+2017,"Visiting Friends & Relatives","Inbound",220.35906378982176
+2017,"Other","Inbound",37.17549341042297
+2017,"Religious","Inbound",1017.0974377766917
+2017,"Leisure","Inbound",77.44263346109508
+2017,"Business","Inbound",232.81264452619584
+2017,"Visiting Friends & Relatives","Inbound",221.33617215512504
+2017,"Other","Inbound",40.00734268737702
+2017,"Religious","Inbound",807.6170013512642
+2017,"Leisure","Inbound",77.73455669478999
+2017,"Business","Inbound",184.76362681233516
+2017,"Visiting Friends & Relatives","Inbound",242.72852366031086
+2017,"Other","Inbound",37.979870638367046
+2017,"Religious","Inbound",34.215760086774004
+2017,"Leisure","Inbound",71.80788428078007
+2017,"Business","Inbound",139.53189681680203
+2017,"Visiting Friends & Relatives","Inbound",173.1025284534275
+2017,"Other","Inbound",33.20957446803302
+2017,"Religious","Inbound",32.355262634280024
+2017,"Leisure","Inbound",91.83725904603403
+2017,"Business","Inbound",177.50212851790553
+2017,"Visiting Friends & Relatives","Inbound",205.4844115181465
+2017,"Other","Inbound",44.09456313874901
+2017,"Religious","Inbound",1754.6707711444062
+2017,"Leisure","Inbound",56.665815923088076
+2017,"Business","Inbound",192.92489017487776
+2017,"Visiting Friends & Relatives","Inbound",171.64645706017356
+2017,"Other","Inbound",14.461382477307007
+2017,"Religious","Inbound",232.8833962395532
+2017,"Leisure","Inbound",50.052432481968005
+2017,"Business","Inbound",156.66879932442217
+2017,"Visiting Friends & Relatives","Inbound",207.6923329594788
+2017,"Other","Inbound",32.78287994042901
+2017,"Religious","Inbound",722.5260023543009
+2017,"Leisure","Inbound",55.52125776660504
+2017,"Business","Inbound",556.0183170939561
+2017,"Visiting Friends & Relatives","Inbound",457.5895567513157
+2017,"Other","Inbound",41.05898437255801
+2017,"Religious","Inbound",914.7344764422353
+2017,"Leisure","Inbound",54.41875196065603
+2017,"Business","Inbound",155.99009526143178
+2017,"Visiting Friends & Relatives","Inbound",224.23738414246924
+2017,"Other","Inbound",31.610001068529026
+2018,"Religious","Inbound",816.6845606479229
+2018,"Leisure","Inbound",82.32467436458694
+2018,"Business","Inbound",236.4537728656024
+2018,"Visiting Friends & Relatives","Inbound",218.30456518196883
+2018,"Other","Inbound",37.13217811007887
+2018,"Religious","Inbound",750.9907053380125
+2018,"Leisure","Inbound",55.29766904608862
+2018,"Business","Inbound",210.87246613988114
+2018,"Visiting Friends & Relatives","Inbound",136.40352091699725
+2018,"Other","Inbound",28.586809071859314
+2018,"Religious","Inbound",1021.5768575282541
+2018,"Leisure","Inbound",59.70119559957727
+2018,"Business","Inbound",186.91891803751923
+2018,"Visiting Friends & Relatives","Inbound",195.73290940804557
+2018,"Other","Inbound",32.352652914234646
+2018,"Religious","Inbound",1045.1143050101755
+2018,"Leisure","Inbound",63.892036529988744
+2018,"Business","Inbound",186.35675061344884
+2018,"Visiting Friends & Relatives","Inbound",184.75006145764962
+2018,"Other","Inbound",31.113527945714612
+2018,"Religious","Inbound",1090.4170838953196
+2018,"Leisure","Inbound",65.53071327009708
+2018,"Business","Inbound",210.459000142659
+2018,"Visiting Friends & Relatives","Inbound",217.92968493625855
+2018,"Other","Inbound",35.12528917665702
+2018,"Religious","Inbound",477.98116709551175
+2018,"Leisure","Inbound",77.9674682932207
+2018,"Business","Inbound",204.43760613236387
+2018,"Visiting Friends & Relatives","Inbound",269.7843024025812
+2018,"Other","Inbound",39.492463304047035
+2018,"Religious","Inbound",35.462405598199986
+2018,"Leisure","Inbound",79.9552366327959
+2018,"Business","Inbound",256.1569312267561
+2018,"Visiting Friends & Relatives","Inbound",235.59951371961807
+2018,"Other","Inbound",33.690123526511954
+2018,"Religious","Inbound",1791.4989948064626
+2018,"Leisure","Inbound",98.58930540966496
+2018,"Business","Inbound",245.00504372618826
+2018,"Visiting Friends & Relatives","Inbound",261.7145161660207
+2018,"Other","Inbound",46.81885788969804
+2018,"Religious","Inbound",91.91277452489489
+2018,"Leisure","Inbound",45.76460507139696
+2018,"Business","Inbound",216.57064601752896
+2018,"Visiting Friends & Relatives","Inbound",142.99981740403138
+2018,"Other","Inbound",12.136293764245996
+2018,"Religious","Inbound",514.7963844313778
+2018,"Leisure","Inbound",65.21974163444501
+2018,"Business","Inbound",170.3138470494848
+2018,"Visiting Friends & Relatives","Inbound",124.4054870934773
+2018,"Other","Inbound",28.160895233752637
+2018,"Religious","Inbound",720.0651867174481
+2018,"Leisure","Inbound",68.72041548229103
+2018,"Business","Inbound",144.99380386343344
+2018,"Visiting Friends & Relatives","Inbound",167.33806465474365
+2018,"Other","Inbound",39.77438904226062
+2018,"Religious","Inbound",936.764914024198
+2018,"Leisure","Inbound",112.09796593549203
+2018,"Business","Inbound",182.14483967004375
+2018,"Visiting Friends & Relatives","Inbound",150.22541289242153
+2018,"Other","Inbound",45.75362867329066
+2019,"Religious","Inbound",973.3781883367441
+2019,"Leisure","Inbound",99.52036180226001
+2019,"Business","Inbound",253.15888870709708
+2019,"Visiting Friends & Relatives","Inbound",261.7548622298577
+2019,"Other","Inbound",65.53102325360302
+2019,"Religious","Inbound",918.1996904191458
+2019,"Leisure","Inbound",89.94468189767672
+2019,"Business","Inbound",226.19910624362666
+2019,"Visiting Friends & Relatives","Inbound",207.0080826167791
+2019,"Other","Inbound",50.562737127534
+2019,"Religious","Inbound",1043.6411886768667
+2019,"Leisure","Inbound",41.15251736745335
+2019,"Business","Inbound",237.6357633426068
+2019,"Visiting Friends & Relatives","Inbound",222.81066583082185
+2019,"Other","Inbound",54.02301157122376
+2019,"Religious","Inbound",1036.0983027028512
+2019,"Leisure","Inbound",72.46997721758987
+2019,"Business","Inbound",265.7093980994767
+2019,"Visiting Friends & Relatives","Inbound",220.87018893873892
+2019,"Other","Inbound",55.28765922942019
+2019,"Religious","Inbound",1380.1250526924002
+2019,"Leisure","Inbound",86.95346410988022
+2019,"Business","Inbound",267.35046326330934
+2019,"Visiting Friends & Relatives","Inbound",281.1847171292406
+2019,"Other","Inbound",63.825660239729025
+2019,"Religious","Inbound",245.87291995378487
+2019,"Leisure","Inbound",79.7945110232363
+2019,"Business","Inbound",278.4766458894108
+2019,"Visiting Friends & Relatives","Inbound",249.98884780642226
+2019,"Other","Inbound",49.21612638025599
+2019,"Religious","Inbound",43.21737152017112
+2019,"Leisure","Inbound",87.4515506693559
+2019,"Business","Inbound",327.6645560836365
+2019,"Visiting Friends & Relatives","Inbound",211.1890574991855
+2019,"Other","Inbound",80.34662773281097
+2019,"Religious","Inbound",1880.890614441149
+2019,"Leisure","Inbound",110.57241487237494
+2019,"Business","Inbound",409.5424171335188
+2019,"Visiting Friends & Relatives","Inbound",203.83896458523213
+2019,"Other","Inbound",69.65796383580796
+2019,"Religious","Inbound",147.16350915560295
+2019,"Leisure","Inbound",32.182990815047965
+2019,"Business","Inbound",230.5265967454366
+2019,"Visiting Friends & Relatives","Inbound",178.43168261182626
+2019,"Other","Inbound",46.85226082310401
+2019,"Religious","Inbound",555.0759412657034
+2019,"Leisure","Inbound",95.38697737054197
+2019,"Business","Inbound",225.20119389197112
+2019,"Visiting Friends & Relatives","Inbound",196.7252578824739
+2019,"Other","Inbound",46.518316952663774
+2019,"Religious","Inbound",671.2596683364131
+2019,"Leisure","Inbound",103.930871612834
+2019,"Business","Inbound",210.86019787381767
+2019,"Visiting Friends & Relatives","Inbound",207.8355482073897
+2019,"Other","Inbound",40.33792783878062
+2019,"Religious","Inbound",964.4693647510596
+2019,"Leisure","Inbound",228.87475422112504
+2019,"Business","Inbound",232.24725715527484
+2019,"Visiting Friends & Relatives","Inbound",268.3074524273336
+2019,"Other","Inbound",41.332397414535016
+2020,"Religious","Inbound",911.1237796734342
+2020,"Leisure","Inbound",188.85127604357612
+2020,"Business","Inbound",222.2903951155754
+2020,"Visiting Friends & Relatives","Inbound",327.147689743121
+2020,"Other","Inbound",87.46859596709002
+2020,"Religious","Inbound",828.4133433776476
+2020,"Leisure","Inbound",170.494877417768
+2020,"Business","Inbound",159.01513380424925
+2020,"Visiting Friends & Relatives","Inbound",257.3499898134052
+2020,"Other","Inbound",67.61451881935264
+2020,"Religious","Inbound",8.168969809760021
+2020,"Leisure","Inbound",18.29463115281767
+2020,"Business","Inbound",77.98591133781663
+2020,"Visiting Friends & Relatives","Inbound",61.87571857107757
+2020,"Other","Inbound",25.38215581081236
+2020,"Religious","Inbound",0
+2020,"Leisure","Inbound",0.2743293925245609
+2020,"Business","Inbound",19.340845869040333
+2020,"Visiting Friends & Relatives","Inbound",0.3559300030135347
+2020,"Other","Inbound",7.380894737548973
+2020,"Religious","Inbound",0
+2020,"Leisure","Inbound",0.34765397448499996
+2020,"Business","Inbound",11.054216081532015
+2020,"Visiting Friends & Relatives","Inbound",0.7084468238746694
+2020,"Other","Inbound",6.624683119371998
+2020,"Religious","Inbound",0
+2020,"Leisure","Inbound",0.7507458070236648
+2020,"Business","Inbound",23.843321874387005
+2020,"Visiting Friends & Relatives","Inbound",1.3079975099130619
+2020,"Other","Inbound",9.378934810837997
+2020,"Religious","Inbound",0
+2020,"Leisure","Inbound",0.7104590270610017
+2020,"Business","Inbound",21.640254621570993
+2020,"Visiting Friends & Relatives","Inbound",2.5810773361660218
+2020,"Other","Inbound",11.807209014145023
+2020,"Religious","Inbound",0
+2020,"Leisure","Inbound",2.0631939643326733
+2020,"Business","Inbound",35.775213083596064
+2020,"Visiting Friends & Relatives","Inbound",4.13918686772666
+2020,"Other","Inbound",10.235673523121003
+2020,"Religious","Inbound",0
+2020,"Leisure","Inbound",4.9364067395939975
+2020,"Business","Inbound",46.491602418006934
+2020,"Visiting Friends & Relatives","Inbound",29.321232970130957
+2020,"Other","Inbound",22.965757875076992
+2020,"Religious","Inbound",0
+2020,"Leisure","Inbound",1.8910653409409997
+2020,"Business","Inbound",52.925864048183016
+2020,"Visiting Friends & Relatives","Inbound",64.80664450382478
+2020,"Other","Inbound",25.871769493638993
+2020,"Religious","Inbound",3.222220422394015
+2020,"Leisure","Inbound",1.4698179260420001
+2020,"Business","Inbound",51.212894765542885
+2020,"Visiting Friends & Relatives","Inbound",82.00825550285566
+2020,"Other","Inbound",21.691324161314984
+2020,"Religious","Inbound",0.5920000000009997
+2020,"Leisure","Inbound",2.746577363666998
+2020,"Business","Inbound",50.368250895615056
+2020,"Visiting Friends & Relatives","Inbound",70.59626153094068
+2020,"Other","Inbound",23.26305137456833
+2021,"Religious","Inbound",3.235
+2021,"Leisure","Inbound",5.646
+2021,"Business","Inbound",70.329
+2021,"Visiting Friends & Relatives","Inbound",131.441
+2021,"Other","Inbound",22.115
+2021,"Religious","Inbound",2.576
+2021,"Leisure","Inbound",2.677
+2021,"Business","Inbound",51.087
+2021,"Visiting Friends & Relatives","Inbound",51.939
+2021,"Other","Inbound",16.753
+2021,"Religious","Inbound",2.4
+2021,"Leisure","Inbound",6.346
+2021,"Business","Inbound",66.527
+2021,"Visiting Friends & Relatives","Inbound",48.556
+2021,"Other","Inbound",24.465
+2021,"Religious","Inbound",6.487
+2021,"Leisure","Inbound",9.067
+2021,"Business","Inbound",71.206
+2021,"Visiting Friends & Relatives","Inbound",60.501
+2021,"Other","Inbound",28.77
+2021,"Religious","Inbound",6.822
+2021,"Leisure","Inbound",11.91
+2021,"Business","Inbound",63.521
+2021,"Visiting Friends & Relatives","Inbound",67.234
+2021,"Other","Inbound",35.358
+2021,"Religious","Inbound",3.097
+2021,"Leisure","Inbound",11.889
+2021,"Business","Inbound",69.077
+2021,"Visiting Friends & Relatives","Inbound",55.27
+2021,"Other","Inbound",36.099
+2021,"Religious","Inbound",11.453
+2021,"Leisure","Inbound",26.312
+2021,"Business","Inbound",65.405
+2021,"Visiting Friends & Relatives","Inbound",81.356
+2021,"Other","Inbound",46.77
+2021,"Religious","Inbound",4.613
+2021,"Leisure","Inbound",24.796
+2021,"Business","Inbound",80.709
+2021,"Visiting Friends & Relatives","Inbound",103.28
+2021,"Other","Inbound",43.967
+2021,"Religious","Inbound",28.698
+2021,"Leisure","Inbound",23.898
+2021,"Business","Inbound",85.453
+2021,"Visiting Friends & Relatives","Inbound",129.41
+2021,"Other","Inbound",40.704
+2021,"Religious","Inbound",51.693
+2021,"Leisure","Inbound",39.773
+2021,"Business","Inbound",115.101
+2021,"Visiting Friends & Relatives","Inbound",201.503
+2021,"Other","Inbound",44.915
+2021,"Religious","Inbound",63.959
+2021,"Leisure","Inbound",55.235
+2021,"Business","Inbound",131.097
+2021,"Visiting Friends & Relatives","Inbound",197.724
+2021,"Other","Inbound",45.578
+2021,"Religious","Inbound",88.824
+2021,"Leisure","Inbound",94.61
+2021,"Business","Inbound",143.599
+2021,"Visiting Friends & Relatives","Inbound",309.874
+2021,"Other","Inbound",54.51
+2022,"Religious","Inbound",84.045
+2022,"Leisure","Inbound",83.669
+2022,"Business","Inbound",105.343
+2022,"Visiting Friends & Relatives","Inbound",224.634
+2022,"Other","Inbound",51.245
+2022,"Religious","Inbound",199.166
+2022,"Leisure","Inbound",94.781
+2022,"Business","Inbound",107.211
+2022,"Visiting Friends & Relatives","Inbound",217.939
+2022,"Other","Inbound",69.943
+2022,"Religious","Inbound",371.53
+2022,"Leisure","Inbound",143.001
+2022,"Business","Inbound",162.75
+2022,"Visiting Friends & Relatives","Inbound",407.161
+2022,"Other","Inbound",132.671
+2022,"Religious","Inbound",720.857
+2022,"Leisure","Inbound",164.461
+2022,"Business","Inbound",175.428
+2022,"Visiting Friends & Relatives","Inbound",437.072
+2022,"Other","Inbound",114.668
+2022,"Religious","Inbound",280.005
+2022,"Leisure","Inbound",103.096
+2022,"Business","Inbound",141.474
+2022,"Visiting Friends & Relatives","Inbound",473.081
+2022,"Other","Inbound",106.716
+2022,"Religious","Inbound",13.233
+2022,"Leisure","Inbound",66.961
+2022,"Business","Inbound",150.989
+2022,"Visiting Friends & Relatives","Inbound",521.824
+2022,"Other","Inbound",114.209
+2022,"Religious","Inbound",809.919
+2022,"Leisure","Inbound",122.463
+2022,"Business","Inbound",114.53
+2022,"Visiting Friends & Relatives","Inbound",536.926
+2022,"Other","Inbound",181.787
+2022,"Religious","Inbound",369.761
+2022,"Leisure","Inbound",147.537
+2022,"Business","Inbound",139.504
+2022,"Visiting Friends & Relatives","Inbound",470.976
+2022,"Other","Inbound",182.794
+2022,"Religious","Inbound",618.299
+2022,"Leisure","Inbound",215.272
+2022,"Business","Inbound",140.42
+2022,"Visiting Friends & Relatives","Inbound",474.835
+2022,"Other","Inbound",90.152
+2022,"Religious","Inbound",819.947
+2022,"Leisure","Inbound",285.102
+2022,"Business","Inbound",146.041
+2022,"Visiting Friends & Relatives","Inbound",429.479
+2022,"Other","Inbound",72.205
+2022,"Religious","Inbound",823.165
+2022,"Leisure","Inbound",404.009
+2022,"Business","Inbound",138.716
+2022,"Visiting Friends & Relatives","Inbound",384.382
+2022,"Other","Inbound",89.749
+2022,"Religious","Inbound",885.591
+2022,"Leisure","Inbound",635.843
+2022,"Business","Inbound",144.287
+2022,"Visiting Friends & Relatives","Inbound",553.787
+2022,"Other","Inbound",171.218
+2023,"Religious","Inbound",1035
+2023,"Leisure","Inbound",523
+2023,"Business","Inbound",150
+2023,"Visiting Friends & Relatives","Inbound",609
+2023,"Other","Inbound",164
+2023,"Religious","Inbound",1105
+2023,"Leisure","Inbound",514
+2023,"Business","Inbound",144
+2023,"Visiting Friends & Relatives","Inbound",536
+2023,"Other","Inbound",157
+2023,"Religious","Inbound",1378
+2023,"Leisure","Inbound",533
+2023,"Business","Inbound",165
+2023,"Visiting Friends & Relatives","Inbound",648
+2023,"Other","Inbound",146
+2023,"Religious","Inbound",1005
+2023,"Leisure","Inbound",549
+2023,"Business","Inbound",147
+2023,"Visiting Friends & Relatives","Inbound",601
+2023,"Other","Inbound",122
+2023,"Religious","Inbound",348
+2023,"Leisure","Inbound",386
+2023,"Business","Inbound",166
+2023,"Visiting Friends & Relatives","Inbound",513
+2023,"Other","Inbound",101
+2023,"Religious","Inbound",1715
+2023,"Leisure","Inbound",424
+2023,"Business","Inbound",129
+2023,"Visiting Friends & Relatives","Inbound",479
+2023,"Other","Inbound",101
+2023,"Religious","Inbound",185
+2023,"Leisure","Inbound",453
+2023,"Business","Inbound",132
+2023,"Visiting Friends & Relatives","Inbound",457
+2023,"Other","Inbound",124
+2023,"Religious","Inbound",749
+2023,"Leisure","Inbound",580
+2023,"Business","Inbound",146
+2023,"Visiting Friends & Relatives","Inbound",507
+2023,"Other","Inbound",127
+2023,"Religious","Inbound",861
+2023,"Leisure","Inbound",469
+2023,"Business","Inbound",147
+2023,"Visiting Friends & Relatives","Inbound",448
+2023,"Other","Inbound",115
+2023,"Religious","Inbound",981
+2023,"Leisure","Inbound",513
+2023,"Business","Inbound",169
+2023,"Visiting Friends & Relatives","Inbound",402
+2023,"Other","Inbound",126
+2023,"Religious","Inbound",991
+2023,"Leisure","Inbound",508
+2023,"Business","Inbound",175
+2023,"Visiting Friends & Relatives","Inbound",427
+2023,"Other","Inbound",136
+2023,"Religious","Inbound",1115
+2023,"Leisure","Inbound",794
+2023,"Business","Inbound",194
+2023,"Visiting Friends & Relatives","Inbound",574
+2023,"Other","Inbound",226
+2024,"Religious","Inbound",1257.713
+2024,"Leisure","Inbound",732.011
+2024,"Business","Inbound",195.174
+2024,"Visiting Friends & Relatives","Inbound",678.976
+2024,"Other","Inbound",270.879
+2024,"Religious","Inbound",1378.683
+2024,"Leisure","Inbound",738.176
+2024,"Business","Inbound",178.69
+2024,"Visiting Friends & Relatives","Inbound",600.706
+2024,"Other","Inbound",214.93
+2024,"Religious","Inbound",1530.038
+2024,"Leisure","Inbound",728.061
+2024,"Business","Inbound",161.054
+2024,"Visiting Friends & Relatives","Inbound",595.089
+2024,"Other","Inbound",146.725
+2024,"Religious","Inbound",674.638
+2024,"Leisure","Inbound",685.348
+2024,"Business","Inbound",120.669
+2024,"Visiting Friends & Relatives","Inbound",458.508
+2024,"Other","Inbound",117.132
+2024,"Religious","Inbound",101.408
+2024,"Leisure","Inbound",496.035
+2024,"Business","Inbound",150.922
+2024,"Visiting Friends & Relatives","Inbound",648.3
+2024,"Other","Inbound",107.373
+2024,"Religious","Inbound",1668.119
+2024,"Leisure","Inbound",379.964
+2024,"Business","Inbound",130.941
+2024,"Visiting Friends & Relatives","Inbound",492.241
+2024,"Other","Inbound",118.275
+2024,"Religious","Inbound",538.839
+2024,"Leisure","Inbound",455.332
+2024,"Business","Inbound",144.818
+2024,"Visiting Friends & Relatives","Inbound",466.459
+2024,"Other","Inbound",150.29
+2024,"Religious","Inbound",796.615
+2024,"Leisure","Inbound",555.953
+2024,"Business","Inbound",148.856
+2024,"Visiting Friends & Relatives","Inbound",457.005
+2024,"Other","Inbound",179.983
+2024,"Religious","Inbound",854.681
+2024,"Leisure","Inbound",465.457
+2024,"Business","Inbound",153.199
+2024,"Visiting Friends & Relatives","Inbound",379.341
+2024,"Other","Inbound",118.828
+2024,"Religious","Inbound",1066.706
+2024,"Leisure","Inbound",625.018
+2024,"Business","Inbound",177.16
+2024,"Visiting Friends & Relatives","Inbound",374.869
+2024,"Other","Inbound",172.844
+2024,"Religious","Inbound",1117.704
+2024,"Leisure","Inbound",686.583
+2024,"Business","Inbound",190.262
+2024,"Visiting Friends & Relatives","Inbound",387.193
+2024,"Other","Inbound",159.905
+2024,"Religious","Inbound",1345.827
+2024,"Leisure","Inbound",957.739
+2024,"Business","Inbound",224.025
+2024,"Visiting Friends & Relatives","Inbound",410.944
+2024,"Other","Inbound",208.23

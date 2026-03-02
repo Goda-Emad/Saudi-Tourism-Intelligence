@@ -1,0 +1,601 @@
+"Month","Trip Purpose","Type of tourist","Tourists"
+"2015-01","Religious","Domestic",1194.9676208134308
+"2015-01","Leisure","Domestic",1854.2667579440429
+"2015-01","Business","Domestic",169.0236211482206
+"2015-01","Visiting Friends & Relatives","Domestic",1380.9246479383783
+"2015-01","Other","Domestic",224.151901065102
+"2015-02","Religious","Domestic",952.7437839168152
+"2015-02","Leisure","Domestic",1620.4875174495578
+"2015-02","Business","Domestic",165.28032362650288
+"2015-02","Visiting Friends & Relatives","Domestic",1185.0848427470935
+"2015-02","Other","Domestic",216.5060698735325
+"2015-03","Religious","Domestic",934.119102683303
+"2015-03","Leisure","Domestic",1674.9319897445332
+"2015-03","Business","Domestic",178.1880451252969
+"2015-03","Visiting Friends & Relatives","Domestic",851.6545131146521
+"2015-03","Other","Domestic",220.65816298856967
+"2015-04","Religious","Domestic",674.5811866104121
+"2015-04","Leisure","Domestic",1592.9229921286492
+"2015-04","Business","Domestic",202.92365113871497
+"2015-04","Visiting Friends & Relatives","Domestic",895.586948165579
+"2015-04","Other","Domestic",173.21071656945253
+"2015-05","Religious","Domestic",726.2381913841149
+"2015-05","Leisure","Domestic",1410.8670673516856
+"2015-05","Business","Domestic",201.9852534621413
+"2015-05","Visiting Friends & Relatives","Domestic",768.9967694382442
+"2015-05","Other","Domestic",224.41563800494242
+"2015-06","Religious","Domestic",1209.5104446406967
+"2015-06","Leisure","Domestic",1253.0423065566276
+"2015-06","Business","Domestic",144.58226309543167
+"2015-06","Visiting Friends & Relatives","Domestic",678.3990357407453
+"2015-06","Other","Domestic",104.09355872217867
+"2015-07","Religious","Domestic",1630.6248154982197
+"2015-07","Leisure","Domestic",1665.7925780519522
+"2015-07","Business","Domestic",172.83226678669556
+"2015-07","Visiting Friends & Relatives","Domestic",1055.7871193987794
+"2015-07","Other","Domestic",152.03207551562193
+"2015-08","Religious","Domestic",942.3087232296791
+"2015-08","Leisure","Domestic",2081.34858045631
+"2015-08","Business","Domestic",131.5982619223017
+"2015-08","Visiting Friends & Relatives","Domestic",848.4780424079955
+"2015-08","Other","Domestic",251.29050819120982
+"2015-09","Religious","Domestic",1360.0905797356934
+"2015-09","Leisure","Domestic",1796.7524967238023
+"2015-09","Business","Domestic",149.98608570109923
+"2015-09","Visiting Friends & Relatives","Domestic",991.888395251704
+"2015-09","Other","Domestic",195.07961286158667
+"2015-10","Religious","Domestic",671.266091836599
+"2015-10","Leisure","Domestic",1571.273526212275
+"2015-10","Business","Domestic",117.10722272929591
+"2015-10","Visiting Friends & Relatives","Domestic",898.1495339903038
+"2015-10","Other","Domestic",234.4722693841338
+"2015-11","Religious","Domestic",842.3645291531981
+"2015-11","Leisure","Domestic",1398.767962885604
+"2015-11","Business","Domestic",98.78225683989861
+"2015-11","Visiting Friends & Relatives","Domestic",858.6010685077993
+"2015-11","Other","Domestic",156.9103879284553
+"2015-12","Religious","Domestic",833.6610802867291
+"2015-12","Leisure","Domestic",1261.3377486730176
+"2015-12","Business","Domestic",127.46224372253634
+"2015-12","Visiting Friends & Relatives","Domestic",687.5341191060015
+"2015-12","Other","Domestic",182.50745429371298
+"2016-01","Religious","Domestic",1094.8293662648168
+"2016-01","Leisure","Domestic",878.5548010770458
+"2016-01","Business","Domestic",144.32560729645624
+"2016-01","Visiting Friends & Relatives","Domestic",564.8534051168884
+"2016-01","Other","Domestic",1920.0517797243315
+"2016-02","Religious","Domestic",983.1427126687888
+"2016-02","Leisure","Domestic",1128.6340318371076
+"2016-02","Business","Domestic",98.69314354424564
+"2016-02","Visiting Friends & Relatives","Domestic",942.5033011986768
+"2016-02","Other","Domestic",150.62971802434473
+"2016-03","Religious","Domestic",846.8563942377319
+"2016-03","Leisure","Domestic",1727.4369049235427
+"2016-03","Business","Domestic",142.35829666276135
+"2016-03","Visiting Friends & Relatives","Domestic",948.3155891692072
+"2016-03","Other","Domestic",82.71070431282118
+"2016-04","Religious","Domestic",816.9781342270594
+"2016-04","Leisure","Domestic",1374.3928669193615
+"2016-04","Business","Domestic",113.80097220425345
+"2016-04","Visiting Friends & Relatives","Domestic",780.7307926614292
+"2016-04","Other","Domestic",45.738071917749636
+"2016-05","Religious","Domestic",820.4513921153579
+"2016-05","Leisure","Domestic",1529.4542624201079
+"2016-05","Business","Domestic",123.03241037306213
+"2016-05","Visiting Friends & Relatives","Domestic",797.4161057959654
+"2016-05","Other","Domestic",17.663249806103806
+"2016-06","Religious","Domestic",1315.7457735204864
+"2016-06","Leisure","Domestic",1228.3417737316045
+"2016-06","Business","Domestic",130.16642270718728
+"2016-06","Visiting Friends & Relatives","Domestic",724.3598846668959
+"2016-06","Other","Domestic",25.106373843541736
+"2016-07","Religious","Domestic",1090.9636294585698
+"2016-07","Leisure","Domestic",1941.8610386791486
+"2016-07","Business","Domestic",109.43236343620754
+"2016-07","Visiting Friends & Relatives","Domestic",1279.3376794812311
+"2016-07","Other","Domestic",38.327386251662155
+"2016-08","Religious","Domestic",844.3629868947511
+"2016-08","Leisure","Domestic",1718.0695622148044
+"2016-08","Business","Domestic",99.91358542765121
+"2016-08","Visiting Friends & Relatives","Domestic",859.1908996547234
+"2016-08","Other","Domestic",54.89577520713309
+"2016-09","Religious","Domestic",1244.2070634947802
+"2016-09","Leisure","Domestic",1519.0739062004222
+"2016-09","Business","Domestic",71.85938567871301
+"2016-09","Visiting Friends & Relatives","Domestic",1062.0998045904437
+"2016-09","Other","Domestic",39.6271402464923
+"2016-10","Religious","Domestic",863.6166622105984
+"2016-10","Leisure","Domestic",1385.8530420263342
+"2016-10","Business","Domestic",98.93136426841336
+"2016-10","Visiting Friends & Relatives","Domestic",888.6408779909656
+"2016-10","Other","Domestic",87.64687287769759
+"2016-11","Religious","Domestic",1073.1799054614514
+"2016-11","Leisure","Domestic",1979.4611494826945
+"2016-11","Business","Domestic",96.97966435398347
+"2016-11","Visiting Friends & Relatives","Domestic",1285.788574932422
+"2016-11","Other","Domestic",159.33271162468904
+"2016-12","Religious","Domestic",760.0556456399878
+"2016-12","Leisure","Domestic",1643.4007887914124
+"2016-12","Business","Domestic",127.33282624332874
+"2016-12","Visiting Friends & Relatives","Domestic",1015.271756393119
+"2016-12","Other","Domestic",100.49610939004151
+"2017-01","Religious","Domestic",1086.515982581578
+"2017-01","Leisure","Domestic",2053.33885352686
+"2017-01","Business","Domestic",138.97519444484882
+"2017-01","Visiting Friends & Relatives","Domestic",1153.5726389111471
+"2017-01","Other","Domestic",92.75033574148434
+"2017-02","Religious","Domestic",834.4066699485561
+"2017-02","Leisure","Domestic",1455.4771646489046
+"2017-02","Business","Domestic",85.68652815223234
+"2017-02","Visiting Friends & Relatives","Domestic",899.2195136742298
+"2017-02","Other","Domestic",99.21230953378941
+"2017-03","Religious","Domestic",936.2787110373397
+"2017-03","Leisure","Domestic",1647.3555964526709
+"2017-03","Business","Domestic",184.25815614624852
+"2017-03","Visiting Friends & Relatives","Domestic",1044.606292531876
+"2017-03","Other","Domestic",89.66997354508231
+"2017-04","Religious","Domestic",742.7126323819294
+"2017-04","Leisure","Domestic",1343.3309558518267
+"2017-04","Business","Domestic",125.53098061108584
+"2017-04","Visiting Friends & Relatives","Domestic",772.4012694754821
+"2017-04","Other","Domestic",80.7833896308977
+"2017-05","Religious","Domestic",734.7215904660984
+"2017-05","Leisure","Domestic",1121.4699900218695
+"2017-05","Business","Domestic",91.36680693706548
+"2017-05","Visiting Friends & Relatives","Domestic",769.1569953974189
+"2017-05","Other","Domestic",74.33288675245693
+"2017-06","Religious","Domestic",1719.956611429749
+"2017-06","Leisure","Domestic",1210.3902130590914
+"2017-06","Business","Domestic",48.298401784074116
+"2017-06","Visiting Friends & Relatives","Domestic",1174.7627046451946
+"2017-06","Other","Domestic",48.41252999415829
+"2017-07","Religious","Domestic",700.1674070630612
+"2017-07","Leisure","Domestic",1868.4016138656891
+"2017-07","Business","Domestic",121.71554163102765
+"2017-07","Visiting Friends & Relatives","Domestic",817.1541763366877
+"2017-07","Other","Domestic",52.535714727259254
+"2017-08","Religious","Domestic",600.682794272497
+"2017-08","Leisure","Domestic",1704.759894750256
+"2017-08","Business","Domestic",121.51152479389185
+"2017-08","Visiting Friends & Relatives","Domestic",1366.6115333285
+"2017-08","Other","Domestic",95.50187310582088
+"2017-09","Religious","Domestic",1341.3450965753113
+"2017-09","Leisure","Domestic",1514.780745722409
+"2017-09","Business","Domestic",125.13099170408242
+"2017-09","Visiting Friends & Relatives","Domestic",1014.7138510899596
+"2017-09","Other","Domestic",109.26843595563041
+"2017-10","Religious","Domestic",1083.0939549753668
+"2017-10","Leisure","Domestic",1006.3829968357571
+"2017-10","Business","Domestic",125.04980059310235
+"2017-10","Visiting Friends & Relatives","Domestic",882.2837218368585
+"2017-10","Other","Domestic",114.59577980917187
+"2017-11","Religious","Domestic",898.6012011172277
+"2017-11","Leisure","Domestic",1500.6807056496134
+"2017-11","Business","Domestic",174.928911660932
+"2017-11","Visiting Friends & Relatives","Domestic",1217.493526154953
+"2017-11","Other","Domestic",140.12171100891243
+"2017-12","Religious","Domestic",599.9108370386429
+"2017-12","Leisure","Domestic",1222.3969552896106
+"2017-12","Business","Domestic",114.32585566812958
+"2017-12","Visiting Friends & Relatives","Domestic",1186.0283234844965
+"2017-12","Other","Domestic",141.44866495732578
+"2018-01","Religious","Domestic",1091.846343106964
+"2018-01","Leisure","Domestic",1919.6384846704693
+"2018-01","Business","Domestic",186.94350766950208
+"2018-01","Visiting Friends & Relatives","Domestic",1359.9979586020527
+"2018-01","Other","Domestic",79.92179810021217
+"2018-02","Religious","Domestic",821.305930658329
+"2018-02","Leisure","Domestic",1438.6660453491224
+"2018-02","Business","Domestic",109.704936399923
+"2018-02","Visiting Friends & Relatives","Domestic",892.0662243756068
+"2018-02","Other","Domestic",84.80077502944827
+"2018-03","Religious","Domestic",926.322096463319
+"2018-03","Leisure","Domestic",1642.9046270041965
+"2018-03","Business","Domestic",184.0569619089821
+"2018-03","Visiting Friends & Relatives","Domestic",1053.9560891106016
+"2018-03","Other","Domestic",101.59505057294102
+"2018-04","Religious","Domestic",738.6313461374527
+"2018-04","Leisure","Domestic",1333.8882646643574
+"2018-04","Business","Domestic",125.48424248715217
+"2018-04","Visiting Friends & Relatives","Domestic",773.5402560730553
+"2018-04","Other","Domestic",76.0756514010138
+"2018-05","Religious","Domestic",592.5834498860261
+"2018-05","Leisure","Domestic",881.659351927492
+"2018-05","Business","Domestic",83.02432660516762
+"2018-05","Visiting Friends & Relatives","Domestic",567.9176354755127
+"2018-05","Other","Domestic",46.77765980262916
+"2018-06","Religious","Domestic",1560.1876380931892
+"2018-06","Leisure","Domestic",1866.388962130994
+"2018-06","Business","Domestic",77.85239279399275
+"2018-06","Visiting Friends & Relatives","Domestic",1282.1502936361878
+"2018-06","Other","Domestic",38.01935038001555
+"2018-07","Religious","Domestic",562.7133159703069
+"2018-07","Leisure","Domestic",1437.8630888282394
+"2018-07","Business","Domestic",115.98235531077589
+"2018-07","Visiting Friends & Relatives","Domestic",681.7819777217953
+"2018-07","Other","Domestic",59.126561413728155
+"2018-08","Religious","Domestic",1025.2987926940148
+"2018-08","Leisure","Domestic",1546.710325128154
+"2018-08","Business","Domestic",150.43425184676587
+"2018-08","Visiting Friends & Relatives","Domestic",1421.2228686616718
+"2018-08","Other","Domestic",90.63420108397044
+"2018-09","Religious","Domestic",839.5507771547974
+"2018-09","Leisure","Domestic",1378.6341246510951
+"2018-09","Business","Domestic",137.8332578806456
+"2018-09","Visiting Friends & Relatives","Domestic",1362.9815626624193
+"2018-09","Other","Domestic",108.98275969551783
+"2018-10","Religious","Domestic",691.1117207492357
+"2018-10","Leisure","Domestic",1226.1895723649834
+"2018-10","Business","Domestic",122.9700340517928
+"2018-10","Visiting Friends & Relatives","Domestic",1271.8270621890754
+"2018-10","Other","Domestic",110.14610325477281
+"2018-11","Religious","Domestic",737.3789093031339
+"2018-11","Leisure","Domestic",1111.7441009979864
+"2018-11","Business","Domestic",157.3723700215612
+"2018-11","Visiting Friends & Relatives","Domestic",1278.8218404392428
+"2018-11","Other","Domestic",129.96972134454333
+"2018-12","Religious","Domestic",775.6486536408157
+"2018-12","Leisure","Domestic",946.9971831353389
+"2018-12","Business","Domestic",109.63569859712977
+"2018-12","Visiting Friends & Relatives","Domestic",1674.231594740735
+"2018-12","Other","Domestic",53.779874809735894
+"2019-01","Religious","Domestic",1177.2746758597261
+"2019-01","Leisure","Domestic",2037.425144642064
+"2019-01","Business","Domestic",175.0707614341964
+"2019-01","Visiting Friends & Relatives","Domestic",1348.603473102118
+"2019-01","Other","Domestic",78.54101474837229
+"2019-02","Religious","Domestic",850.3925515987698
+"2019-02","Leisure","Domestic",1487.7458228017692
+"2019-02","Business","Domestic",124.76483888908551
+"2019-02","Visiting Friends & Relatives","Domestic",936.3388866063975
+"2019-02","Other","Domestic",89.69104696053523
+"2019-03","Religious","Domestic",1069.007119022773
+"2019-03","Leisure","Domestic",1671.0513211386585
+"2019-03","Business","Domestic",189.4494424140934
+"2019-03","Visiting Friends & Relatives","Domestic",996.8364213674496
+"2019-03","Other","Domestic",80.37240143817934
+"2019-04","Religious","Domestic",675.7479696491971
+"2019-04","Leisure","Domestic",1415.9980275134988
+"2019-04","Business","Domestic",122.63684144897597
+"2019-04","Visiting Friends & Relatives","Domestic",850.4840742359515
+"2019-04","Other","Domestic",69.27508015625894
+"2019-05","Religious","Domestic",837.8636476026885
+"2019-05","Leisure","Domestic",1050.5021172230545
+"2019-05","Business","Domestic",66.32387993353052
+"2019-05","Visiting Friends & Relatives","Domestic",768.8067306209929
+"2019-05","Other","Domestic",42.40856149241684
+"2019-06","Religious","Domestic",1595.575247059046
+"2019-06","Leisure","Domestic",2295.0487210199653
+"2019-06","Business","Domestic",79.29430172950002
+"2019-06","Visiting Friends & Relatives","Domestic",1393.2165169148661
+"2019-06","Other","Domestic",42.39863421741699
+"2019-07","Religious","Domestic",704.6735568369273
+"2019-07","Leisure","Domestic",1799.291482063779
+"2019-07","Business","Domestic",124.1061632921127
+"2019-07","Visiting Friends & Relatives","Domestic",1054.9289338907622
+"2019-07","Other","Domestic",70.98777180453335
+"2019-08","Religious","Domestic",1172.0242210651816
+"2019-08","Leisure","Domestic",1766.481363529696
+"2019-08","Business","Domestic",122.28968844205932
+"2019-08","Visiting Friends & Relatives","Domestic",1763.5729186315675
+"2019-08","Other","Domestic",77.20887675287985
+"2019-09","Religious","Domestic",850.2898585901814
+"2019-09","Leisure","Domestic",1526.4253686452744
+"2019-09","Business","Domestic",130.5657422600978
+"2019-09","Visiting Friends & Relatives","Domestic",1364.4287978343161
+"2019-09","Other","Domestic",112.6305928426443
+"2019-10","Religious","Domestic",719.5721527286879
+"2019-10","Leisure","Domestic",1652.3225523659985
+"2019-10","Business","Domestic",108.11107936462986
+"2019-10","Visiting Friends & Relatives","Domestic",1346.1893100878217
+"2019-10","Other","Domestic",87.58962680934988
+"2019-11","Religious","Domestic",611.3747409689436
+"2019-11","Leisure","Domestic",1579.7696567274472
+"2019-11","Business","Domestic",114.10279805823693
+"2019-11","Visiting Friends & Relatives","Domestic",1287.6474093434456
+"2019-11","Other","Domestic",75.87738081018115
+"2019-12","Religious","Domestic",782.8989177909618
+"2019-12","Leisure","Domestic",1631.669936533962
+"2019-12","Business","Domestic",104.58891148495596
+"2019-12","Visiting Friends & Relatives","Domestic",1382.2065745321704
+"2019-12","Other","Domestic",63.215684536180675
+"2020-01","Religious","Domestic",1419.250977653273
+"2020-01","Leisure","Domestic",2331.9004124853536
+"2020-01","Business","Domestic",126.40740687144259
+"2020-01","Visiting Friends & Relatives","Domestic",1231.9720287600724
+"2020-01","Other","Domestic",114.65974136863167
+"2020-02","Religious","Domestic",999.7623241334562
+"2020-02","Leisure","Domestic",1779.5245103006866
+"2020-02","Business","Domestic",172.72007709351738
+"2020-02","Visiting Friends & Relatives","Domestic",742.8086720136284
+"2020-02","Other","Domestic",118.27308419001217
+"2020-03","Religious","Domestic",848.4428247865433
+"2020-03","Leisure","Domestic",1936.5094918860414
+"2020-03","Business","Domestic",119.8291421547467
+"2020-03","Visiting Friends & Relatives","Domestic",862.593636119029
+"2020-03","Other","Domestic",63.87275420285707
+"2020-04","Religious","Domestic",0
+"2020-04","Leisure","Domestic",22.407640474876462
+"2020-04","Business","Domestic",0
+"2020-04","Visiting Friends & Relatives","Domestic",46.65156609603932
+"2020-04","Other","Domestic",0
+"2020-05","Religious","Domestic",0
+"2020-05","Leisure","Domestic",14.814405700888269
+"2020-05","Business","Domestic",0.991784326867628
+"2020-05","Visiting Friends & Relatives","Domestic",33.01632295932534
+"2020-05","Other","Domestic",0
+"2020-06","Religious","Domestic",99.52663402277005
+"2020-06","Leisure","Domestic",494.75276496804986
+"2020-06","Business","Domestic",38.30302332788008
+"2020-06","Visiting Friends & Relatives","Domestic",403.88774724079235
+"2020-06","Other","Domestic",9.89102716120547
+"2020-07","Religious","Domestic",9.999999999999686
+"2020-07","Leisure","Domestic",2423.2633363800796
+"2020-07","Business","Domestic",122.0264131125052
+"2020-07","Visiting Friends & Relatives","Domestic",1621.8858502885466
+"2020-07","Other","Domestic",80.5960736980695
+"2020-08","Religious","Domestic",0
+"2020-08","Leisure","Domestic",2697.872324056084
+"2020-08","Business","Domestic",129.7238270854332
+"2020-08","Visiting Friends & Relatives","Domestic",2317.12868409401
+"2020-08","Other","Domestic",77.06861427438558
+"2020-09","Religious","Domestic",0
+"2020-09","Leisure","Domestic",2290.523086992282
+"2020-09","Business","Domestic",189.02170112886822
+"2020-09","Visiting Friends & Relatives","Domestic",1986.2674060032948
+"2020-09","Other","Domestic",129.33801309662368
+"2020-10","Religious","Domestic",579.5980854956922
+"2020-10","Leisure","Domestic",2335.2044874182234
+"2020-10","Business","Domestic",201.58802104703577
+"2020-10","Visiting Friends & Relatives","Domestic",1480.3430166655642
+"2020-10","Other","Domestic",115.7666819270979
+"2020-11","Religious","Domestic",735.3518494745632
+"2020-11","Leisure","Domestic",2053.4019677858987
+"2020-11","Business","Domestic",196.37709173014198
+"2020-11","Visiting Friends & Relatives","Domestic",1479.5271165680206
+"2020-11","Other","Domestic",115.82718963025067
+"2020-12","Religious","Domestic",739.0870407894027
+"2020-12","Leisure","Domestic",2197.147807976583
+"2020-12","Business","Domestic",219.87875490368464
+"2020-12","Visiting Friends & Relatives","Domestic",1460.2115034795722
+"2020-12","Other","Domestic",89.99518808451666
+"2021-01","Religious","Domestic",542.297
+"2021-01","Leisure","Domestic",1877.569
+"2021-01","Business","Domestic",618.931
+"2021-01","Visiting Friends & Relatives","Domestic",2636.499
+"2021-01","Other","Domestic",244.412
+"2021-02","Religious","Domestic",383.754
+"2021-02","Leisure","Domestic",1201.821
+"2021-02","Business","Domestic",468.729
+"2021-02","Visiting Friends & Relatives","Domestic",2116.334
+"2021-02","Other","Domestic",205.276
+"2021-03","Religious","Domestic",386.596
+"2021-03","Leisure","Domestic",1215.041
+"2021-03","Business","Domestic",529.286
+"2021-03","Visiting Friends & Relatives","Domestic",2118.123
+"2021-03","Other","Domestic",158.991
+"2021-04","Religious","Domestic",538.355
+"2021-04","Leisure","Domestic",1193.251
+"2021-04","Business","Domestic",516.601
+"2021-04","Visiting Friends & Relatives","Domestic",1882.363
+"2021-04","Other","Domestic",300.433
+"2021-05","Religious","Domestic",578.068
+"2021-05","Leisure","Domestic",2127.202
+"2021-05","Business","Domestic",596.398
+"2021-05","Visiting Friends & Relatives","Domestic",3193.409
+"2021-05","Other","Domestic",232.835
+"2021-06","Religious","Domestic",294.956
+"2021-06","Leisure","Domestic",1560.767
+"2021-06","Business","Domestic",426.344
+"2021-06","Visiting Friends & Relatives","Domestic",1744.31
+"2021-06","Other","Domestic",139.192
+"2021-07","Religious","Domestic",490.973
+"2021-07","Leisure","Domestic",2402.684
+"2021-07","Business","Domestic",358.283
+"2021-07","Visiting Friends & Relatives","Domestic",4038.179
+"2021-07","Other","Domestic",243.232
+"2021-08","Religious","Domestic",388.439
+"2021-08","Leisure","Domestic",2135.567
+"2021-08","Business","Domestic",464.211
+"2021-08","Visiting Friends & Relatives","Domestic",2268.113
+"2021-08","Other","Domestic",225.92
+"2021-09","Religious","Domestic",376.885
+"2021-09","Leisure","Domestic",1511.375
+"2021-09","Business","Domestic",366.517
+"2021-09","Visiting Friends & Relatives","Domestic",1797.337
+"2021-09","Other","Domestic",133.183
+"2021-10","Religious","Domestic",450.52
+"2021-10","Leisure","Domestic",2344.299
+"2021-10","Business","Domestic",454.701
+"2021-10","Visiting Friends & Relatives","Domestic",1851.119
+"2021-10","Other","Domestic",297.921
+"2021-11","Religious","Domestic",586.656
+"2021-11","Leisure","Domestic",2865.906
+"2021-11","Business","Domestic",420.199
+"2021-11","Visiting Friends & Relatives","Domestic",2256.299
+"2021-11","Other","Domestic",583.691
+"2021-12","Religious","Domestic",441.725
+"2021-12","Leisure","Domestic",1931.288
+"2021-12","Business","Domestic",209.99
+"2021-12","Visiting Friends & Relatives","Domestic",1700.381
+"2021-12","Other","Domestic",210.162
+"2022-01","Religious","Domestic",596.252
+"2022-01","Leisure","Domestic",2867.998
+"2022-01","Business","Domestic",341.926
+"2022-01","Visiting Friends & Relatives","Domestic",3551.156
+"2022-01","Other","Domestic",317.828
+"2022-02","Religious","Domestic",586.608
+"2022-02","Leisure","Domestic",2417.283
+"2022-02","Business","Domestic",273.146
+"2022-02","Visiting Friends & Relatives","Domestic",2836.744
+"2022-02","Other","Domestic",336.157
+"2022-03","Religious","Domestic",549.498
+"2022-03","Leisure","Domestic",2180.247
+"2022-03","Business","Domestic",282.899
+"2022-03","Visiting Friends & Relatives","Domestic",2879.42
+"2022-03","Other","Domestic",312.691
+"2022-04","Religious","Domestic",1469.406
+"2022-04","Leisure","Domestic",2115.43
+"2022-04","Business","Domestic",277.932
+"2022-04","Visiting Friends & Relatives","Domestic",3899.846
+"2022-04","Other","Domestic",273.517
+"2022-05","Religious","Domestic",589.898
+"2022-05","Leisure","Domestic",2717.715
+"2022-05","Business","Domestic",371.79
+"2022-05","Visiting Friends & Relatives","Domestic",3267.698
+"2022-05","Other","Domestic",299.008
+"2022-06","Religious","Domestic",281.898
+"2022-06","Leisure","Domestic",1716.806
+"2022-06","Business","Domestic",248.02
+"2022-06","Visiting Friends & Relatives","Domestic",1571.684
+"2022-06","Other","Domestic",214.379
+"2022-07","Religious","Domestic",948.318
+"2022-07","Leisure","Domestic",3713.087
+"2022-07","Business","Domestic",499.956
+"2022-07","Visiting Friends & Relatives","Domestic",5262.984
+"2022-07","Other","Domestic",371.209
+"2022-08","Religious","Domestic",758.364
+"2022-08","Leisure","Domestic",2776.151
+"2022-08","Business","Domestic",534.951
+"2022-08","Visiting Friends & Relatives","Domestic",2631.712
+"2022-08","Other","Domestic",307.26
+"2022-09","Religious","Domestic",500.227
+"2022-09","Leisure","Domestic",1862.447
+"2022-09","Business","Domestic",298.644
+"2022-09","Visiting Friends & Relatives","Domestic",1311.165
+"2022-09","Other","Domestic",223.556
+"2022-10","Religious","Domestic",488.166
+"2022-10","Leisure","Domestic",2233.055
+"2022-10","Business","Domestic",432.195
+"2022-10","Visiting Friends & Relatives","Domestic",1376.883
+"2022-10","Other","Domestic",307.887
+"2022-11","Religious","Domestic",749.834
+"2022-11","Leisure","Domestic",3283.884
+"2022-11","Business","Domestic",510.602
+"2022-11","Visiting Friends & Relatives","Domestic",1994.362
+"2022-11","Other","Domestic",464.467
+"2022-12","Religious","Domestic",495.142
+"2022-12","Leisure","Domestic",1978.806
+"2022-12","Business","Domestic",432.887
+"2022-12","Visiting Friends & Relatives","Domestic",1231.832
+"2022-12","Other","Domestic",211.588
+"2023-01","Religious","Domestic",658.471
+"2023-01","Leisure","Domestic",3085.674
+"2023-01","Business","Domestic",536.528
+"2023-01","Visiting Friends & Relatives","Domestic",1739.337
+"2023-01","Other","Domestic",273.946
+"2023-02","Religious","Domestic",635.661
+"2023-02","Leisure","Domestic",2619.228
+"2023-02","Business","Domestic",546.173
+"2023-02","Visiting Friends & Relatives","Domestic",1588.526
+"2023-02","Other","Domestic",218.049
+"2023-03","Religious","Domestic",996.116
+"2023-03","Leisure","Domestic",2604.594
+"2023-03","Business","Domestic",633.282
+"2023-03","Visiting Friends & Relatives","Domestic",1956.899
+"2023-03","Other","Domestic",311.265
+"2023-04","Religious","Domestic",1132.871
+"2023-04","Leisure","Domestic",2522.562
+"2023-04","Business","Domestic",613.427
+"2023-04","Visiting Friends & Relatives","Domestic",2353.898
+"2023-04","Other","Domestic",258.538
+"2023-05","Religious","Domestic",525.657
+"2023-05","Leisure","Domestic",2245.711
+"2023-05","Business","Domestic",536.118
+"2023-05","Visiting Friends & Relatives","Domestic",1395.87
+"2023-05","Other","Domestic",299.635
+"2023-06","Religious","Domestic",1234.789
+"2023-06","Leisure","Domestic",3886.558
+"2023-06","Business","Domestic",785.582
+"2023-06","Visiting Friends & Relatives","Domestic",3251.576
+"2023-06","Other","Domestic",389.355
+"2023-07","Religious","Domestic",752.531
+"2023-07","Leisure","Domestic",3688.683
+"2023-07","Business","Domestic",729.043
+"2023-07","Visiting Friends & Relatives","Domestic",2431.251
+"2023-07","Other","Domestic",516.748
+"2023-08","Religious","Domestic",837.242
+"2023-08","Leisure","Domestic",2836.306
+"2023-08","Business","Domestic",800.176
+"2023-08","Visiting Friends & Relatives","Domestic",2173.515
+"2023-08","Other","Domestic",338.709
+"2023-09","Religious","Domestic",689.514
+"2023-09","Leisure","Domestic",2472.869
+"2023-09","Business","Domestic",666.927
+"2023-09","Visiting Friends & Relatives","Domestic",1902.066
+"2023-09","Other","Domestic",342.451
+"2023-10","Religious","Domestic",707.384
+"2023-10","Leisure","Domestic",2417.181
+"2023-10","Business","Domestic",834.838
+"2023-10","Visiting Friends & Relatives","Domestic",1953.757
+"2023-10","Other","Domestic",288.859
+"2023-11","Religious","Domestic",996.979
+"2023-11","Leisure","Domestic",3584.746
+"2023-11","Business","Domestic",793.102
+"2023-11","Visiting Friends & Relatives","Domestic",2537.225
+"2023-11","Other","Domestic",308.275
+"2023-12","Religious","Domestic",758.084
+"2023-12","Leisure","Domestic",3046.356
+"2023-12","Business","Domestic",719.795
+"2023-12","Visiting Friends & Relatives","Domestic",1748.997
+"2023-12","Other","Domestic",210.857
+"2024-01","Religious","Domestic",1003.006
+"2024-01","Leisure","Domestic",3379.914
+"2024-01","Business","Domestic",771.353
+"2024-01","Visiting Friends & Relatives","Domestic",2341.854
+"2024-01","Other","Domestic",284.238
+"2024-02","Religious","Domestic",948.945
+"2024-02","Leisure","Domestic",3434.89
+"2024-02","Business","Domestic",665.148
+"2024-02","Visiting Friends & Relatives","Domestic",2397.233
+"2024-02","Other","Domestic",296.486
+"2024-03","Religious","Domestic",1567.474
+"2024-03","Leisure","Domestic",2169.01
+"2024-03","Business","Domestic",562.055
+"2024-03","Visiting Friends & Relatives","Domestic",2237.328
+"2024-03","Other","Domestic",266.712
+"2024-04","Religious","Domestic",1070.993
+"2024-04","Leisure","Domestic",2599.842
+"2024-04","Business","Domestic",624.153
+"2024-04","Visiting Friends & Relatives","Domestic",2674.691
+"2024-04","Other","Domestic",230.723
+"2024-05","Religious","Domestic",559.944
+"2024-05","Leisure","Domestic",2119.503
+"2024-05","Business","Domestic",754.346
+"2024-05","Visiting Friends & Relatives","Domestic",2205.655
+"2024-05","Other","Domestic",336.55
+"2024-06","Religious","Domestic",1125.398
+"2024-06","Leisure","Domestic",3301.219
+"2024-06","Business","Domestic",852.674
+"2024-06","Visiting Friends & Relatives","Domestic",4069.266
+"2024-06","Other","Domestic",264.552
+"2024-07","Religious","Domestic",938.105
+"2024-07","Leisure","Domestic",3388.26
+"2024-07","Business","Domestic",737.243
+"2024-07","Visiting Friends & Relatives","Domestic",2745.667
+"2024-07","Other","Domestic",253.587
+"2024-08","Religious","Domestic",812.599
+"2024-08","Leisure","Domestic",2479.657
+"2024-08","Business","Domestic",711.117
+"2024-08","Visiting Friends & Relatives","Domestic",2109.375
+"2024-08","Other","Domestic",335.215
+"2024-09","Religious","Domestic",673.917
+"2024-09","Leisure","Domestic",1983.221
+"2024-09","Business","Domestic",761.804
+"2024-09","Visiting Friends & Relatives","Domestic",2161.02
+"2024-09","Other","Domestic",327.505
+"2024-10","Religious","Domestic",763.597
+"2024-10","Leisure","Domestic",2048.431
+"2024-10","Business","Domestic",806.067
+"2024-10","Visiting Friends & Relatives","Domestic",1899.097
+"2024-10","Other","Domestic",276.573
+"2024-11","Religious","Domestic",1042.916
+"2024-11","Leisure","Domestic",2871.841
+"2024-11","Business","Domestic",850.852
+"2024-11","Visiting Friends & Relatives","Domestic",2900.212
+"2024-11","Other","Domestic",240.905
+"2024-12","Religious","Domestic",910.193
+"2024-12","Leisure","Domestic",2520.693
+"2024-12","Business","Domestic",835.865
+"2024-12","Visiting Friends & Relatives","Domestic",2355.444
+"2024-12","Other","Domestic",301.226
