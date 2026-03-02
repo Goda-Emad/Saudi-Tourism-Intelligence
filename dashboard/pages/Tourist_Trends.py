@@ -662,10 +662,4 @@ with covid_col:
           <th>{t['pre_covid']}</th>
           <th>{t['during_covid']}</th>
           <th>{t['post_covid']}</th>
-          <th>2019→2020</th>
-          <th>2020→2024</th>
-        </tr>
-      </thead>
-      <tbody>
-    """
-    for row in
+          <th>2019→2020
