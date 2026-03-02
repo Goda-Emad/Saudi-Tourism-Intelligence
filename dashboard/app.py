@@ -1,8 +1,8 @@
 """
 Saudi Tourism Intelligence - Professional Dashboard
 Developed by: Eng. Goda Emad
-Version: 10.0.0
-Features: Dark/Light Mode, Arabic/English, Green Navigation Buttons Only
+Version: 11.0.0
+Features: Dark/Light Mode, Arabic/English, Original Colors Restored
 """
 
 import streamlit as st
@@ -32,38 +32,36 @@ class Config:
     DEV_NAME = "Eng. Goda Emad"
     DEV_GITHUB = "https://github.com/Goda-Emad/Saudi-Tourism-Intelligence"
     DEV_LINKEDIN = "https://www.linkedin.com/in/goda-emad/"
-    APP_VERSION = "10.0.0"
+    APP_VERSION = "11.0.0"
     
-    # Color Palettes - الألوان القديمة
+    # Color Palettes - الألوان القديمة الأصلية
     DARK_THEME = {
-        'bg': '#0D1B2A',
-        'card': '#132336',
-        'card_hover': '#1A2F45',
-        'text': '#F0F4F8',
-        'text_muted': '#94A3B8',
-        'border': '#2A3F55',
-        'primary': '#1B5E20',      # أخضر غامق
+        'bg': '#0D1B2A',           # الخلفية الأصلية
+        'card': '#132336',          # لون الكروت الأصلي
+        'card_hover': '#1A2F45',    # لون الكروت عند المرور
+        'text': '#F0F4F8',          # لون النص الرئيسي
+        'text_muted': '#94A3B8',     # لون النص الثانوي
+        'border': '#2A3F55',        # لون الحدود
+        'primary': '#1B5E20',       # أخضر غامق
         'primary_light': '#2E7D32',  # أخضر فاتح
-        'primary_dark': '#0A3A0A',   # أخضر داكن جداً
-        'secondary': '#00838F',
-        'accent': '#D4A017',
+        'secondary': '#00838F',      # أزرق
+        'accent': '#D4A017',         # ذهبي
         'success': '#43A047',
         'warning': '#F0A500',
         'danger': '#FF5252'
     }
     
     LIGHT_THEME = {
-        'bg': '#F5F9FF',
-        'card': '#FFFFFF',
-        'card_hover': '#F0F4F8',
-        'text': '#1A2B3C',
-        'text_muted': '#4A6080',
-        'border': '#CBD5E0',
-        'primary': '#2E7D32',      # أخضر غامق
-        'primary_light': '#4CAF50',  # أخضر فاتح
-        'primary_dark': '#1B5E20',   # أخضر داكن جداً
-        'secondary': '#00ACC1',
-        'accent': '#E08C00',
+        'bg': '#F4F7FB',            # الخلفية الأصلية للوضع الفاتح
+        'card': '#FFFFFF',           # لون الكروت الأصلي
+        'card_hover': '#EDF2F7',     # لون الكروت عند المرور
+        'text': '#1A2B3C',           # لون النص الرئيسي
+        'text_muted': '#4A6080',      # لون النص الثانوي
+        'border': '#CBD5E0',         # لون الحدود
+        'primary': '#2E7D32',        # أخضر غامق
+        'primary_light': '#4CAF50',   # أخضر فاتح
+        'secondary': '#00ACC1',       # أزرق
+        'accent': '#E08C00',          # ذهبي
         'success': '#2E7D32',
         'warning': '#F57C00',
         'danger': '#C62828'
@@ -249,57 +247,152 @@ def get_colors():
 colors = get_colors()
 
 # ═══════════════════════════════════════════════════════
-# HERO BANNER - صورة كـ banner
+# CUSTOM CSS FOR ORIGINAL COLORS
 # ═══════════════════════════════════════════════════════
-def create_hero_banner():
-    """Create a hero banner image"""
-    hero_base64 = get_image_base64("assets/hero.png")
-    if hero_base64:
-        st.markdown(
-            f"""
-            <div style="
-                width: 100%;
-                margin-bottom: 2rem;
-                border-radius: 0;
-                overflow: hidden;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            ">
-                <img src="data:image/png;base64,{hero_base64}" 
-                     style="
-                        width: 100%;
-                        height: 300px;
-                        object-fit: cover;
-                        object-position: center;
-                     ">
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        # Hero banner افتراضي إذا الصورة مش موجودة
-        st.markdown(
-            f"""
-            <div style="
-                width: 100%;
-                height: 300px;
-                margin-bottom: 2rem;
-                background: linear-gradient(135deg, {colors['primary']}, {colors['secondary']});
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 2rem;
-                font-weight: 700;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            ">
-                🇸🇦 Saudi Tourism Intelligence
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+def get_original_css():
+    """Generate custom CSS with original colors"""
+    return f"""
+    <style>
+        /* Main app background - الأصلي */
+        .stApp {{
+            background-color: {colors['bg']};
+            color: {colors['text']};
+        }}
+        
+        /* Sidebar styling - الأصلي */
+        [data-testid="stSidebar"] {{
+            background-color: {colors['card']};
+            border-right: 1px solid {colors['border']};
+        }}
+        
+        [data-testid="stSidebar"] * {{
+            color: {colors['text']};
+        }}
+        
+        /* Metric cards - الأصلي */
+        [data-testid="stMetric"] {{
+            background-color: {colors['card']};
+            border: 1px solid {colors['border']};
+            border-radius: 12px;
+            padding: 1rem;
+            transition: transform 0.2s ease;
+        }}
+        
+        [data-testid="stMetric"]:hover {{
+            transform: translateY(-2px);
+            background-color: {colors['card_hover']};
+        }}
+        
+        [data-testid="stMetricLabel"] {{
+            color: {colors['text_muted']} !important;
+            font-size: 0.75rem !important;
+        }}
+        
+        [data-testid="stMetricValue"] {{
+            color: {colors['accent']} !important;
+            font-size: 1.5rem !important;
+            font-weight: 700 !important;
+        }}
+        
+        /* Navigation buttons - خضراء فقط */
+        .stButton button {{
+            background: {colors['primary']}20 !important;
+            border: 1px solid {colors['primary']}40 !important;
+            border-radius: 12px !important;
+            padding: 0.8rem 1rem !important;
+            margin: 0.3rem 0 !important;
+            color: {colors['text']} !important;
+            font-size: 0.95rem !important;
+            text-align: left !important;
+            width: 100% !important;
+            transition: all 0.3s ease !important;
+        }}
+        
+        .stButton button:hover {{
+            background: {colors['primary']}40 !important;
+            border-color: {colors['accent']} !important;
+            transform: translateX(5px) !important;
+        }}
+        
+        .stButton button[kind="primary"] {{
+            background: {colors['primary']}60 !important;
+            border-left: 4px solid {colors['accent']} !important;
+            font-weight: 700 !important;
+        }}
+        
+        /* Hero banner */
+        .hero-banner {{
+            width: 100%;
+            margin-bottom: 2rem;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }}
+        
+        .hero-banner img {{
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            object-position: center;
+        }}
+        
+        /* Divider */
+        hr {{
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, {colors['accent']}, transparent);
+            margin: 2rem 0;
+        }}
+        
+        /* RTL support */
+        {f'''
+        [dir="rtl"] .stButton button {{
+            text-align: right !important;
+        }}
+        ''' if st.session_state.lang == 'AR' else ''}
+    </style>
+    """
+
+# Apply CSS
+st.markdown(get_original_css(), unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════
-# SIDEBAR - العمود الجانبي (بالألوان القديمة)
+# HERO BANNER
+# ═══════════════════════════════════════════════════════
+hero_base64 = get_image_base64("assets/hero.png")
+if hero_base64:
+    st.markdown(
+        f"""
+        <div class="hero-banner">
+            <img src="data:image/png;base64,{hero_base64}">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        f"""
+        <div style="
+            width: 100%;
+            height: 300px;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, {colors['primary']}, {colors['secondary']});
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        ">
+            🇸🇦 Saudi Tourism Intelligence
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# ═══════════════════════════════════════════════════════
+# SIDEBAR
 # ═══════════════════════════════════════════════════════
 with st.sidebar:
     # Logo
@@ -315,7 +408,8 @@ with st.sidebar:
     col1, col2 = st.columns(2)
     with col1:
         theme_icon = "☀️" if st.session_state.theme == 'dark' else "🌙"
-        if st.button(f"{theme_icon} Theme", key="theme_btn", use_container_width=True):
+        theme_text = "Light" if st.session_state.theme == 'dark' else "Dark"
+        if st.button(f"{theme_icon} {theme_text}", key="theme_btn", use_container_width=True):
             st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
             st.rerun()
     
@@ -333,47 +427,16 @@ with st.sidebar:
     # Navigation buttons - خضراء فقط
     for page in Config.PAGES:
         page_name = page['en'] if st.session_state.lang == 'EN' else page['ar']
+        btn_type = "primary" if st.session_state.current_page == page['id'] else "secondary"
         
-        # تنسيق خاص للأزرار الخضراء
-        if st.session_state.current_page == page['id']:
-            button_html = f"""
-            <div style="
-                background: linear-gradient(135deg, {colors['primary']}, {colors['primary_light']});
-                color: white;
-                padding: 0.8rem 1rem;
-                margin: 0.3rem 0;
-                border-radius: 12px;
-                border-left: 4px solid {colors['accent']};
-                font-weight: 700;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            ">
-                {page_name}
-            </div>
-            """
-        else:
-            button_html = f"""
-            <div style="
-                background: {colors['primary']}20;
-                color: {colors['text']};
-                padding: 0.8rem 1rem;
-                margin: 0.3rem 0;
-                border-radius: 12px;
-                border: 1px solid {colors['primary']}40;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            " onmouseover="this.style.background='{colors['primary']}40'; this.style.transform='translateX(5px)';" 
-               onmouseout="this.style.background='{colors['primary']}20'; this.style.transform='translateX(0)';">
-                {page_name}
-            </div>
-            """
-        
-        if st.button(" ", key=f"nav_{page['id']}"):
+        if st.button(
+            page_name,
+            key=f"nav_{page['id']}",
+            use_container_width=True,
+            type=btn_type
+        ):
             st.session_state.current_page = page['id']
             st.rerun()
-        
-        st.markdown(button_html, unsafe_allow_html=True)
     
     st.divider()
     
@@ -400,11 +463,8 @@ with st.sidebar:
     )
 
 # ═══════════════════════════════════════════════════════
-# MAIN CONTENT AREA
+# MAIN CONTENT
 # ═══════════════════════════════════════════════════════
-
-# Hero Banner
-create_hero_banner()
 
 # Title
 st.markdown(
