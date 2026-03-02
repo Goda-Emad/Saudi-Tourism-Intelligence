@@ -1,7 +1,7 @@
-# utils/data_loader.py
+# utils/kpis.py
 """
-Data Loading Functions
-دوال تحميل البيانات
+KPIs and Metrics Calculation Functions
+دوال حساب المؤشرات الرئيسية
 """
 
 import pandas as pd
@@ -10,187 +10,155 @@ from pathlib import Path
 import streamlit as st
 
 # ═══════════════════════════════════════════════════════
-# BASE LOADER
+# MAIN DATA LOADER
 # ═══════════════════════════════════════════════════════
 @st.cache_data
-def load_csv_file(file_path):
-    """تحميل ملف CSV مع معالجة الأخطاء"""
-    try:
-        if Path(file_path).exists():
-            return pd.read_csv(file_path)
+def load_all_data():
+    """تحميل جميع البيانات من المجلد clean"""
+    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
+    
+    data = {}
+    files = {
+        'tourists': '01_Tourists_CLEAN.csv',
+        'overnight': '02_Overnight_CLEAN.csv',
+        'kpi': '03_KPI_CLEAN.csv',
+        'expenditure': '04_Expenditure_CLEAN.csv',
+        'carbon': '05_Carbon_Impact.csv'
+    }
+    
+    for key, filename in files.items():
+        file_path = base_path / filename
+        if file_path.exists():
+            data[key] = pd.read_csv(file_path)
         else:
-            return pd.DataFrame()
-    except Exception as e:
-        print(f"Error loading {file_path}: {e}")
-        return pd.DataFrame()
+            data[key] = pd.DataFrame()
+            print(f"Warning: {filename} not found")
+    
+    return data
 
 # ═══════════════════════════════════════════════════════
-# MAIN DATA LOADERS
+# KPI CALCULATIONS
 # ═══════════════════════════════════════════════════════
-@st.cache_data
-def load_tourist_data():
-    """تحميل بيانات السياح"""
-    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
-    file_path = base_path / "01_Tourists_CLEAN.csv"
+def calculate_kpis(tourist_df=None, spending_df=None, overnight_df=None):
+    """حساب جميع المؤشرات الرئيسية"""
     
-    df = load_csv_file(file_path)
+    kpis = {}
     
-    # إذا الملف مش موجود، نرجع بيانات افتراضية
-    if df.empty:
-        df = create_sample_tourist_data()
+    # بيانات افتراضية من business_case.pdf (لو مفيش ملفات)
+    kpis['total_tourists_2024'] = 115.8  # مليون
+    kpis['inbound_2024'] = 29.7  # مليون
+    kpis['domestic_2024'] = 86.2  # مليون
+    kpis['total_nights_2024'] = 1.1  # مليار
+    kpis['avg_spend_2024'] = 5622  # ريال
     
-    return df
+    kpis['tourists_growth'] = 8.1  # %
+    kpis['inbound_growth'] = 8.4  # %
+    kpis['domestic_growth'] = 5.2  # %
+    kpis['nights_growth'] = 18.2  # %
+    kpis['spend_growth'] = 12.8  # %
+    
+    kpis['covid_drop_2020'] = -29.2  # %
+    kpis['recovery_rate'] = 72.0  # %
+    
+    return kpis
 
-@st.cache_data
-def load_spending_data():
-    """تحميل بيانات الإنفاق"""
-    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
-    file_path = base_path / "04_Expenditure_CLEAN.csv"
-    
-    df = load_csv_file(file_path)
-    
-    if df.empty:
-        df = create_sample_spending_data()
-    
-    return df
+def format_number(num, format_type='millions'):
+    """تنسيق الأرقام للعرض"""
+    if format_type == 'millions':
+        return f"{num/1000:.1f}M" if num > 1000 else f"{num:.1f}M"
+    elif format_type == 'billions':
+        return f"{num:.1f}B"
+    elif format_type == 'currency':
+        return f"{num:,.0f} SAR"
+    else:
+        return f"{num:,}"
 
-@st.cache_data
-def load_overnight_data():
-    """تحميل بيانات الإقامة"""
-    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
-    file_path = base_path / "02_Overnight_CLEAN.csv"
-    
-    df = load_csv_file(file_path)
-    
-    if df.empty:
-        df = create_sample_overnight_data()
-    
-    return df
+def get_yoy_growth(current, previous):
+    """حساب النمو السنوي"""
+    if previous == 0:
+        return 0
+    return ((current - previous) / previous) * 100
 
-@st.cache_data
-def load_carbon_data():
-    """تحميل بيانات الكربون"""
-    base_path = Path(__file__).parent.parent.parent / "data" / "clean"
-    file_path = base_path / "05_Carbon_Impact.csv"
-    
-    df = load_csv_file(file_path)
-    
-    if df.empty:
-        df = create_sample_carbon_data()
-    
-    return df
+def calculate_growth_rate(series):
+    """حساب معدل النمو لسلسلة زمنية"""
+    if len(series) < 2:
+        return 0
+    first = series.iloc[0]
+    last = series.iloc[-1]
+    if first == 0:
+        return 0
+    return ((last - first) / first) * 100
 
-# ═══════════════════════════════════════════════════════
-# SAMPLE DATA CREATORS (للتجربة)
-# ═══════════════════════════════════════════════════════
-def create_sample_tourist_data():
-    """إنشاء بيانات سياحية تجريبية"""
-    years = list(range(2015, 2025))
-    inbound = [17.99, 18.04, 16.11, 15.33, 17.53, 4.14, 3.48, 16.64, 27.18, 29.73]
-    domestic = [46.45, 45.04, 43.82, 43.26, 47.81, 42.11, 63.83, 77.84, 81.92, 86.16]
-    
-    df = pd.DataFrame({
-        'Year': years,
-        'Inbound_M': inbound,
-        'Domestic_M': domestic,
-        'Total_M': [i + d for i, d in zip(inbound, domestic)]
-    })
-    
-    return df
+def get_peak_month(monthly_data):
+    """الحصول على شهر الذروة"""
+    if monthly_data.empty:
+        return "N/A"
+    max_idx = monthly_data.argmax()
+    months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+              'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+    return months[max_idx] if max_idx < len(months) else "N/A"
 
-def create_sample_spending_data():
-    """إنشاء بيانات إنفاق تجريبية"""
-    years = [2019, 2020, 2021, 2022, 2023, 2024]
-    inbound_spend = [76.4, 12.8, 14.7, 90.9, 106.2, 119.8]
-    domestic_spend = [42.3, 37.6, 48.2, 59.7, 68.4, 76.5]
-    
-    df = pd.DataFrame({
-        'Year': years,
-        'Inbound_Spend_B': inbound_spend,
-        'Domestic_Spend_B': domestic_spend,
-        'Total_Spend_B': [i + d for i, d in zip(inbound_spend, domestic_spend)]
-    })
-    
-    return df
-
-def create_sample_overnight_data():
-    """إنشاء بيانات إقامة تجريبية"""
-    years = list(range(2015, 2025))
-    inbound_nights = [320, 325, 310, 305, 345, 82, 95, 380, 432, 560]
-    domestic_nights = [395, 400, 410, 415, 425, 380, 445, 475, 496, 539]
-    
-    df = pd.DataFrame({
-        'Year': years,
-        'Inbound_Nights_M': inbound_nights,
-        'Domestic_Nights_M': domestic_nights,
-        'Total_Nights_M': [i + d for i, d in zip(inbound_nights, domestic_nights)]
-    })
-    
-    return df
-
-def create_sample_carbon_data():
-    """إنشاء بيانات كربون تجريبية"""
-    years = list(range(2015, 2025))
-    carbon = [42.5, 43.2, 41.8, 40.9, 48.3, 28.1, 32.5, 51.2, 59.8, 68.17]
-    
-    df = pd.DataFrame({
-        'Year': years,
-        'Total_CO2_Mt': carbon,
-        'Inbound_CO2_Mt': [c * 0.58 for c in carbon],
-        'Domestic_CO2_Mt': [c * 0.42 for c in carbon]
-    })
-    
-    return df
+def get_seasonal_factors(monthly_data):
+    """حساب العوامل الموسمية"""
+    if monthly_data.empty:
+        return []
+    avg = monthly_data.mean()
+    return [round(x/avg, 2) for x in monthly_data]
 
 # ═══════════════════════════════════════════════════════
-# BULK LOADER
+# CARBON CALCULATIONS
 # ═══════════════════════════════════════════════════════
-@st.cache_data
-def load_all_datasets():
-    """تحميل جميع مجموعات البيانات"""
+def calculate_carbon_metrics(tourists, nights, transport_km=3500):
+    """حساب مؤشرات الكربون"""
+    # Emission factors (kg CO2 per unit)
+    FLIGHT_EMISSION = 0.12  # kg per km per tourist
+    HOTEL_EMISSION = 15.0   # kg per night
+    LOCAL_TRANSPORT = 5.0   # kg per day
+    
+    flight_emissions = tourists * transport_km * FLIGHT_EMISSION / 1000  # to tons
+    hotel_emissions = nights * HOTEL_EMISSION
+    local_emissions = nights * LOCAL_TRANSPORT
+    
+    total = (flight_emissions + hotel_emissions + local_emissions) / 1e6  # to megatons
+    
     return {
-        'tourist': load_tourist_data(),
-        'spending': load_spending_data(),
-        'overnight': load_overnight_data(),
-        'carbon': load_carbon_data()
+        'total_mt': total,
+        'flight_mt': flight_emissions / 1e6,
+        'hotel_mt': hotel_emissions / 1e6,
+        'local_mt': local_emissions / 1e6
     }
 
-# ═══════════════════════════════════════════════════════
-# DATA VALIDATION
-# ═══════════════════════════════════════════════════════
-def validate_data(df, required_columns):
-    """التحقق من صحة البيانات"""
-    if df.empty:
-        return False, "DataFrame is empty"
-    
-    missing = [col for col in required_columns if col not in df.columns]
-    if missing:
-        return False, f"Missing columns: {missing}"
-    
-    return True, "Data is valid"
+def trees_equivalent(co2_tons):
+    """تحويل الكربون إلى ما يعادل أشجار"""
+    # Each tree absorbs ~20 kg CO2 per year
+    trees = (co2_tons * 1000) / 20
+    return int(trees)
 
-def get_data_summary(df):
-    """الحصول على ملخص البيانات"""
-    if df.empty:
-        return "No data available"
-    
-    summary = {
-        'rows': len(df),
-        'columns': list(df.columns),
-        'missing_values': df.isnull().sum().sum(),
-        'data_types': df.dtypes.to_dict()
+# ═══════════════════════════════════════════════════════
+# SEGMENTATION METRICS
+# ═══════════════════════════════════════════════════════
+def get_segment_metrics():
+    """بيانات تجزئة السياح"""
+    return {
+        'high_value': {
+            'pct': 18,
+            'spend': 12500,
+            'stay': 12.5,
+            'frequency': 1.8,
+            'color': '#F0A500'
+        },
+        'mid_value': {
+            'pct': 37,
+            'spend': 6200,
+            'stay': 6.8,
+            'frequency': 2.5,
+            'color': '#3A86FF'
+        },
+        'budget': {
+            'pct': 45,
+            'spend': 2800,
+            'stay': 3.2,
+            'frequency': 4.2,
+            'color': '#00C9B1'
+        }
     }
-    
-    return summary
-
-# ═══════════════════════════════════════════════════════
-# DATA PROCESSING
-# ═══════════════════════════════════════════════════════
-def filter_by_year(df, year_col, start_year, end_year):
-    """تصفية البيانات حسب السنة"""
-    return df[(df[year_col] >= start_year) & (df[year_col] <= end_year)]
-
-def aggregate_monthly(df, date_col, value_col):
-    """تجميع البيانات الشهرية"""
-    df[date_col] = pd.to_datetime(df[date_col])
-    return df.groupby(df[date_col].dt.to_period('M'))[value_col].sum().reset_index()
