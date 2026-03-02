@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 import sys
 from pathlib import Path
+import base64
 
 # إضافة المسار الرئيسي للمشروع
 sys.path.append(str(Path(__file__).parent.parent))
@@ -35,6 +36,20 @@ from utils.data_loader import (
     load_overnight_data,
     load_carbon_data
 )
+
+# ═══════════════════════════════════════════════════════
+# HELPER FUNCTIONS
+# ═══════════════════════════════════════════════════════
+def get_image_base64(image_path):
+    """تحويل الصورة إلى base64 لإدراجها في HTML"""
+    try:
+        full_path = Path(__file__).parent / image_path
+        if full_path.exists():
+            with open(full_path, "rb") as img_file:
+                return base64.b64encode(img_file.read()).decode()
+        return ""
+    except:
+        return ""
 
 # ═══════════════════════════════════════════════════════
 # PAGE CONFIG
@@ -155,19 +170,21 @@ T = {
 # SIDEBAR
 # ═══════════════════════════════════════════════════════
 with st.sidebar:
-    # Logo
+    # Logo with custom styling
     try:
         st.image("assets/logo.png", use_column_width=True)
     except:
         st.markdown("""
         <div style='text-align:center; padding: 1rem;'>
             <span style='font-size: 3rem;'>🇸🇦</span>
+            <div style='color: var(--desert-gold-light); font-weight: 700;'>Saudi Tourism</div>
+            <div style='color: var(--white); font-weight: 600;'>INTELLIGENCE</div>
         </div>
         """, unsafe_allow_html=True)
     
     st.markdown(f"""
     <div style='text-align:center; font-size:0.8rem; color: var(--text-secondary); margin-bottom: 1rem;'>
-        {T[lang]['app_subtitle']}
+        {T[st.session_state.lang]['app_subtitle']}
     </div>
     """, unsafe_allow_html=True)
     
@@ -176,12 +193,12 @@ with st.sidebar:
     # Theme and Language Toggles
     col1, col2 = st.columns(2)
     with col1:
-        if st.button(T[lang]["dark_mode"] if theme == "dark" else T[lang]["light_mode"], use_container_width=True):
-            st.session_state.theme = "light" if theme == "dark" else "dark"
+        if st.button(T[st.session_state.lang]["dark_mode"] if st.session_state.theme == "dark" else T[st.session_state.lang]["light_mode"], use_container_width=True):
+            st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
             st.rerun()
     with col2:
-        if st.button(T[lang]["lang_toggle"], use_container_width=True):
-            st.session_state.lang = "AR" if lang == "EN" else "EN"
+        if st.button(T[st.session_state.lang]["lang_toggle"], use_container_width=True):
+            st.session_state.lang = "AR" if st.session_state.lang == "EN" else "EN"
             st.rerun()
     
     st.divider()
@@ -189,20 +206,20 @@ with st.sidebar:
     # Navigation
     st.markdown(f"""
     <div style='font-size:0.7rem; font-weight:600; color: var(--text-secondary); text-transform:uppercase; margin-bottom:0.5rem;'>
-        {T[lang]['nav_title']}
+        {T[st.session_state.lang]['nav_title']}
     </div>
     """, unsafe_allow_html=True)
     
     # Navigation buttons
     pages = {
-        "overview": T[lang]["overview"],
-        "trends": T[lang]["trends"],
-        "seasonality": T[lang]["seasonality"],
-        "spending": T[lang]["spending"],
-        "overnight": T[lang]["overnight"],
-        "forecast": T[lang]["forecast"],
-        "segmentation": T[lang]["segmentation"],
-        "carbon": T[lang]["carbon"],
+        "overview": T[st.session_state.lang]["overview"],
+        "trends": T[st.session_state.lang]["trends"],
+        "seasonality": T[st.session_state.lang]["seasonality"],
+        "spending": T[st.session_state.lang]["spending"],
+        "overnight": T[st.session_state.lang]["overnight"],
+        "forecast": T[st.session_state.lang]["forecast"],
+        "segmentation": T[st.session_state.lang]["segmentation"],
+        "carbon": T[st.session_state.lang]["carbon"],
     }
     
     for page_key, page_name in pages.items():
@@ -216,10 +233,10 @@ with st.sidebar:
     st.markdown(f"""
     <div style='font-size:0.7rem; color: var(--text-secondary);'>
         <div style='margin-bottom:0.5rem;'>
-            <span style='color: var(--saudi-green-light);'>📊</span> {T[lang]['data_source']}
+            <span style='color: var(--saudi-green-light);'>📊</span> {T[st.session_state.lang]['data_source']}
         </div>
         <div>
-            <span style='color: var(--saudi-green-light);'>🔄</span> {T[lang]['last_updated']}
+            <span style='color: var(--saudi-green-light);'>🔄</span> {T[st.session_state.lang]['last_updated']}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -241,7 +258,7 @@ with st.sidebar:
             color: var(--text-secondary);
             margin-bottom: 0.3rem;
         '>
-            {T[lang]['built_by']}
+            {T[st.session_state.lang]['built_by']}
         </div>
         <div style='
             font-size: 1.1rem;
@@ -272,7 +289,7 @@ with st.sidebar:
                 align-items: center;
                 gap: 4px;
             '>
-                🐙 {T[lang]['github']}
+                🐙 {T[st.session_state.lang]['github']}
             </a>
             <a href="{DEV_LINKEDIN}" target="_blank" style='
                 text-decoration: none;
@@ -287,7 +304,7 @@ with st.sidebar:
                 align-items: center;
                 gap: 4px;
             '>
-                💼 {T[lang]['linkedin']}
+                💼 {T[st.session_state.lang]['linkedin']}
             </a>
         </div>
     </div>
@@ -314,39 +331,74 @@ except Exception as e:
     st.error(f"⚠️ خطأ في تحميل البيانات: {str(e)}")
     st.session_state.data_loaded = False
 
-# Hero Banner with Developer Credit
-st.markdown(f"""
-<div class='hero-banner' style='
-    background: linear-gradient(135deg,
-        rgba(27,94,32,0.3) 0%,
-        rgba(0,131,143,0.2) 50%,
-        rgba(184,134,11,0.2) 100%);
-    border: 1px solid var(--border-accent);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
-'>
-    <div style='display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;'>
+# Hero Banner with Hero Image
+hero_base64 = get_image_base64("assets/hero.png")
+
+if hero_base64:
+    # مع وجود الصورة
+    col_hero1, col_hero2 = st.columns([2, 1])
+    
+    with col_hero1:
+        st.markdown(f"""
         <div>
-            <h1 style='margin:0; font-size:2.2rem;'>{T[lang]['app_title']}</h1>
+            <h1 style='margin:0; font-size:2.2rem; background: linear-gradient(135deg, var(--white), var(--desert-gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>{T[st.session_state.lang]['app_title']}</h1>
             <p style='font-size:1rem; color: var(--text-secondary); max-width:600px; margin-top:0.5rem;'>
-                {T[lang]['welcome']}
+                {T[st.session_state.lang]['welcome']}
             </p>
+            <div style='
+                background: rgba(255,255,255,0.05);
+                border-radius: 30px;
+                padding: 0.5rem 1.2rem;
+                border: 1px solid var(--border-accent);
+                display: inline-block;
+                margin-top: 0.5rem;
+            '>
+                <span style='color: var(--text-secondary); font-size:0.8rem;'>{T[st.session_state.lang]['built_by']}: </span>
+                <span style='color: var(--desert-gold-light); font-weight:700;'>{DEV_NAME}</span>
+            </div>
         </div>
-        <div style='
-            background: rgba(255,255,255,0.05);
-            border-radius: 30px;
-            padding: 0.5rem 1.2rem;
-            border: 1px solid var(--border-accent);
-        '>
-            <span style='color: var(--text-secondary); font-size:0.8rem;'>{T[lang]['built_by']}: </span>
-            <span style='color: var(--desert-gold-light); font-weight:700;'>{DEV_NAME}</span>
+        """, unsafe_allow_html=True)
+    
+    with col_hero2:
+        st.markdown(f"""
+        <div style='text-align: center;'>
+            <img src='data:image/png;base64,{hero_base64}' style='width: 100%; max-height: 150px; object-fit: contain;'>
+        </div>
+        """, unsafe_allow_html=True)
+else:
+    # من غير الصورة
+    st.markdown(f"""
+    <div class='hero-banner' style='
+        background: linear-gradient(135deg,
+            rgba(27,94,32,0.3) 0%,
+            rgba(0,131,143,0.2) 50%,
+            rgba(184,134,11,0.2) 100%);
+        border: 1px solid var(--border-accent);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    '>
+        <div style='display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;'>
+            <div>
+                <h1 style='margin:0; font-size:2.2rem; background: linear-gradient(135deg, var(--white), var(--desert-gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>{T[st.session_state.lang]['app_title']}</h1>
+                <p style='font-size:1rem; color: var(--text-secondary); max-width:600px; margin-top:0.5rem;'>
+                    {T[st.session_state.lang]['welcome']}
+                </p>
+            </div>
+            <div style='
+                background: rgba(255,255,255,0.05);
+                border-radius: 30px;
+                padding: 0.5rem 1.2rem;
+                border: 1px solid var(--border-accent);
+            '>
+                <span style='color: var(--text-secondary); font-size:0.8rem;'>{T[st.session_state.lang]['built_by']}: </span>
+                <span style='color: var(--desert-gold-light); font-weight:700;'>{DEV_NAME}</span>
+            </div>
         </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # Key Metrics Row (if data loaded)
 if st.session_state.data_loaded:
@@ -356,7 +408,7 @@ if st.session_state.data_loaded:
     
     with col1:
         st.metric(
-            label=T[lang]["total_tourists"],
+            label=T[st.session_state.lang]["total_tourists"],
             value=f"{kpis['total_tourists_2024']:.1f}M",
             delta=f"{kpis['tourists_growth']:.1f}%",
             delta_color="normal"
@@ -364,7 +416,7 @@ if st.session_state.data_loaded:
     
     with col2:
         st.metric(
-            label=T[lang]["inbound"],
+            label=T[st.session_state.lang]["inbound"],
             value=f"{kpis['inbound_2024']:.1f}M",
             delta=f"{kpis['inbound_growth']:.1f}%",
             delta_color="normal"
@@ -372,7 +424,7 @@ if st.session_state.data_loaded:
     
     with col3:
         st.metric(
-            label=T[lang]["domestic"],
+            label=T[st.session_state.lang]["domestic"],
             value=f"{kpis['domestic_2024']:.1f}M",
             delta=f"{kpis['domestic_growth']:.1f}%",
             delta_color="normal"
@@ -380,7 +432,7 @@ if st.session_state.data_loaded:
     
     with col4:
         st.metric(
-            label=T[lang]["overnight_stays"],
+            label=T[st.session_state.lang]["overnight_stays"],
             value=f"{kpis['total_nights_2024']:.1f}B",
             delta=f"{kpis['nights_growth']:.1f}%",
             delta_color="normal"
@@ -388,7 +440,7 @@ if st.session_state.data_loaded:
     
     with col5:
         st.metric(
-            label=T[lang]["avg_spend"],
+            label=T[st.session_state.lang]["avg_spend"],
             value=f"{kpis['avg_spend_2024']:.0f} SAR",
             delta=f"{kpis['spend_growth']:.1f}%",
             delta_color="normal"
@@ -407,7 +459,7 @@ if current_page == "overview":
     if st.session_state.data_loaded:
         try:
             from pages.overview import show_overview
-            show_overview(tourist_data, spending_data, overnight_data, carbon_data, lang, theme)
+            show_overview(tourist_data, spending_data, overnight_data, carbon_data, st.session_state.lang, st.session_state.theme)
         except ImportError as e:
             st.info(f"📊 صفحة Overview جاري تجهيزها... {e}")
     else:
@@ -416,49 +468,49 @@ if current_page == "overview":
 elif current_page == "trends":
     try:
         from pages.tourist_trends import show_trends
-        show_trends(tourist_data, lang, theme)
+        show_trends(tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
         st.info(f"📈 صفحة Tourist Trends جاري تجهيزها... {e}")
     
 elif current_page == "seasonality":
     try:
         from pages.seasonality import show_seasonality
-        show_seasonality(tourist_data, lang, theme)
+        show_seasonality(tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
         st.info(f"📅 صفحة Seasonality جاري تجهيزها... {e}")
     
 elif current_page == "spending":
     try:
         from pages.spending import show_spending
-        show_spending(spending_data, tourist_data, lang, theme)
+        show_spending(spending_data, tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
         st.info(f"💰 صفحة Spending جاري تجهيزها... {e}")
     
 elif current_page == "overnight":
     try:
         from pages.overnight_stays import show_overnight
-        show_overnight(overnight_data, tourist_data, lang, theme)
+        show_overnight(overnight_data, tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
         st.info(f"🏨 صفحة Overnight Stays جاري تجهيزها... {e}")
     
 elif current_page == "forecast":
     try:
         from pages.forecasting import show_forecast
-        show_forecast(tourist_data, lang, theme)
+        show_forecast(tourist_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
         st.info(f"🔮 صفحة Forecasting جاري تجهيزها... {e}")
     
 elif current_page == "segmentation":
     try:
         from pages.segmentation import show_segmentation
-        show_segmentation(tourist_data, spending_data, overnight_data, lang, theme)
+        show_segmentation(tourist_data, spending_data, overnight_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
         st.info(f"🎯 صفحة Segmentation جاري تجهيزها... {e}")
     
 elif current_page == "carbon":
     try:
         from pages.carbon_impact import show_carbon
-        show_carbon(carbon_data, tourist_data, overnight_data, lang, theme)
+        show_carbon(carbon_data, tourist_data, overnight_data, st.session_state.lang, st.session_state.theme)
     except ImportError as e:
         st.info(f"🌱 صفحة Carbon Impact جاري تجهيزها... {e}")
 
@@ -611,21 +663,30 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Footer
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
+# Footer with mini logo
+logo_base64 = get_image_base64("assets/logo.png")
+if logo_base64:
     st.markdown(f"""
-    <div style='
-        text-align: center;
-        color: var(--text-secondary);
-        font-size: 0.7rem;
-        padding: 1rem 0;
-    '>
-        {T[lang]['footer_text']}<br>
-        <span style='font-size:0.6rem;'>DataSaudi · Ministry of Tourism · 2015-2024</span><br>
-        <span style='font-size:0.6rem; color: var(--desert-gold-light);'>Developed with 🇸🇦 by {DEV_NAME}</span>
+    <div style='display: flex; justify-content: center; align-items: center; gap: 10px; margin: 1rem 0;'>
+        <img src='data:image/png;base64,{logo_base64}' style='height: 30px; opacity: 0.7;'>
+        <span style='color: var(--text-secondary); font-size: 0.7rem;'>{T[st.session_state.lang]['footer_text']}</span>
     </div>
     """, unsafe_allow_html=True)
+else:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown(f"""
+        <div style='
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            padding: 1rem 0;
+        '>
+            {T[st.session_state.lang]['footer_text']}<br>
+            <span style='font-size:0.6rem;'>DataSaudi · Ministry of Tourism · 2015-2024</span><br>
+            <span style='font-size:0.6rem; color: var(--desert-gold-light);'>Developed with 🇸🇦 by {DEV_NAME}</span>
+        </div>
+        """, unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════
 # RUN
