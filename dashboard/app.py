@@ -1,8 +1,8 @@
 """
 Saudi Tourism Intelligence - Professional Dashboard
 Developed by: Eng. Goda Emad
-Version: 4.0.0
-Features: Dark/Light Mode, Arabic/English, Responsive Design, Interactive Navigation
+Version: 5.0.0
+Features: Dark/Light Mode, Arabic/English, Responsive Design, Green Navigation Cards
 """
 
 import streamlit as st
@@ -32,7 +32,7 @@ class Config:
     DEV_NAME = "Eng. Goda Emad"
     DEV_GITHUB = "https://github.com/Goda-Emad/Saudi-Tourism-Intelligence"
     DEV_LINKEDIN = "https://www.linkedin.com/in/goda-emad/"
-    APP_VERSION = "4.0.0"
+    APP_VERSION = "5.0.0"
     
     # Color Palettes
     DARK_THEME = {
@@ -43,6 +43,7 @@ class Config:
         'text_muted': '#94A3B8',
         'border': '#2A3F55',
         'primary': '#1B5E20',
+        'primary_hover': '#2E7D32',
         'secondary': '#00838F',
         'accent': '#D4A017',
         'success': '#43A047',
@@ -60,6 +61,7 @@ class Config:
         'text_muted': '#4A6080',
         'border': '#CBD5E0',
         'primary': '#2E7D32',
+        'primary_hover': '#1B5E20',
         'secondary': '#00ACC1',
         'accent': '#E08C00',
         'success': '#2E7D32',
@@ -264,6 +266,10 @@ def get_custom_css():
         [dir="rtl"] .stMarkdown {
             text-align: right;
         }
+        
+        [data-testid="column"] {
+            direction: rtl;
+        }
         """
     
     return f"""
@@ -305,31 +311,118 @@ def get_custom_css():
             font-weight: 700 !important;
         }}
         
-        /* Navigation buttons */
-        .nav-button {{
+        /* Left column container */
+        .left-column {{
             background-color: {colors['card']};
-            color: {colors['text']};
+            border-radius: 16px;
+            padding: 1.5rem;
             border: 1px solid {colors['border']};
-            border-radius: 10px;
+            height: fit-content;
+        }}
+        
+        /* Logo container */
+        .logo-container {{
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid {colors['border']};
+        }}
+        
+        .logo-container img {{
+            max-width: 180px;
+            height: auto;
+        }}
+        
+        /* Navigation title */
+        .nav-title {{
+            color: {colors['text_muted']};
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+        }}
+        
+        /* Navigation cards - الخضراء المربعات */
+        .nav-card {{
+            background: linear-gradient(135deg, {colors['primary']}15, {colors['primary']}05);
+            border: 1px solid {colors['primary']}40;
+            border-radius: 12px;
             padding: 0.75rem 1rem;
-            margin: 0.25rem 0;
-            width: 100%;
-            text-align: left;
-            font-size: 1rem;
+            margin: 0.5rem 0;
             cursor: pointer;
             transition: all 0.3s ease;
+            color: {colors['text']};
+            font-size: 1rem;
+            text-align: left;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }}
         
-        .nav-button:hover {{
-            background-color: {colors['card_hover']};
-            border-color: {colors['primary']};
+        .nav-card:hover {{
+            background: linear-gradient(135deg, {colors['primary']}30, {colors['primary']}20);
+            border-color: {colors['accent']};
             transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }}
         
-        .nav-button.active {{
-            background: linear-gradient(135deg, {colors['primary']}40, {colors['secondary']}40);
+        .nav-card.active {{
+            background: linear-gradient(135deg, {colors['primary']}40, {colors['secondary']}30);
             border-left: 4px solid {colors['primary']};
+            border-color: {colors['primary']};
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }}
+        
+        /* Profile card - تحت الأزرار */
+        .profile-card {{
+            background: linear-gradient(135deg, {colors['primary']}20, {colors['secondary']}20);
+            border: 1px solid {colors['border']};
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+        }}
+        
+        .profile-name {{
+            color: {colors['accent']};
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }}
+        
+        .profile-title {{
+            color: {colors['text_muted']};
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }}
+        
+        .profile-links {{
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }}
+        
+        .profile-link {{
+            background: {colors['card']};
+            color: {colors['secondary']};
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid {colors['border']};
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }}
+        
+        .profile-link:hover {{
+            color: {colors['accent']};
+            border-color: {colors['accent']};
+            transform: translateY(-2px);
+            background: {colors['card_hover']};
         }}
         
         /* Hero image */
@@ -347,47 +440,6 @@ def get_custom_css():
             border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.2);
             object-fit: contain;
-        }}
-        
-        /* Developer profile card */
-        .profile-card {{
-            background: linear-gradient(135deg, {colors['primary']}20, {colors['secondary']}20);
-            border: 1px solid {colors['border']};
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            text-align: center;
-        }}
-        
-        .profile-name {{
-            color: {colors['accent']};
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }}
-        
-        .profile-links {{
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin: 1rem 0;
-        }}
-        
-        .profile-link {{
-            color: {colors['secondary']};
-            text-decoration: none;
-            font-size: 0.9rem;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            background: {colors['card']};
-            border: 1px solid {colors['border']};
-            transition: all 0.3s ease;
-        }}
-        
-        .profile-link:hover {{
-            color: {colors['accent']};
-            border-color: {colors['accent']};
-            transform: translateY(-2px);
         }}
         
         /* Footer */
@@ -414,6 +466,34 @@ def get_custom_css():
                 flex-direction: column;
                 gap: 0.5rem;
             }}
+            
+            .left-column {{
+                margin-bottom: 1rem;
+            }}
+        }}
+        
+        /* Top bar styling */
+        .top-bar {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            margin-bottom: 1rem;
+        }}
+        
+        .theme-lang-btn {{
+            background: {colors['card']};
+            border: 1px solid {colors['border']};
+            border-radius: 8px;
+            padding: 0.4rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }}
+        
+        .theme-lang-btn:hover {{
+            border-color: {colors['accent']};
+            transform: scale(1.05);
         }}
     </style>
     """
@@ -422,21 +502,14 @@ def get_custom_css():
 st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════
-# TOP BAR - LOGO AND THEME/LANG TOGGLES
+# TOP BAR - THEME AND LANGUAGE
 # ═══════════════════════════════════════════════════════
-top_col1, top_col2, top_col3 = st.columns([1, 2, 1])
+col_top1, col_top2, col_top3 = st.columns([1, 2, 1])
 
-with top_col1:
-    logo_base64 = get_image_base64("assets/logo.png")
-    if logo_base64:
-        st.markdown(
-            f"<img src='data:image/png;base64,{logo_base64}' style='max-width:180px; height:auto;'>",
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown("<h2 style='color:{};'>🇸🇦 STI</h2>".format(colors['accent']), unsafe_allow_html=True)
+with col_top1:
+    st.markdown(f"<div style='color:{colors['accent']}; font-weight:600;'>🇸🇦 STI</div>", unsafe_allow_html=True)
 
-with top_col3:
+with col_top3:
     col_t1, col_t2 = st.columns(2)
     with col_t1:
         theme_label = "🌙" if st.session_state.theme == 'dark' else "☀️"
@@ -464,36 +537,85 @@ if hero_base64:
     )
 
 # ═══════════════════════════════════════════════════════
-# MAIN CONTENT WITH SIDEBAR REPLACEMENT
+# MAIN CONTENT WITH LEFT COLUMN (NAV + PROFILE)
 # ═══════════════════════════════════════════════════════
-main_col1, main_col2 = st.columns([1, 3])
+left_col, right_col = st.columns([1, 3])
 
-with main_col1:
-    # Title
-    st.markdown(f"<h3 style='color:{colors['text_muted']}; margin-bottom:1rem;'>{TRANSLATIONS[st.session_state.lang]['nav_title']}</h3>", unsafe_allow_html=True)
+with left_col:
+    # Left column container with all elements
+    st.markdown("<div class='left-column'>", unsafe_allow_html=True)
     
-    # Navigation buttons (interactive)
+    # Logo at the top of left column
+    logo_base64 = get_image_base64("assets/logo.png")
+    if logo_base64:
+        st.markdown(
+            f"<div class='logo-container'>"
+            f"<img src='data:image/png;base64,{logo_base64}'>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+    
+    # Navigation title
+    st.markdown(f"<div class='nav-title'>{TRANSLATIONS[st.session_state.lang]['nav_title']}</div>", unsafe_allow_html=True)
+    
+    # Navigation green cards
     for page in Config.PAGES:
         page_name = page['en'] if st.session_state.lang == 'EN' else page['ar']
         active_class = "active" if st.session_state.current_page == page['id'] else ""
         
+        # Create a button that looks like a card
         if st.button(
             page_name,
             key=f"nav_{page['id']}",
             use_container_width=True,
-            type="primary" if st.session_state.current_page == page['id'] else "secondary"
+            type="secondary"  # We'll use CSS to style it
         ):
             st.session_state.current_page = page['id']
             st.rerun()
+        
+        # Add custom class to the button via CSS
+        st.markdown(f"""
+        <style>
+            div[data-testid="stButton"]:has(button[key="nav_{page['id']}"]) button {{
+                background: linear-gradient(135deg, {colors['primary']}15, {colors['primary']}05) !important;
+                border: 1px solid {colors['primary']}40 !important;
+                border-radius: 12px !important;
+                padding: 0.75rem 1rem !important;
+                margin: 0.5rem 0 !important;
+                color: {colors['text']} !important;
+                font-size: 1rem !important;
+                text-align: left !important;
+                width: 100% !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+                transition: all 0.3s ease !important;
+            }}
+            
+            div[data-testid="stButton"]:has(button[key="nav_{page['id']}"]):hover button {{
+                background: linear-gradient(135deg, {colors['primary']}30, {colors['primary']}20) !important;
+                border-color: {colors['accent']} !important;
+                transform: translateX(5px) !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+            }}
+            
+            {f"""
+            div[data-testid="stButton"]:has(button[key="nav_{page['id']}"]) button {{
+                background: linear-gradient(135deg, {colors['primary']}40, {colors['secondary']}30) !important;
+                border-left: 4px solid {colors['primary']} !important;
+                border-color: {colors['primary']} !important;
+                font-weight: 600 !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            }}
+            """ if st.session_state.current_page == page['id'] else ""}
+        </style>
+        """, unsafe_allow_html=True)
     
     st.divider()
     
-    # Developer Profile Card (كبر مكان)
+    # Profile card (اسمي وحساباتي)
     st.markdown(
         f"<div class='profile-card'>"
         f"<div class='profile-name'>{Config.DEV_NAME}</div>"
-        f"<div style='color:{colors['text_muted']}; font-size:0.9rem; margin-bottom:1rem;'>"
-        f"{TRANSLATIONS[st.session_state.lang]['developed_by']} 🇸🇦</div>"
+        f"<div class='profile-title'>{TRANSLATIONS[st.session_state.lang]['developed_by']} 🇸🇦</div>"
         f"<div class='profile-links'>"
         f"<a href='{Config.DEV_GITHUB}' target='_blank' class='profile-link'>🐙 GitHub</a>"
         f"<a href='{Config.DEV_LINKEDIN}' target='_blank' class='profile-link'>💼 LinkedIn</a>"
@@ -503,12 +625,15 @@ with main_col1:
         f"</div>",
         unsafe_allow_html=True
     )
+    
+    # Close left column container
+    st.markdown("</div>", unsafe_allow_html=True)
 
-with main_col2:
+with right_col:
     # Main content area
     st.markdown(
-        f"<h1>{TRANSLATIONS[st.session_state.lang]['app_title']}</h1>"
-        f"<p style='color:{colors['text_muted']}; font-size:1.1rem; margin:1rem 0;'>"
+        f"<h1 style='color:{colors['accent']};'>{TRANSLATIONS[st.session_state.lang]['app_title']}</h1>"
+        f"<p style='color:{colors['text_muted']}; font-size:1.1rem; margin:1rem 0 2rem 0;'>"
         f"{TRANSLATIONS[st.session_state.lang]['welcome']}</p>",
         unsafe_allow_html=True
     )
