@@ -26,10 +26,10 @@ C = {
     "white":"#F4F9F8","grey":"#A1A6B7","foot_txt":"#B5B8B7",
     "border":"#2A3235","orange":"#F4D044","gold":"#C9A84C","blue":"#365C8D",
 } if THEME=="dark" else {
-    "teal":"#17B19B","teal_act":"#149581","bg":"#F4F9F8",
-    "sec_bg":"#E8EFEE","card_bg":"#FFFFFF","navbar":"#1A2628",
-    "white":"#F4F9F8","grey":"#8BAFAA","foot_txt":"#8BAFAA",
-    "border":"#2A3235","orange":"#C9950A","gold":"#A67C00","blue":"#365C8D",
+    "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
+    "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
+    "white":"#F4F9F8","grey":"#9DBFBA","foot_txt":"#9DBFBA",
+    "border":"#2A3235","orange":"#E8A020","gold":"#C9A84C","blue":"#5B8DC8",
 }
 def clr(k): return C.get(k, C["teal"])
 
@@ -187,21 +187,17 @@ st.markdown(
     "border-color:"+C["teal"]+"44!important;"
     "color:"+C["teal"]+"!important;}"
 
-    # Theme + Lang buttons — first 2 styled as filled
-    "[data-testid='stSidebar'] div[data-testid='stVerticalBlock']"
-    ">div:nth-child(3) .stButton>button,"
-    "[data-testid='stSidebar'] div[data-testid='stVerticalBlock']"
-    ">div:nth-child(4) .stButton>button{"
-    "background:"+C["card_bg"]+"!important;"
-    "border:1px solid "+C["border"]+"!important;"
-    "color:"+C["white"]+"!important;"
+    # Theme + Lang buttons — always visible filled style
+    "[data-testid='stSidebar'] div:nth-child(3) .stButton>button,"
+    "[data-testid='stSidebar'] div:nth-child(4) .stButton>button{"
+    "background:#2A3235!important;"
+    "border:1px solid #3A4C50!important;"
+    "color:#F4F9F8!important;"
     "font-weight:600!important;margin-bottom:5px!important;}"
-    "[data-testid='stSidebar'] div[data-testid='stVerticalBlock']"
-    ">div:nth-child(3) .stButton>button:hover,"
-    "[data-testid='stSidebar'] div[data-testid='stVerticalBlock']"
-    ">div:nth-child(4) .stButton>button:hover{"
+    "[data-testid='stSidebar'] div:nth-child(3) .stButton>button:hover,"
+    "[data-testid='stSidebar'] div:nth-child(4) .stButton>button:hover{"
     "border-color:"+C["gold"]+"!important;"
-    "color:"+C["gold"]+"!important;}"
+    "color:"+C["gold"]+"!important;background:#2A3235!important;}"
 
     # Gold slider
     "[data-baseweb='slider']>div>div:nth-child(2){background:"+C["gold"]+"!important;}"
@@ -303,7 +299,7 @@ st.markdown(
     'margin-bottom:32px;max-width:460px;">'+t["hs"]+'</p>'
 
     '<a href="#" style="display:inline-flex;align-items:center;gap:8px;'
-    'background:'+C["teal"]+';color:#031414!important;'
+    'background:'+C["teal"]+';color:#FEFEFE!important;text-shadow:0 1px 2px rgba(0,0,0,.3)!important;'
     'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
     'text-decoration:none;box-shadow:0 6px 28px '+C["teal"]+'55;">'+t["hb"]+'</a>'
     '</div></div>',
