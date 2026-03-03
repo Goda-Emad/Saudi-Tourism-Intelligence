@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════
-#  Saudi Tourism Intelligence — Home Page  (FINAL v5)
+#  Saudi Tourism Intelligence — Home Page  (FINAL)
 #  Author : Eng. Goda Emad
 # ═══════════════════════════════════════════════════════════════════
 import streamlit as st
-import base64, os
+import base64, os, glob, re
 
 st.set_page_config(
     page_title="Saudi Tourism Intelligence",
@@ -49,6 +49,21 @@ def _load_css():
     try:    return "<style>"+_read("assets/style.css").decode()+"</style>"
     except: return ""
 
+# ── Auto-discover pages ───────────────────────────────────────────
+@st.cache_data(show_spinner=False)
+def _get_pages():
+    base      = os.path.dirname(os.path.abspath(__file__))
+    pages_dir = os.path.join(base, "pages")
+    files     = sorted(glob.glob(os.path.join(pages_dir, "*.py")))
+    result    = []
+    for f in files:
+        fname = os.path.basename(f)                         # 01_🏠_Overview.py
+        rel   = "pages/" + fname                            # relative to app.py
+        label = re.sub(r"^\d+_", "", fname[:-3])            # 🏠_Overview
+        label = label.replace("_", " ")                     # 🏠 Overview
+        result.append((rel, label))
+    return result
+
 # ── Translations ──────────────────────────────────────────────────
 TR = {
 "EN":{
@@ -79,14 +94,6 @@ TR = {
            ("⏰","Inbound avg stay: 8.6 → 19.2 nights (2021→2024) · +123%","orange"),
            ("💰","Inbound tourists spend 4× more than Domestic (SAR 5,622 vs 1,336)","blue"),
            ("🚀","2024 record: 115.9M tourists · +150% recovery from COVID low","teal_act")],
-    "nav":[("🏠","Overview","pages/01_🏠_Overview.py"),
-           ("📈","Tourist Trends","pages/02_📈_Tourist_Trends.py"),
-           ("📅","Seasonality","pages/03_📅_Seasonality.py"),
-           ("💰","Spending","pages/04_💰_Spending_Analysis.py"),
-           ("🏨","Overnight Stays","pages/05_🏨_Overnight_Stays.py"),
-           ("🔮","Forecasting","pages/06_🔮_Demand_Forecasting.py"),
-           ("🎯","Segmentation","pages/07_🎯_Segmentation.py"),
-           ("🌱","Carbon Impact","pages/08_🌱_Carbon_Impact.py")],
     "data":"DataSaudi · Ministry of Economy & Planning · 2015–2024",
     "copy":"© 2025 Saudi Tourism Intelligence · Eng. Goda Emad",
     "thm":"☀️  Light" if THEME=="dark" else "🌙  Dark",
@@ -120,14 +127,6 @@ TR = {
            ("⏰","متوسط إقامة الوافد: 8.6 → 19.2 ليلة (2021→2024) · +123%","orange"),
            ("💰","الوافدون ينفقون 4 أضعاف المحليين (5,622 مقابل 1,336 ريال)","blue"),
            ("🚀","رقم قياسي 2024: 115.9M سائح · تعافي +150% من أدنى كوفيد","teal_act")],
-    "nav":[("🏠","النظرة التنفيذية","pages/01_🏠_Overview.py"),
-           ("📈","اتجاهات السياحة","pages/02_📈_Tourist_Trends.py"),
-           ("📅","الموسمية","pages/03_📅_Seasonality.py"),
-           ("💰","الإنفاق","pages/04_💰_Spending_Analysis.py"),
-           ("🏨","ليالي الإقامة","pages/05_🏨_Overnight_Stays.py"),
-           ("🔮","التوقعات","pages/06_🔮_Demand_Forecasting.py"),
-           ("🎯","التقسيم","pages/07_🎯_Segmentation.py"),
-           ("🌱","الأثر الكربوني","pages/08_🌱_Carbon_Impact.py")],
     "data":"داتا السعودية · وزارة الاقتصاد والتخطيط · 2015–2024",
     "copy":"© 2025 ذكاء السياحة السعودية · م. جودة عماد",
     "thm":"☀️  فاتح" if THEME=="dark" else "🌙  داكن",
@@ -149,111 +148,119 @@ ff       = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
 # GLOBAL CSS
 # ════════════════════════════════════════════════════════════════════
 st.markdown(_load_css(), unsafe_allow_html=True)
-st.markdown("""
-<style>
-/* ── Hide Streamlit chrome ── */
-[data-testid="stHeader"],[data-testid="stToolbar"],
-[data-testid="stSidebarNav"],footer,#MainMenu{display:none!important;}
-.block-container{padding:0!important;max-width:100%!important;}
-section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
+st.markdown(
+    "<style>"
+    "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700"
+    "&family=IBM+Plex+Mono:wght@400;600&family=Tajawal:wght@400;700;800&display=swap');"
 
-/* ── Hero fix: force real height ── */
-[data-testid="stMarkdownContainer"] .hero-wrap{
-  display:block!important;width:100%!important;
-}
-</style>
-"""+
-"<style>"
-"html,body,[data-testid=stAppViewContainer],[data-testid=stMain]{"
-"background:"+C["bg"]+"!important;direction:"+dir_val+";font-family:'"+ff+"',sans-serif;}"
-"[data-testid=stSidebar]{background:"+C["navbar"]+"!important;border-right:1px solid "+C["border"]+"!important;}"
-"[data-testid=stSidebar] *{color:"+C["white"]+"!important;}"
-# Sidebar buttons
-"[data-testid=stSidebar] .stButton>button{"
-"background:"+C["card_bg"]+"!important;border:1px solid "+C["border"]+"!important;"
-"color:"+C["white"]+"!important;border-radius:8px!important;"
-"width:100%!important;font-size:.82rem!important;font-weight:600!important;"
-"padding:10px 0!important;margin-bottom:5px!important;transition:all .2s!important;}"
-"[data-testid=stSidebar] .stButton>button:hover{border-color:"+C["gold"]+"!important;color:"+C["gold"]+"!important;}"
-# Page links in sidebar
-"[data-testid=stSidebar] [data-testid=stPageLink]{"
-"border-radius:8px!important;padding:2px 4px!important;}"
-"[data-testid=stSidebar] [data-testid=stPageLink]:hover{background:"+C["teal"]+"18!important;}"
-"[data-testid=stSidebar] [data-testid=stPageLink] p{"
-"font-size:.84rem!important;font-weight:500!important;color:"+C["grey"]+"!important;}"
-"[data-testid=stSidebar] [data-testid=stPageLink]:hover p{color:"+C["teal"]+"!important;}"
-# Gold slider
-"[data-baseweb=slider]>div>div:nth-child(2){background:"+C["gold"]+"!important;}"
-"[data-baseweb=slider] [role=slider]{background:"+C["gold"]+"!important;border-color:"+C["gold"]+"!important;box-shadow:0 0 0 4px "+C["gold"]+"22!important;}"
-"</style>",
-unsafe_allow_html=True)
+    "[data-testid='stHeader'],[data-testid='stToolbar'],"
+    "[data-testid='stSidebarNav'],footer,#MainMenu{display:none!important;}"
+    ".block-container{padding:0!important;max-width:100%!important;}"
+    "section[data-testid='stMain']>div:first-child{padding-top:0!important;}"
+
+    "html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']{"
+    "background:"+C["bg"]+"!important;direction:"+dir_val+";font-family:'"+ff+"',sans-serif;}"
+
+    "[data-testid='stSidebar']{"
+    "background:"+C["navbar"]+"!important;border-right:1px solid "+C["border"]+"!important;}"
+
+    # Nav buttons in sidebar
+    "[data-testid='stSidebar'] .stButton>button{"
+    "background:transparent!important;border:none!important;"
+    "color:"+C["grey"]+"!important;border-radius:8px!important;"
+    "width:100%!important;font-size:.84rem!important;font-weight:500!important;"
+    "padding:9px 12px!important;margin-bottom:2px!important;"
+    "text-align:left!important;transition:all .15s!important;}"
+    "[data-testid='stSidebar'] .stButton>button:hover{"
+    "background:"+C["teal"]+"18!important;color:"+C["teal"]+"!important;}"
+
+    # Theme/Lang buttons (first 2) — styled differently
+    "[data-testid='stSidebar'] .stButton:nth-child(1)>button,"
+    "[data-testid='stSidebar'] .stButton:nth-child(2)>button{"
+    "background:"+C["card_bg"]+"!important;border:1px solid "+C["border"]+"!important;"
+    "color:"+C["white"]+"!important;font-weight:600!important;"
+    "margin-bottom:5px!important;}"
+    "[data-testid='stSidebar'] .stButton:nth-child(1)>button:hover,"
+    "[data-testid='stSidebar'] .stButton:nth-child(2)>button:hover{"
+    "border-color:"+C["gold"]+"!important;color:"+C["gold"]+"!important;"
+    "background:"+C["card_bg"]+"!important;}"
+
+    # Gold slider
+    "[data-baseweb='slider']>div>div:nth-child(2){background:"+C["gold"]+"!important;}"
+    "[data-baseweb='slider'] [role='slider']{"
+    "background:"+C["gold"]+"!important;border-color:"+C["gold"]+"!important;"
+    "box-shadow:0 0 0 4px "+C["gold"]+"22!important;}"
+    "</style>",
+    unsafe_allow_html=True,
+)
 
 # ════════════════════════════════════════════════════════════════════
 # SIDEBAR
 # ════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    # Logo + brand
+    # Brand
     st.markdown(
-        '<div style="display:flex;align-items:center;gap:10px;padding:16px 4px 12px;">'
+        '<div style="display:flex;align-items:center;gap:10px;padding:16px 4px 14px;">'
         +logo_img+
         '<div>'
         '<div style="font-size:.88rem;font-weight:700;color:'+C["white"]+';">'+t["name"]+'</div>'
-        '<div style="font-size:.58rem;color:'+C["teal"]+';font-weight:600;letter-spacing:1.2px;text-transform:uppercase;">'+t["sub"]+'</div>'
+        '<div style="font-size:.58rem;color:'+C["teal"]+';font-weight:600;'
+        'letter-spacing:1.2px;text-transform:uppercase;">'+t["sub"]+'</div>'
         '</div></div>',
         unsafe_allow_html=True)
 
-    st.markdown('<div style="height:1px;background:'+C["border"]+';margin-bottom:12px;"></div>',
+    st.markdown('<div style="height:1px;background:'+C["border"]+';margin-bottom:10px;"></div>',
                 unsafe_allow_html=True)
 
-    # Theme + Lang buttons
+    # Theme + Lang
     if st.button(t["thm"], key="k_thm", use_container_width=True):
         st.session_state.theme = "light" if THEME=="dark" else "dark"; st.rerun()
     if st.button(t["lng"], key="k_lng", use_container_width=True):
-        st.session_state.lang  = "AR"    if LANG=="EN"    else "EN";   st.rerun()
+        st.session_state.lang  = "AR" if LANG=="EN" else "EN"; st.rerun()
 
-    st.markdown('<div style="height:1px;background:'+C["border"]+';margin:12px 0 8px;"></div>',
+    st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0 6px;"></div>',
                 unsafe_allow_html=True)
 
-    # ── Navigation — st.page_link (real Streamlit navigation) ──
-    for ico, label, page_path in t["nav"]:
-        st.page_link(page_path, label=ico+"  "+label)
+    # ── Nav: st.switch_page via buttons — works on Streamlit Cloud ──
+    pages = _get_pages()
+    for rel_path, label in pages:
+        if st.button(label, key="nav_"+rel_path, use_container_width=True):
+            st.switch_page(rel_path)
 
-    st.markdown('<div style="height:1px;background:'+C["border"]+';margin:12px 0 10px;"></div>',
+    st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0;"></div>',
                 unsafe_allow_html=True)
 
     st.markdown(
         '<div style="font-size:.67rem;color:'+C["grey"]+';padding:0 2px;line-height:1.9;">'
         '📦 DataSaudi · 2015–2024<br>'
-        '🐙 <a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
-        'style="color:'+C["teal"]+';text-decoration:none;">GitHub</a>'
+        '🐙 <a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" '
+        'target="_blank" style="color:'+C["teal"]+';text-decoration:none;">GitHub</a>'
         '  ·  '
-        '💼 <a href="https://www.linkedin.com/in/goda-emad/" target="_blank" '
-        'style="color:'+C["teal"]+';text-decoration:none;">LinkedIn</a>'
+        '💼 <a href="https://www.linkedin.com/in/goda-emad/" '
+        'target="_blank" style="color:'+C["teal"]+';text-decoration:none;">LinkedIn</a>'
         '</div>',
         unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# HERO  — use fixed height (px) not aspect-ratio — more reliable
+# HERO
 # ════════════════════════════════════════════════════════════════════
-hero_bg = 'url("'+hero_src+'")' if hero_src else "linear-gradient(135deg,"+C["navbar"]+","+C["bg"]+")"
+hero_bg = ('url("'+hero_src+'")' if hero_src
+           else "linear-gradient(135deg,"+C["navbar"]+","+C["bg"]+")")
 
 st.markdown(
-    '<div class="hero-wrap" style="'
-    'position:relative;width:100%;height:520px;overflow:hidden;'
-    'background-image:'+hero_bg+';'
-    'background-size:cover;background-position:center center;">'
+    '<div style="position:relative;width:100%;height:520px;overflow:hidden;'
+    'background-image:'+hero_bg+';background-size:cover;background-position:center center;">'
 
     '<div style="position:absolute;inset:0;'
     'background:linear-gradient(100deg,'
     +C["navbar"]+'EE 0%,'+C["navbar"]+'99 38%,'+C["bg"]+'33 70%,transparent 100%);"></div>'
 
-    '<div style="position:relative;z-index:2;padding:80px 52px;max-width:580px;">'
+    '<div style="position:relative;z-index:2;padding:80px 52px;max-width:600px;">'
 
     '<div style="display:inline-flex;align-items:center;'
     'background:'+C["teal"]+'15;border:1px solid '+C["teal"]+'55;color:'+C["teal"]+';'
     'font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
-    'padding:5px 14px;border-radius:4px;margin-bottom:22px;">'
-    +t["pill"]+'</div>'
+    'padding:5px 14px;border-radius:4px;margin-bottom:22px;">'+t["pill"]+'</div>'
 
     '<div style="font-size:3.4rem;font-weight:800;color:'+C["white"]+';'
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:4px;">'+t["h1"]+'</div>'
@@ -268,12 +275,11 @@ st.markdown(
     'background:'+C["teal"]+';color:'+C["navbar"]+'!important;'
     'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
     'text-decoration:none;box-shadow:0 6px 28px '+C["teal"]+'55;">'+t["hb"]+'</a>'
-
     '</div></div>',
     unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# STATS STRIP
+# STATS
 # ════════════════════════════════════════════════════════════════════
 cells = ""
 for i,(val,lbl,ck) in enumerate(t["stats"]):
@@ -291,8 +297,8 @@ st.markdown(
     'display:grid;grid-template-columns:repeat(4,1fr);">'+cells+'</div>',
     unsafe_allow_html=True)
 
-# ── helper ────────────────────────────────────────────────────────
-def sec_head(badge,h2,sub=""):
+# ── Section header helper ─────────────────────────────────────────
+def sec_head(badge, h2, sub=""):
     o = ('<div style="margin-bottom:28px;">'
          '<div style="display:inline-block;background:'+C["teal"]+'15;'
          'border:1px solid '+C["teal"]+'44;color:'+C["teal"]+';'
@@ -318,7 +324,6 @@ st.markdown(
     '<div style="padding:52px 40px;">'+sec_head(t["pt"],t["ph"],t["ps"])+
     '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'+page_cards+'</div></div>',
     unsafe_allow_html=True)
-
 st.markdown('<div style="height:1px;background:'+C["border"]+';margin:0 40px;"></div>',unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
@@ -366,9 +371,9 @@ st.markdown(
 # ════════════════════════════════════════════════════════════════════
 st.markdown(
     '<div style="background:'+C["navbar"]+';border-top:2px solid '+C["teal"]+';'
-    'padding:22px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">'
-    '<div style="display:flex;align-items:center;gap:14px;">'
-    +logo_img+
+    'padding:22px 40px;display:flex;justify-content:space-between;'
+    'align-items:center;flex-wrap:wrap;gap:12px;">'
+    '<div style="display:flex;align-items:center;gap:14px;">'+logo_img+
     '<div>'
     '<div style="font-size:.88rem;font-weight:700;color:'+C["teal"]+';">'+t["name"]+'</div>'
     '<div style="font-size:.66rem;color:'+C["foot_txt"]+';margin-top:2px;">'+t["copy"]+'</div>'
@@ -376,9 +381,9 @@ st.markdown(
     '</div></div>'
     '<div style="display:flex;gap:20px;align-items:center;">'
     '<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
-    'style="font-size:.75rem;color:'+C["foot_txt"]+';text-decoration:none;font-weight:500;">🐙 GitHub</a>'
+    'style="font-size:.75rem;color:'+C["foot_txt"]+';text-decoration:none;">🐙 GitHub</a>'
     '<a href="https://www.linkedin.com/in/goda-emad/" target="_blank" '
-    'style="font-size:.75rem;color:'+C["foot_txt"]+';text-decoration:none;font-weight:500;">💼 LinkedIn</a>'
+    'style="font-size:.75rem;color:'+C["foot_txt"]+';text-decoration:none;">💼 LinkedIn</a>'
     '<a href="https://datasaudi.sa" target="_blank" '
     'style="font-size:.75rem;color:'+C["teal"]+';text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
     '</div></div>',
