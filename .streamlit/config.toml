@@ -1,14 +1,16 @@
 [server]
-# إعدادات الخادم
-maxUploadSize = 10
 enableCORS = true
 enableXsrfProtection = true
+maxUploadSize = 10
 
 [browser]
-# إعدادات المتصفح
 gatherUsageStats = false
 
 [theme]
-# إعدادات الثيم
 base = "dark"
 primaryColor = "#C9A84C"
+
+[react]
+# إعدادات React
+useWhitenoise = true
+serveReactApp = false
