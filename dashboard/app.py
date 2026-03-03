@@ -247,9 +247,22 @@ with st.sidebar:
 hero_bg = ('url("'+hero_src+'")' if hero_src
            else "linear-gradient(135deg,"+C["navbar"]+","+C["bg"]+")")
 
+# inject hero CSS separately so height isn't eaten by Streamlit wrappers
 st.markdown(
-    '<div style="position:relative;width:100%;height:520px;overflow:hidden;'
-    'background-image:'+hero_bg+';background-size:cover;background-position:center center;">'
+    "<style>"
+    ".ds-hero{"
+    "position:relative!important;width:100%!important;height:520px!important;"
+    "overflow:hidden!important;"
+    "background-image:"+hero_bg+"!important;"
+    "background-size:cover!important;background-position:center center!important;}"
+    "[data-testid='stMarkdownContainer']:has(.ds-hero){"
+    "padding:0!important;margin:0!important;}"
+    "</style>",
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    '<div class="ds-hero">'
 
     '<div style="position:absolute;inset:0;'
     'background:linear-gradient(100deg,'
