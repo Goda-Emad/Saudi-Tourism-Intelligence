@@ -27,9 +27,9 @@ C = {
     "border":"#2A3235","orange":"#F4D044","gold":"#C9A84C","blue":"#365C8D",
 } if THEME=="dark" else {
     "teal":"#17B19B","teal_act":"#149581","bg":"#F4F9F8",
-    "sec_bg":"#E8EFEE","card_bg":"#FFFFFF","navbar":"#FFFFFF",
-    "white":"#0D1414","grey":"#4A5568","foot_txt":"#718096",
-    "border":"#C8D8D5","orange":"#C9950A","gold":"#A67C00","blue":"#365C8D",
+    "sec_bg":"#E8EFEE","card_bg":"#FFFFFF","navbar":"#1A2628",
+    "white":"#F4F9F8","grey":"#8BAFAA","foot_txt":"#8BAFAA",
+    "border":"#2A3235","orange":"#C9950A","gold":"#A67C00","blue":"#365C8D",
 }
 def clr(k): return C.get(k, C["teal"])
 
@@ -161,29 +161,47 @@ st.markdown(
     "html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']{"
     "background:"+C["bg"]+"!important;direction:"+dir_val+";font-family:'"+ff+"',sans-serif;}"
 
+    # sidebar background — dark navbar in dark, light grey in light
     "[data-testid='stSidebar']{"
-    "background:"+C["navbar"]+"!important;border-right:1px solid "+C["border"]+"!important;}"
+    "background:"+C["navbar"]+"!important;"
+    "border-right:1px solid "+C["border"]+"!important;}"
 
-    # Nav buttons in sidebar
+    # ALL sidebar text visible in both modes
+    "[data-testid='stSidebar'] label,"
+    "[data-testid='stSidebar'] span,"
+    "[data-testid='stSidebar'] p,"
+    "[data-testid='stSidebar'] div{"
+    "color:"+C["white"]+"!important;}"
+
+    # Nav buttons — page links
     "[data-testid='stSidebar'] .stButton>button{"
-    "background:transparent!important;border:none!important;"
-    "color:"+C["grey"]+"!important;border-radius:8px!important;"
-    "width:100%!important;font-size:.84rem!important;font-weight:500!important;"
+    "background:transparent!important;"
+    "border:1px solid transparent!important;"
+    "color:"+C["grey"]+"!important;"
+    "border-radius:8px!important;width:100%!important;"
+    "font-size:.84rem!important;font-weight:500!important;"
     "padding:9px 12px!important;margin-bottom:2px!important;"
-    "text-align:left!important;transition:all .15s!important;}"
+    "transition:all .15s!important;}"
     "[data-testid='stSidebar'] .stButton>button:hover{"
-    "background:"+C["teal"]+"18!important;color:"+C["teal"]+"!important;}"
+    "background:"+C["teal"]+"22!important;"
+    "border-color:"+C["teal"]+"44!important;"
+    "color:"+C["teal"]+"!important;}"
 
-    # Theme/Lang buttons (first 2) — styled differently
-    "[data-testid='stSidebar'] .stButton:nth-child(1)>button,"
-    "[data-testid='stSidebar'] .stButton:nth-child(2)>button{"
-    "background:"+C["card_bg"]+"!important;border:1px solid "+C["border"]+"!important;"
-    "color:"+C["white"]+"!important;font-weight:600!important;"
-    "margin-bottom:5px!important;}"
-    "[data-testid='stSidebar'] .stButton:nth-child(1)>button:hover,"
-    "[data-testid='stSidebar'] .stButton:nth-child(2)>button:hover{"
-    "border-color:"+C["gold"]+"!important;color:"+C["gold"]+"!important;"
-    "background:"+C["card_bg"]+"!important;}"
+    # Theme + Lang buttons — first 2 styled as filled
+    "[data-testid='stSidebar'] div[data-testid='stVerticalBlock']"
+    ">div:nth-child(3) .stButton>button,"
+    "[data-testid='stSidebar'] div[data-testid='stVerticalBlock']"
+    ">div:nth-child(4) .stButton>button{"
+    "background:"+C["card_bg"]+"!important;"
+    "border:1px solid "+C["border"]+"!important;"
+    "color:"+C["white"]+"!important;"
+    "font-weight:600!important;margin-bottom:5px!important;}"
+    "[data-testid='stSidebar'] div[data-testid='stVerticalBlock']"
+    ">div:nth-child(3) .stButton>button:hover,"
+    "[data-testid='stSidebar'] div[data-testid='stVerticalBlock']"
+    ">div:nth-child(4) .stButton>button:hover{"
+    "border-color:"+C["gold"]+"!important;"
+    "color:"+C["gold"]+"!important;}"
 
     # Gold slider
     "[data-baseweb='slider']>div>div:nth-child(2){background:"+C["gold"]+"!important;}"
@@ -285,7 +303,7 @@ st.markdown(
     'margin-bottom:32px;max-width:460px;">'+t["hs"]+'</p>'
 
     '<a href="#" style="display:inline-flex;align-items:center;gap:8px;'
-    'background:'+C["teal"]+';color:'+C["navbar"]+'!important;'
+    'background:'+C["teal"]+';color:#031414!important;'
     'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
     'text-decoration:none;box-shadow:0 6px 28px '+C["teal"]+'55;">'+t["hb"]+'</a>'
     '</div></div>',
