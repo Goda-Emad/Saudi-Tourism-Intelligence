@@ -1,79 +1,17 @@
 import streamlit as st
 import base64, os
-import time
 
-# ══════════════════════════════════════════════════════
-# FIX: حل مشكلة React Error #290
-# ══════════════════════════════════════════════════════
-if '_react_initialized' not in st.session_state:
-    st.session_state._react_initialized = True
-    # تأخير بسيط لضمان تحميل React بشكل صحيح
-    time.sleep(0.1)
-    st.rerun()
-
-# استيراد option_menu بطريقة آمنة
-try:
-    # محاولة استيراد المكتبة بشكل طبيعي
-    from streamlit_option_menu import option_menu
-    OPTION_MENU_AVAILABLE = True
-except:
-    OPTION_MENU_AVAILABLE = False
-    st.warning("⚠️ مكتبة القوائم غير متوفرة، سيتم استخدام البديل المحلي")
-
-# ══════════════════════════════════════════════════════
-# بديل محلي لـ option_menu (لا يستخدم React)
-# ══════════════════════════════════════════════════════
-def safe_option_menu(options, icons=None, menu_title=None, default_index=0, orientation="vertical"):
-    """
-    بديل آمن تماماً من مشاكل React
-    """
-    if menu_title:
-        if orientation == "vertical":
-            st.sidebar.markdown(f"### {menu_title}")
-            st.sidebar.markdown("---")
-        else:
-            st.markdown(f"### {menu_title}")
-    
-    selected = default_index
-    
-    if orientation == "vertical":
-        # قائمة رأسية في sidebar
-        for i, option in enumerate(options):
-            icon = icons[i] if icons and i < len(icons) else "•"
-            col1, col2 = st.sidebar.columns([1, 5])
-            with col1:
-                st.markdown(f"<h3 style='margin:0; color:{st.session_state.get('theme_color', '#C9A84C')}'>{icon}</h3>", 
-                          unsafe_allow_html=True)
-            with col2:
-                if st.button(option, key=f"nav_{i}", use_container_width=True):
-                    selected = i
-            if i < len(options) - 1:
-                st.sidebar.markdown("---")
-    else:
-        # قائمة أفقية
-        cols = st.columns(len(options))
-        for i, (col, option) in enumerate(zip(cols, options)):
-            icon = icons[i] if icons and i < len(icons) else "•"
-            with col:
-                if st.button(f"{icon} {option}", key=f"nav_h_{i}", use_container_width=True):
-                    selected = i
-    
-    return options[selected]
-
-# ══════════════════════════════════════════════════════
-# إعدادات الصفحة
-# ══════════════════════════════════════════════════════
 st.set_page_config(
     page_title="Saudi Tourism Intelligence",
     page_icon="🇸🇦",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed"  # ← sidebar مخفي افتراضي في Home
 )
 
 # ══════════════════════════════════════════════════════
 # SESSION STATE
 # ══════════════════════════════════════════════════════
-for k, v in [("lang","EN"), ("theme","dark"), ("theme_color","#C9A84C")]:
+for k, v in [("lang","EN"), ("theme","dark")]:
     if k not in st.session_state:
         st.session_state[k] = v
 
@@ -109,9 +47,6 @@ def _palette(theme: str) -> dict:
 @st.cache_data(show_spinner=False)
 def _css(theme: str, lang: str) -> str:
     p   = _palette(theme)
-    # تحديث لون الثيم في session state
-    st.session_state.theme_color = p['gold']
-    
     ff  = "Tajawal" if lang == "AR" else "Sora"
     dir = "rtl"     if lang == "AR" else "ltr"
     return f"""
@@ -351,12 +286,10 @@ with c_logo:
     </div>""", unsafe_allow_html=True)
 with c_thm:
     if st.button("🌙" if theme=="dark" else "☀️", use_container_width=True, key="thm"):
-        st.session_state.theme = thm_next
-        st.rerun()
+        st.session_state.theme = thm_next; st.rerun()
 with c_lng:
     if st.button("AR" if lang=="EN" else "EN", use_container_width=True, key="lng"):
-        st.session_state.lang  = lng_next
-        st.rerun()
+        st.session_state.lang  = lng_next;  st.rerun()
 
 # ── HERO ──────────────────────────────────────────────
 st.markdown(f"""
@@ -451,26 +384,3 @@ st.markdown(f"""
     <a href='https://datasaudi.sa' target='_blank'>📊 DataSaudi</a>
   </div>
 </div>""", unsafe_allow_html=True)
-
-# ── FIX: إذا كان هناك option_menu مستخدم في مكان آخر ──
-if OPTION_MENU_AVAILABLE:
-    st.sidebar.markdown("### 🧭 التنقل")
-    # استخدام option_menu الأصلي إذا كان متاحاً
-    with st.sidebar:
-        selected = option_menu(
-            menu_title=None,
-            options=["الرئيسية", "تحليل البيانات", "النماذج", "حول"],
-            icons=["house", "graph-up", "robot", "info-circle"],
-            default_index=0,
-            orientation="vertical"
-        )
-else:
-    # استخدام البديل الآمن
-    st.sidebar.markdown("### 🧭 التنقل")
-    selected = safe_option_menu(
-        options=["الرئيسية", "تحليل البيانات", "النماذج", "حول"],
-        icons=["🏠", "📊", "🤖", "ℹ️"],
-        menu_title=None,
-        default_index=0,
-        orientation="vertical"
-    )
