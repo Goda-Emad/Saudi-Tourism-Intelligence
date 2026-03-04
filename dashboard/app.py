@@ -60,28 +60,30 @@ def _load_css():
 @st.cache_data(show_spinner=False)
 def _get_pages():
     base  = os.path.dirname(os.path.abspath(__file__))
-    files = sorted(glob.glob(os.path.join(base,"pages","*.py")))
-    # Map filename keyword → clean label EN/AR
+    # Support both: pages/ subfolder OR same dir as app.py
+    sub   = glob.glob(os.path.join(base,"pages","[0-9]*.py"))
+    same  = glob.glob(os.path.join(base,"[0-9]*.py"))
+    files = sorted(sub if sub else same)
     NAME_MAP = {
-        "Overview":      ("🏠  Overview",           "🏠  النظرة التنفيذية"),
-        "Tourist":       ("📈  Tourist Trends",      "📈  اتجاهات السياحة"),
-        "Seasonality":   ("📅  Seasonality",         "📅  الموسمية"),
-        "Spending":      ("💰  Spending",            "💰  الإنفاق"),
-        "Overnight":     ("🏨  Overnight Stays",     "🏨  ليالي الإقامة"),
-        "Forecasting":   ("🔮  Forecasting",         "🔮  التوقعات"),
-        "Segmentation":  ("🎯  Segmentation",        "🎯  التقسيم"),
-        "Carbon":        ("🌱  Carbon Impact",       "🌱  الأثر الكربوني"),
+        "Overview":     ("🏠  Overview",        "🏠  النظرة التنفيذية"),
+        "Tourist":      ("📈  Tourist Trends",   "📈  اتجاهات السياحة"),
+        "Seasonality":  ("📅  Seasonality",      "📅  الموسمية"),
+        "Spending":     ("💰  Spending",         "💰  الإنفاق"),
+        "Overnight":    ("🏨  Overnight Stays",  "🏨  ليالي الإقامة"),
+        "Forecasting":  ("🔮  Forecasting",      "🔮  التوقعات"),
+        "Segmentation": ("🎯  Segmentation",     "🎯  التقسيم"),
+        "Carbon":       ("🌱  Carbon Impact",    "🌱  الأثر الكربوني"),
     }
     result = []
     for f in files:
-        fname = os.path.basename(f)
-        rel   = "pages/"+fname
-        key   = next((k for k in NAME_MAP if k.lower() in fname.lower()), None)
+        fname  = os.path.basename(f)
+        in_sub = "pages" + os.sep in f or "/pages/" in f
+        rel    = ("pages/"+fname) if in_sub else fname
+        key    = next((k for k in NAME_MAP if k.lower() in fname.lower()), None)
         if key:
-            en_lbl, ar_lbl = NAME_MAP[key]
-            result.append((rel, en_lbl, ar_lbl))
+            result.append((rel, NAME_MAP[key][0], NAME_MAP[key][1]))
         else:
-            raw = re.sub(r"^\d+_","",fname[:-3]).replace("_"," ")
+            raw = re.sub(r"^d+_","",fname[:-3]).replace("_"," ")
             result.append((rel, raw, raw))
     return result
 
