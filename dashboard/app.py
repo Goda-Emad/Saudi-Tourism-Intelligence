@@ -425,7 +425,7 @@ st.markdown(
     'padding:5px 14px;border-radius:4px;margin-bottom:22px;">'+t["pill"]+'</div>'
     '<div style="font-size:3.4rem;font-weight:800;color:'+C["white"]+';'
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:4px;">'+t["h1"]+'</div>'
-    '<div style="font-size:3.4rem;font-weight:800;color:'+C["white"]+';'
+    '<div style="font-size:3.4rem;font-weight:800;color:'+C["teal"]+';'
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'+t["h2"]+'</div>'
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
     'margin-bottom:30px;max-width:460px;">'+t["hs"]+'</p>'
