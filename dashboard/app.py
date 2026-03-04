@@ -456,42 +456,23 @@ def sec_head(badge,h2,sub=""):
     return o+'</div>'
 
 # ════════════════════════════════════════════════════════════════════
-# PAGES — clickable cards via st.columns
+# PAGES — HTML cards (original design)
 # ════════════════════════════════════════════════════════════════════
-TXT_COL = "#0D1414" if THEME=="light" else C["white"]
-st.markdown('<div style="padding:52px 40px 0px;">'+sec_head(t["pt"],t["ph"],t["ps"])+'</div>',
-            unsafe_allow_html=True)
-# CSS for page nav buttons
+TXT_COL = C["white"]
+page_cards = ""
+for ico, title, desc in t["pages"]:
+    page_cards += (
+        '<div class="ds-card" style="background:'+C["card_bg"]+';'
+        'border:1px solid '+C["border"]+';border-radius:10px;padding:20px 18px;">'
+        '<div style="font-size:1.6rem;margin-bottom:10px;line-height:1;">'+ico+'</div>'
+        '<div style="font-size:.87rem;font-weight:600;color:'+TXT_COL+';margin-bottom:5px;">'+title+'</div>'
+        '<div style="font-size:.73rem;color:'+C["grey"]+';line-height:1.5;">'+desc+'</div>'
+        '</div>')
 st.markdown(
-    "<style>"
-    ".page-nav-btn button{"
-    "background:"+C["card_bg"]+"!important;border:1px solid "+C["border"]+"!important;"
-    "border-radius:10px!important;padding:18px 16px!important;"
-    "width:100%!important;height:120px!important;"
-    "color:"+TXT_COL+"!important;font-size:.85rem!important;font-weight:600!important;"
-    "text-align:left!important;transition:all .22s!important;"
-    "white-space:normal!important;line-height:1.4!important;}"
-    ".page-nav-btn button:hover{"
-    "border-color:"+C["teal"]+"!important;"
-    "box-shadow:0 8px 24px rgba(23,177,155,.2)!important;"
-    "transform:translateY(-3px)!important;}"
-    "</style>",
+    '<div style="padding:52px 40px;">'+sec_head(t["pt"],t["ph"],t["ps"])+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'+page_cards+'</div></div>',
     unsafe_allow_html=True)
-
-_page_nav = _get_pages()   # [(rel, en_lbl, ar_lbl), ...]
-_cols = st.columns(4, gap="small")
-for idx, (ico, title, desc) in enumerate(t["pages"]):
-    with _cols[idx % 4]:
-        st.markdown('<div class="page-nav-btn">', unsafe_allow_html=True)
-        _btn_label = ico + "  " + title + "\n" + desc
-        if st.button(_btn_label, key="pg_card_"+str(idx), use_container_width=True):
-            if idx < len(_page_nav):
-                try: st.switch_page(_page_nav[idx][0])
-                except: pass
-        st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('<div style="padding:0 40px;margin-top:10px;"></div>', unsafe_allow_html=True)
-st.markdown('<div style="height:1px;background:'+C["border"]+';margin:16px 40px;"></div>',
+st.markdown('<div style="height:1px;background:'+C["border"]+';margin:0 40px;"></div>',
             unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
