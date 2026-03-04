@@ -391,10 +391,7 @@ with st.sidebar:
 
     for label, fname in _nav:
         if st.button(label, key="nav_"+fname, use_container_width=True):
-            try:
-                st.switch_page(_prefix + fname)
-            except Exception:
-                pass
+            st.switch_page("pages/" + fname)
     st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0;"></div>',
                 unsafe_allow_html=True)
     st.markdown(
@@ -428,19 +425,43 @@ st.markdown(
     'padding:5px 14px;border-radius:4px;margin-bottom:22px;">'+t["pill"]+'</div>'
     '<div style="font-size:3.4rem;font-weight:800;color:'+C["white"]+';'
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:4px;">'+t["h1"]+'</div>'
-    '<div style="font-size:3.4rem;font-weight:800;color:'+C["teal"]+';'
+    '<div style="font-size:3.4rem;font-weight:800;color:'+C["white"]+';'
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'+t["h2"]+'</div>'
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
     'margin-bottom:30px;max-width:460px;">'+t["hs"]+'</p>'
-    '<a class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
-    'background:'+C["teal"]+';color:#FFFFFF!important;'
-    'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
-    'text-decoration:none!important;letter-spacing:.3px;cursor:default;">'
-    +("Explore Dashboard <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
-      else "<span class='ds-arrow-icon'>←</span> استكشف لوحة التحكم")+
-    '</a>'
+    '<div id="hero-cta-placeholder"></div>'
     '</div></div>',
     unsafe_allow_html=True)
+
+# Hero CTA — real st.button overlaid on hero
+st.markdown("""
+<style>
+div[data-testid="stMain"] > div > div:nth-child(3){
+  margin-top:-82px!important;
+  padding-left:92px!important;
+  position:relative!important;
+  z-index:20!important;
+  width:fit-content!important;
+  pointer-events:auto!important;
+}
+div[data-testid="stMain"] > div > div:nth-child(3) button{
+  background:#17B19B!important;color:#FFFFFF!important;
+  font-size:.92rem!important;font-weight:700!important;
+  padding:13px 28px!important;border-radius:7px!important;
+  border:none!important;letter-spacing:.3px!important;
+  box-shadow:0 6px 28px rgba(23,177,155,.55)!important;
+  animation:ds-pulse 2.6s ease-in-out infinite!important;
+}
+div[data-testid="stMain"] > div > div:nth-child(3) button:hover{
+  background:#149581!important;animation:none!important;
+  transform:translateX(4px)!important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+_cta = "Explore Dashboard  →" if LANG=="EN" else "←  استكشف لوحة التحكم"
+if st.button(_cta, key="hero_cta"):
+    st.switch_page("pages/01_Overview.py")
 
 
 
