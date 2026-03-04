@@ -19,6 +19,10 @@ for k, v in [("lang","EN"),("theme","dark")]:
 LANG  = st.session_state.lang
 THEME = st.session_state.theme
 
+# ── ML Model Accuracy (pull from model in production) ──
+ML_R2        = 0.986
+ML_ACCURACY  = f"{ML_R2*100:.1f}%"   # "98.6%"
+
 # ── Colors — both themes ─────────────────────────────────────────
 DARK = {
     "teal":"#17B19B","teal_act":"#149581","teal_sec":"#8BAFAA",
@@ -78,7 +82,7 @@ TR = {
         ("115.8M","Tourists 2024",       "teal",  "+23%","up"),
         ("1.10B", "Overnight Stays",     "teal",  "+41%","up"),
         ("5,622", "Avg Spend (SAR)",     "orange","+8%", "up"),
-        ("98.6%", "ML Accuracy R²",      "orange","",""),
+        ((ML_ACCURACY, "ML Accuracy R²",      "orange","",""),
     ],
     "pt":"PLATFORM","ph":"8 Interactive Pages",
     "ps":"Comprehensive analysis covering every dimension of Saudi tourism",
@@ -135,7 +139,7 @@ TR = {
         ("115.8M","سائح 2024",       "teal",  "+23%","up"),
         ("1.10B", "ليالي الإقامة",   "teal",  "+41%","up"),
         ("5,622", "متوسط الإنفاق",   "orange","+8%", "up"),
-        ("98.6%", "دقة النموذج R²",  "orange","",""),
+        ((ML_ACCURACY, "دقة النموذج R²",  "orange","",""),
     ],
     "pt":"المنصة","ph":"8 صفحات تفاعلية",
     "ps":"تحليل شامل لكل أبعاد السياحة السعودية",
@@ -238,10 +242,33 @@ section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
 /* ── Sparkline SVG ── */
 .ds-spark{opacity:.35;}
 
-/* ── CTA Button hover — arrow slides right ── */
-.ds-cta{transition:background .2s, box-shadow .2s, transform .15s!important;}
-.ds-cta:hover{transform:translateX(3px)!important;
-  box-shadow:0 8px 36px rgba(23,177,155,.7)!important;}
+/* ── CTA Button — pulse on load + arrow slide on hover ── */
+@keyframes ds-pulse{
+  0%,100%{box-shadow:0 6px 28px rgba(23,177,155,.55);}
+  50%{box-shadow:0 6px 40px rgba(23,177,155,.9),0 0 0 8px rgba(23,177,155,.12);}
+}
+@keyframes ds-arrow{
+  0%,100%{transform:translateX(0);}
+  50%{transform:translateX(5px);}
+}
+.ds-cta{
+  animation:ds-pulse 2.6s ease-in-out infinite;
+  transition:background .2s,transform .2s!important;
+  color:#FFFFFF!important;
+}
+.ds-cta:hover{
+  animation:none!important;
+  transform:translateX(4px)!important;
+  box-shadow:0 8px 40px rgba(23,177,155,.85)!important;
+  background:#149581!important;
+}
+.ds-cta .ds-arrow-icon{
+  display:inline-block;
+  transition:transform .25s ease;
+}
+.ds-cta:hover .ds-arrow-icon{
+  transform:translateX(6px);
+}
 
 /* ── Progress bar glow at tip ── */
 .ds-prog-fill{
@@ -357,11 +384,13 @@ st.markdown(
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'+t["h2"]+'</div>'
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
     'margin-bottom:32px;max-width:460px;">'+t["hs"]+'</p>'
-    '<a href="#" style="display:inline-flex;align-items:center;gap:8px;'
-    'background:'+C["teal"]+';color:#F4F9F8!important;'
+    '<a href="#" class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
+    'background:'+C["teal"]+';color:#FFFFFF!important;'
     'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
-    'text-decoration:none;box-shadow:0 6px 28px '+C["teal"]+'55;'
-    'text-shadow:0 1px 3px rgba(0,0,0,.3);">'+t["hb"]+'</a>'
+    'text-decoration:none;letter-spacing:.3px;">'
+    +("Explore Dashboard <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
+      else "<span class='ds-arrow-icon'>←</span> استكشف لوحة التحكم")+
+    '</a>'
     '</div></div>',
     unsafe_allow_html=True)
 
