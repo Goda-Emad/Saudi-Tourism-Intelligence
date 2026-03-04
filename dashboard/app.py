@@ -82,7 +82,7 @@ TR = {
         ("115.8M","Tourists 2024",       "teal",  "+23%","up"),
         ("1.10B", "Overnight Stays",     "teal",  "+41%","up"),
         ("5,622", "Avg Spend (SAR)",     "orange","+8%", "up"),
-        ((ML_ACCURACY, "ML Accuracy R²",      "orange","",""),
+        (ML_ACCURACY, "ML Accuracy R²",      "orange","",""),
     ],
     "pt":"PLATFORM","ph":"8 Interactive Pages",
     "ps":"Comprehensive analysis covering every dimension of Saudi tourism",
@@ -139,7 +139,7 @@ TR = {
         ("115.8M","سائح 2024",       "teal",  "+23%","up"),
         ("1.10B", "ليالي الإقامة",   "teal",  "+41%","up"),
         ("5,622", "متوسط الإنفاق",   "orange","+8%", "up"),
-        ((ML_ACCURACY, "دقة النموذج R²",  "orange","",""),
+        (ML_ACCURACY, "دقة النموذج R²",  "orange","",""),
     ],
     "pt":"المنصة","ph":"8 صفحات تفاعلية",
     "ps":"تحليل شامل لكل أبعاد السياحة السعودية",
@@ -255,6 +255,7 @@ section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
   animation:ds-pulse 2.6s ease-in-out infinite;
   transition:background .2s,transform .2s!important;
   color:#FFFFFF!important;
+  text-decoration:none!important;
 }
 .ds-cta:hover{
   animation:none!important;
@@ -384,7 +385,7 @@ st.markdown(
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'+t["h2"]+'</div>'
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
     'margin-bottom:32px;max-width:460px;">'+t["hs"]+'</p>'
-    '<a href="#" class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
+    '<a href="pages/01_🏠_Overview.py" class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
     'background:'+C["teal"]+';color:#FFFFFF!important;'
     'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
     'text-decoration:none;letter-spacing:.3px;">'
