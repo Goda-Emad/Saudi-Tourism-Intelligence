@@ -78,7 +78,7 @@ TR = {
         ("115.8M","Tourists 2024",       "teal",  "+23%","up"),
         ("1.10B", "Overnight Stays",     "teal",  "+41%","up"),
         ("5,622", "Avg Spend (SAR)",     "orange","+8%", "up"),
-        ("0.986", "ML Accuracy R²",      "orange","",""),
+        ("98.6%", "ML Accuracy R²",      "orange","",""),
     ],
     "pt":"PLATFORM","ph":"8 Interactive Pages",
     "ps":"Comprehensive analysis covering every dimension of Saudi tourism",
@@ -103,7 +103,7 @@ TR = {
          "3 segments · Silhouette 0.630","orange"),
         ("💰","Gradient Boosting","Spending Prediction",
          "Predicts per-trip spending based on nationality, purpose & season.",
-         "R²=0.986 · MAE: SAR 184","blue"),
+         "Full spend analysis · MAE SAR 184","blue"),
     ],
     "it":"KEY DISCOVERIES","ih":"Data Insights",
     "ins":[
@@ -135,7 +135,7 @@ TR = {
         ("115.8M","سائح 2024",       "teal",  "+23%","up"),
         ("1.10B", "ليالي الإقامة",   "teal",  "+41%","up"),
         ("5,622", "متوسط الإنفاق",   "orange","+8%", "up"),
-        ("0.986", "دقة النموذج R²",  "orange","",""),
+        ("98.6%", "دقة النموذج R²",  "orange","",""),
     ],
     "pt":"المنصة","ph":"8 صفحات تفاعلية",
     "ps":"تحليل شامل لكل أبعاد السياحة السعودية",
@@ -160,7 +160,7 @@ TR = {
          "3 شرائح · Silhouette 0.630","orange"),
         ("💰","Gradient Boosting","توقع الإنفاق",
          "يتوقع الإنفاق لكل رحلة بناءً على الجنسية والغرض والموسم.",
-         "R²=0.986 · MAE: 184 ريال","blue"),
+         "تحليل الإنفاق التنبؤي · MAE 184 ريال","blue"),
     ],
     "it":"الاكتشافات الرئيسية","ih":"رؤى البيانات",
     "ins":[
@@ -237,6 +237,25 @@ section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
 
 /* ── Sparkline SVG ── */
 .ds-spark{opacity:.35;}
+
+/* ── CTA Button hover — arrow slides right ── */
+.ds-cta{transition:background .2s, box-shadow .2s, transform .15s!important;}
+.ds-cta:hover{transform:translateX(3px)!important;
+  box-shadow:0 8px 36px rgba(23,177,155,.7)!important;}
+
+/* ── Progress bar glow at tip ── */
+.ds-prog-fill{
+  position:relative;
+  box-shadow:4px 0 12px currentColor;
+}
+.ds-prog-fill::after{
+  content:'';position:absolute;
+  right:-1px;top:50%;transform:translateY(-50%);
+  width:10px;height:10px;border-radius:50%;
+  background:inherit;
+  box-shadow:0 0 8px 3px currentColor;
+  opacity:.7;
+}
 </style>
 """+
 "<style>"
@@ -464,18 +483,23 @@ st.markdown(
 # ════════════════════════════════════════════════════════════════════
 prog_bars = ""
 for label, current, target, note, ck in t["v30"]:
-    pct    = min(round(current/target*100), 100)
-    col    = clr(ck)
+    pct     = min(round(current/target*100), 100)
+    col     = clr(ck)
+    done    = pct >= 100
+    badge   = (' <span style="color:'+col+';font-size:.8rem;">✅</span>' if done else "")
+    # glow color via inline style trick — use filter
+    glow    = "filter:drop-shadow(0 0 5px "+col+");" if not done else ""
     prog_bars += (
         '<div style="background:'+C["card_bg"]+';border:1px solid '+C["border"]+';'
+        +(('border-color:'+col+'88;') if done else '')+
         'border-radius:10px;padding:18px 20px;">'
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-        '<div style="font-size:.84rem;font-weight:600;color:'+C["white"]+';">'+label+'</div>'
-        '<div style="font-size:.78rem;font-weight:700;color:'+col+';'
+        '<div style="font-size:.84rem;font-weight:600;color:'+C["white"]+';">'+label+badge+'</div>'
+        '<div style="font-size:.82rem;font-weight:700;color:'+col+';'
         'font-family:IBM Plex Mono,monospace;">'+str(pct)+'%</div>'
         '</div>'
         '<div class="ds-prog-bg">'
-        '<div class="ds-prog-fill" style="width:'+str(pct)+'%;background:'+col+';"></div>'
+        '<div class="ds-prog-fill" style="width:'+str(pct)+'%;background:'+col+';'+glow+'"></div>'
         '</div>'
         '<div style="font-size:.68rem;color:'+C["grey"]+';margin-top:7px;">'+note+'</div>'
         '</div>')
