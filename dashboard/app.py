@@ -59,14 +59,30 @@ def _load_css():
 
 @st.cache_data(show_spinner=False)
 def _get_pages():
-    base      = os.path.dirname(os.path.abspath(__file__))
-    files     = sorted(glob.glob(os.path.join(base,"pages","*.py")))
-    result    = []
+    base  = os.path.dirname(os.path.abspath(__file__))
+    files = sorted(glob.glob(os.path.join(base,"pages","*.py")))
+    # Map filename keyword → clean label EN/AR
+    NAME_MAP = {
+        "Overview":      ("🏠  Overview",           "🏠  النظرة التنفيذية"),
+        "Tourist":       ("📈  Tourist Trends",      "📈  اتجاهات السياحة"),
+        "Seasonality":   ("📅  Seasonality",         "📅  الموسمية"),
+        "Spending":      ("💰  Spending",            "💰  الإنفاق"),
+        "Overnight":     ("🏨  Overnight Stays",     "🏨  ليالي الإقامة"),
+        "Forecasting":   ("🔮  Forecasting",         "🔮  التوقعات"),
+        "Segmentation":  ("🎯  Segmentation",        "🎯  التقسيم"),
+        "Carbon":        ("🌱  Carbon Impact",       "🌱  الأثر الكربوني"),
+    }
+    result = []
     for f in files:
         fname = os.path.basename(f)
         rel   = "pages/"+fname
-        label = re.sub(r"^\d+_","",fname[:-3]).replace("_"," ")
-        result.append((rel,label))
+        key   = next((k for k in NAME_MAP if k.lower() in fname.lower()), None)
+        if key:
+            en_lbl, ar_lbl = NAME_MAP[key]
+            result.append((rel, en_lbl, ar_lbl))
+        else:
+            raw = re.sub(r"^\d+_","",fname[:-3]).replace("_"," ")
+            result.append((rel, raw, raw))
     return result
 
 # ── Translations ──────────────────────────────────────────────────
@@ -345,7 +361,8 @@ with st.sidebar:
         st.session_state.lang  = "AR" if LANG=="EN" else "EN"; st.rerun()
     st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0 6px;"></div>',
                 unsafe_allow_html=True)
-    for rel_path, label in _get_pages():
+    for rel_path, en_lbl, ar_lbl in _get_pages():
+        label = ar_lbl if LANG=="AR" else en_lbl
         if st.button(label, key="nav_"+rel_path, use_container_width=True):
             st.switch_page(rel_path)
     st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0;"></div>',
@@ -385,15 +402,35 @@ st.markdown(
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'+t["h2"]+'</div>'
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
     'margin-bottom:32px;max-width:460px;">'+t["hs"]+'</p>'
-    '<a href="pages/01_🏠_Overview.py" class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
-    'background:'+C["teal"]+';color:#FFFFFF!important;'
-    'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
-    'text-decoration:none;letter-spacing:.3px;">'
-    +("Explore Dashboard <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
-      else "<span class='ds-arrow-icon'>←</span> استكشف لوحة التحكم")+
-    '</a>'
+    '<div id="hero-btn-anchor"></div>'
     '</div></div>',
     unsafe_allow_html=True)
+
+# ── Hero CTA button — st.button styled as ds-cta ─────────────────
+st.markdown("""
+<style>
+/* Position the hero button inside the hero visually */
+div[data-testid="stButton"]:has(#hero-cta-btn) > button,
+button[kind="secondary"]#hero-cta-btn {
+  background:#17B19B!important;color:#FFFFFF!important;
+  font-size:.92rem!important;font-weight:700!important;
+  padding:12px 30px!important;border-radius:7px!important;
+  border:none!important;letter-spacing:.3px!important;
+  animation:ds-pulse 2.6s ease-in-out infinite;
+  margin-top:-60px!important;
+}
+/* Overlay the button on top of hero */
+section[data-testid="stMain"] > div > div:nth-child(3){
+  margin-top:-72px!important;padding-left:92px!important;
+  position:relative!important;z-index:10!important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+_cta_label = ("Explore Dashboard  →" if LANG=="EN"
+               else "←  استكشف لوحة التحكم")
+if st.button(_cta_label, key="hero_cta", type="primary"):
+    st.switch_page("pages/01_🏠_Overview.py")
 
 # ════════════════════════════════════════════════════════════════════
 # STATS STRIP  — with delta arrows
