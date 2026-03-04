@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════
-#  Saudi Tourism Intelligence — Home Page  (FINAL v8)
+#  Saudi Tourism Intelligence — Home Page  (FINAL v9)
 #  Author : Eng. Goda Emad
 # ═══════════════════════════════════════════════════════════════════
 import streamlit as st
@@ -19,8 +19,8 @@ for k, v in [("lang","EN"),("theme","dark")]:
 LANG  = st.session_state.lang
 THEME = st.session_state.theme
 
-ML_R2        = 0.986
-ML_ACCURACY  = f"{ML_R2*100:.1f}%"
+ML_R2       = 0.986
+ML_ACCURACY = f"{ML_R2*100:.1f}%"
 
 DARK = {
     "teal":"#17B19B","teal_act":"#149581","teal_sec":"#8BAFAA",
@@ -40,34 +40,41 @@ C = DARK if THEME=="dark" else LIGHT
 def clr(k): return C.get(k, C["teal"])
 
 # ════════════════════════════════════════════════════════════════════
-# ✅ FIX: حساب مسار الصفحات الصح على Streamlit Cloud
+# ✅ FIX: مسار الصفحات الصح على Streamlit Cloud
+# traceback بيقول: /mount/src/saudi-tourism-intelligence/dashboard/app.py
+# يعني st.switch_page محتاج: dashboard/pages/filename.py
 # ════════════════════════════════════════════════════════════════════
 def _page_path(fname):
     """
-    Structure على Streamlit Cloud:
-      /mount/src/<repo>/dashboard/app.py       ← __file__
-      /mount/src/<repo>/dashboard/pages/*.py   ← الصفحات
-
-    st.switch_page بيحتاج المسار النسبي من مجلد الـ app (dashboard/)
-    يعني: pages/01_Overview.py
+    Streamlit Cloud يشغّل من root الـ repo.
+    app.py موجود في dashboard/ فالمسار الصح هو: dashboard/pages/<fname>
+    على local (لو pages/ جنب app.py مباشرة) بيرجع: pages/<fname>
     """
     base = os.path.dirname(os.path.abspath(__file__))
-    # pages/ موجودة جنب app.py
-    if os.path.isdir(os.path.join(base, "pages")):
-        return "pages/" + fname
-    # pages/ في مستوى أعلى
-    parent = os.path.dirname(base)
-    if os.path.isdir(os.path.join(parent, "pages")):
-        folder = os.path.basename(base)
-        return folder + "/pages/" + fname
-    # fallback
-    return "pages/" + fname
+
+    # ── local dev: pages/ جنب app.py مباشرة ──
+    local_pages = os.path.join(base, "pages")
+    if os.path.isdir(local_pages):
+        # حدد المسار النسبي من cwd
+        cwd = os.getcwd()
+        try:
+            rel = os.path.relpath(os.path.join(local_pages, fname), cwd)
+            return rel.replace("\\", "/")
+        except Exception:
+            pass
+
+    # ── Streamlit Cloud: app.py داخل subfolder (مثلاً dashboard/) ──
+    # نحسب اسم الـ subfolder ونضيفه
+    folder_name = os.path.basename(base)   # "dashboard"
+    return f"{folder_name}/pages/{fname}"
+
 
 # ── Cached helpers ────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
 def _read(p):
     base = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(base, p),"rb") as f: return f.read()
+    with open(os.path.join(base, p), "rb") as f:
+        return f.read()
 
 @st.cache_data(show_spinner=False)
 def _b64(p):
@@ -76,7 +83,7 @@ def _b64(p):
 
 @st.cache_data(show_spinner=False)
 def _load_css():
-    try:    return "<style>"+_read("assets/style.css").decode()+"</style>"
+    try:    return "<style>" + _read("assets/style.css").decode() + "</style>"
     except: return ""
 
 # ── Translations ──────────────────────────────────────────────────
@@ -88,10 +95,10 @@ TR = {
     "hs":"AI-powered analytics built on 10 years of official government data. Forecasting · Segmentation · Sustainability — all in one platform.",
     "hb":"Explore Dashboard →",
     "stats":[
-        ("115.8M","Tourists 2024",       "teal",  "+23%","up"),
-        ("1.10B", "Overnight Stays",     "teal",  "+41%","up"),
-        ("5,622", "Avg Spend (SAR)",     "orange","+8%", "up"),
-        (ML_ACCURACY, "ML Accuracy R²",  "orange","",""),
+        ("115.8M","Tourists 2024",      "teal",  "+23%","up"),
+        ("1.10B", "Overnight Stays",    "teal",  "+41%","up"),
+        ("5,622", "Avg Spend (SAR)",    "orange","+8%", "up"),
+        (ML_ACCURACY,"ML Accuracy R²",  "orange","",""),
     ],
     "pt":"PLATFORM","ph":"8 Interactive Pages",
     "ps":"Comprehensive analysis covering every dimension of Saudi tourism",
@@ -126,10 +133,10 @@ TR = {
         ("🚀","2024 record: 115.9M tourists · +150% recovery from COVID low","teal_act"),
     ],
     "v30":[
-        ("🎯 Tourist Arrivals Target",     115.9, 150.0, "M tourists by 2030",    "teal"),
-        ("💰 Tourism GDP Contribution",    10.0,  10.0,  "% of GDP (achieved ✅)", "gold"),
-        ("🌱 Carbon Intensity Reduction",  18.0,  30.0,  "% reduction by 2030",   "orange"),
-        ("🏨 Hotel Capacity Expansion",    72.0,  100.0, "% of 500K rooms target", "blue"),
+        ("🎯 Tourist Arrivals Target",    115.9,150.0,"M tourists by 2030",    "teal"),
+        ("💰 Tourism GDP Contribution",   10.0, 10.0, "% of GDP (achieved ✅)", "gold"),
+        ("🌱 Carbon Intensity Reduction", 18.0, 30.0, "% reduction by 2030",   "orange"),
+        ("🏨 Hotel Capacity Expansion",   72.0,100.0, "% of 500K rooms target", "blue"),
     ],
     "data":"DataSaudi · Ministry of Economy & Planning · 2015–2024",
     "copy":"© 2025 Saudi Tourism Intelligence · Eng. Goda Emad",
@@ -144,10 +151,10 @@ TR = {
     "hs":"تحليلات مدعومة بالذكاء الاصطناعي على 10 سنوات من البيانات الرسمية. توقعات · تقسيم · استدامة — كل شيء في منصة واحدة.",
     "hb":"← استكشف لوحة التحكم",
     "stats":[
-        ("115.8M","سائح 2024",       "teal",  "+23%","up"),
-        ("1.10B", "ليالي الإقامة",   "teal",  "+41%","up"),
-        ("5,622", "متوسط الإنفاق",   "orange","+8%", "up"),
-        (ML_ACCURACY, "دقة النموذج R²",  "orange","",""),
+        ("115.8M","سائح 2024",      "teal",  "+23%","up"),
+        ("1.10B", "ليالي الإقامة",  "teal",  "+41%","up"),
+        ("5,622", "متوسط الإنفاق",  "orange","+8%", "up"),
+        (ML_ACCURACY,"دقة النموذج R²","orange","",""),
     ],
     "pt":"المنصة","ph":"8 صفحات تفاعلية",
     "ps":"تحليل شامل لكل أبعاد السياحة السعودية",
@@ -182,10 +189,10 @@ TR = {
         ("🚀","رقم قياسي 2024: 115.9M سائح · تعافي +150% من أدنى كوفيد","teal_act"),
     ],
     "v30":[
-        ("🎯 مستهدف الوصول السياحي",     115.9, 150.0, "مليون سائح بحلول 2030",         "teal"),
-        ("💰 مساهمة السياحة في الناتج",  10.0,  10.0,  "% من الناتج (تحقق ✅)",          "gold"),
-        ("🌱 تخفيض الكثافة الكربونية",   18.0,  30.0,  "% تخفيض بحلول 2030",             "orange"),
-        ("🏨 توسعة الطاقة الفندقية",     72.0,  100.0, "% من مستهدف 500 ألف غرفة",       "blue"),
+        ("🎯 مستهدف الوصول السياحي",    115.9,150.0,"مليون سائح بحلول 2030",        "teal"),
+        ("💰 مساهمة السياحة في الناتج", 10.0, 10.0, "% من الناتج (تحقق ✅)",         "gold"),
+        ("🌱 تخفيض الكثافة الكربونية",  18.0, 30.0, "% تخفيض بحلول 2030",            "orange"),
+        ("🏨 توسعة الطاقة الفندقية",    72.0,100.0, "% من مستهدف 500 ألف غرفة",      "blue"),
     ],
     "data":"داتا السعودية · وزارة الاقتصاد والتخطيط · 2015–2024",
     "copy":"© 2025 ذكاء السياحة السعودية · م. جودة عماد",
@@ -198,9 +205,9 @@ TR = {
 t        = TR[LANG]
 logo_b64 = _b64("assets/logo.jpg")
 hero_b64 = _b64("assets/hero.jpg")
-logo_src = "data:image/jpeg;base64,"+logo_b64 if logo_b64 else ""
-hero_src = "data:image/jpeg;base64,"+hero_b64 if hero_b64 else ""
-logo_img = ('<img src="'+logo_src+'" style="height:42px;border-radius:8px;"/>'
+logo_src = "data:image/jpeg;base64," + logo_b64 if logo_b64 else ""
+hero_src = "data:image/jpeg;base64," + hero_b64 if hero_b64 else ""
+logo_img = (f'<img src="{logo_src}" style="height:42px;border-radius:8px;"/>'
             if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
 dir_val  = "rtl" if LANG=="AR" else "ltr"
 ff       = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
@@ -233,8 +240,7 @@ section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
   transform:translateX(-50%);
   background:#0D1A1E;border:1px solid #17B19B44;
   color:#F4F9F8;font-size:.72rem;line-height:1.5;
-  padding:8px 12px;border-radius:6px;
-  width:220px;text-align:center;
+  padding:8px 12px;border-radius:6px;width:220px;text-align:center;
   transition:opacity .2s;z-index:99;pointer-events:none;}
 .ds-tooltip:hover .ds-tip{visibility:visible;opacity:1;}
 
@@ -252,34 +258,17 @@ section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
   50%{box-shadow:0 6px 40px rgba(23,177,155,.9),0 0 0 8px rgba(23,177,155,.12);}
 }
 </style>
-"""+
+""" +
 "<style>"
-"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']{"
-"background:"+C["bg"]+"!important;direction:"+dir_val+";font-family:'"+ff+"',sans-serif;}"
-"[data-testid='stSidebar']{background:"+C["navbar"]+"!important;"
-"border-right:1px solid "+C["border"]+"!important;}"
-"[data-testid='stSidebar'] label,[data-testid='stSidebar'] span,"
-"[data-testid='stSidebar'] p,[data-testid='stSidebar'] div{"
-"color:"+C["white"]+"!important;}"
-"[data-testid='stSidebar'] .stButton>button{"
-"background:transparent!important;border:1px solid transparent!important;"
-"color:"+C["grey"]+"!important;border-radius:8px!important;"
-"width:100%!important;font-size:.84rem!important;font-weight:500!important;"
-"padding:9px 12px!important;margin-bottom:2px!important;transition:all .15s!important;}"
-"[data-testid='stSidebar'] .stButton>button:hover{"
-"background:"+C["teal"]+"22!important;border-color:"+C["teal"]+"44!important;"
-"color:"+C["teal"]+"!important;}"
-"[data-testid='stSidebar'] div:nth-child(3) .stButton>button,"
-"[data-testid='stSidebar'] div:nth-child(4) .stButton>button{"
-"background:#2A3235!important;border:1px solid #3A4C50!important;"
-"color:#F4F9F8!important;font-weight:600!important;margin-bottom:5px!important;}"
-"[data-testid='stSidebar'] div:nth-child(3) .stButton>button:hover,"
-"[data-testid='stSidebar'] div:nth-child(4) .stButton>button:hover{"
-"border-color:"+C["gold"]+"!important;color:"+C["gold"]+"!important;background:#2A3235!important;}"
-"[data-baseweb='slider']>div>div:nth-child(2){background:"+C["gold"]+"!important;}"
-"[data-baseweb='slider'] [role='slider']{"
-"background:"+C["gold"]+"!important;border-color:"+C["gold"]+"!important;"
-"box-shadow:0 0 0 4px "+C["gold"]+"22!important;}"
+f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']{{background:{C['bg']}!important;direction:{dir_val};font-family:'{ff}',sans-serif;}}"
+f"[data-testid='stSidebar']{{background:{C['navbar']}!important;border-right:1px solid {C['border']}!important;}}"
+f"[data-testid='stSidebar'] label,[data-testid='stSidebar'] span,[data-testid='stSidebar'] p,[data-testid='stSidebar'] div{{color:{C['white']}!important;}}"
+f"[data-testid='stSidebar'] .stButton>button{{background:transparent!important;border:1px solid transparent!important;color:{C['grey']}!important;border-radius:8px!important;width:100%!important;font-size:.84rem!important;font-weight:500!important;padding:9px 12px!important;margin-bottom:2px!important;transition:all .15s!important;}}"
+f"[data-testid='stSidebar'] .stButton>button:hover{{background:{C['teal']}22!important;border-color:{C['teal']}44!important;color:{C['teal']}!important;}}"
+f"[data-testid='stSidebar'] div:nth-child(3) .stButton>button,[data-testid='stSidebar'] div:nth-child(4) .stButton>button{{background:#2A3235!important;border:1px solid #3A4C50!important;color:#F4F9F8!important;font-weight:600!important;margin-bottom:5px!important;}}"
+f"[data-testid='stSidebar'] div:nth-child(3) .stButton>button:hover,[data-testid='stSidebar'] div:nth-child(4) .stButton>button:hover{{border-color:{C['gold']}!important;color:{C['gold']}!important;background:#2A3235!important;}}"
+f"[data-baseweb='slider']>div>div:nth-child(2){{background:{C['gold']}!important;}}"
+f"[data-baseweb='slider'] [role='slider']{{background:{C['gold']}!important;border-color:{C['gold']}!important;box-shadow:0 0 0 4px {C['gold']}22!important;}}"
 "</style>",
 unsafe_allow_html=True)
 
@@ -288,22 +277,21 @@ unsafe_allow_html=True)
 # ════════════════════════════════════════════════════════════════════
 with st.sidebar:
     st.markdown(
-        '<div style="display:flex;align-items:center;gap:10px;padding:16px 4px 14px;">'
-        +logo_img+
-        '<div>'
-        '<div style="font-size:.88rem;font-weight:700;color:'+C["white"]+';">'+t["name"]+'</div>'
-        '<div style="font-size:.58rem;color:'+C["teal"]+';font-weight:600;'
-        'letter-spacing:1.2px;text-transform:uppercase;">'+t["sub"]+'</div>'
-        '</div></div>',
+        f'<div style="display:flex;align-items:center;gap:10px;padding:16px 4px 14px;">'
+        f'{logo_img}'
+        f'<div>'
+        f'<div style="font-size:.88rem;font-weight:700;color:{C["white"]};">{t["name"]}</div>'
+        f'<div style="font-size:.58rem;color:{C["teal"]};font-weight:600;letter-spacing:1.2px;text-transform:uppercase;">{t["sub"]}</div>'
+        f'</div></div>',
         unsafe_allow_html=True)
-    st.markdown('<div style="height:1px;background:'+C["border"]+';margin-bottom:10px;"></div>',
-                unsafe_allow_html=True)
+    st.markdown(f'<div style="height:1px;background:{C["border"]};margin-bottom:10px;"></div>', unsafe_allow_html=True)
+
     if st.button(t["thm"], key="k_thm", use_container_width=True):
         st.session_state.theme = "light" if THEME=="dark" else "dark"; st.rerun()
     if st.button(t["lng"], key="k_lng", use_container_width=True):
-        st.session_state.lang  = "AR" if LANG=="EN" else "EN"; st.rerun()
-    st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0 6px;"></div>',
-                unsafe_allow_html=True)
+        st.session_state.lang = "AR" if LANG=="EN" else "EN"; st.rerun()
+
+    st.markdown(f'<div style="height:1px;background:{C["border"]};margin:10px 0 6px;"></div>', unsafe_allow_html=True)
 
     NAV_EN = [
         ("🏠  Overview",       "01_Overview.py"),
@@ -328,119 +316,94 @@ with st.sidebar:
     _nav = NAV_AR if LANG=="AR" else NAV_EN
 
     for label, fname in _nav:
-        if st.button(label, key="nav_"+fname, use_container_width=True):
-            st.switch_page(_page_path(fname))   # ✅ مسار صح
+        if st.button(label, key="nav_" + fname, use_container_width=True):
+            st.switch_page(_page_path(fname))
 
-    st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0;"></div>',
-                unsafe_allow_html=True)
+    st.markdown(f'<div style="height:1px;background:{C["border"]};margin:10px 0;"></div>', unsafe_allow_html=True)
     st.markdown(
-        '<div style="font-size:.67rem;color:'+C["grey"]+';padding:0 2px;line-height:1.9;">'
-        '📦 DataSaudi · 2015–2024<br>'
-        '🐙 <a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" '
-        'target="_blank" style="color:'+C["teal"]+';text-decoration:none;">GitHub</a>'
-        '  ·  '
-        '💼 <a href="https://www.linkedin.com/in/goda-emad/" '
-        'target="_blank" style="color:'+C["teal"]+';text-decoration:none;">LinkedIn</a>'
-        '</div>', unsafe_allow_html=True)
+        f'<div style="font-size:.67rem;color:{C["grey"]};padding:0 2px;line-height:1.9;">'
+        f'📦 DataSaudi · 2015–2024<br>'
+        f'🐙 <a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" style="color:{C["teal"]};text-decoration:none;">GitHub</a>'
+        f'  ·  '
+        f'💼 <a href="https://www.linkedin.com/in/goda-emad/" target="_blank" style="color:{C["teal"]};text-decoration:none;">LinkedIn</a>'
+        f'</div>', unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
 # HERO
 # ════════════════════════════════════════════════════════════════════
-hero_bg_val = ('url("'+hero_src+'")' if hero_src
-               else "linear-gradient(135deg,"+C["navbar"]+","+C["bg"]+")")
-st.markdown(
-    "<style>.ds-hero{background-image:"+hero_bg_val+"!important;}</style>",
-    unsafe_allow_html=True)
+hero_bg_val = (f'url("{hero_src}")' if hero_src
+               else f"linear-gradient(135deg,{C['navbar']},{C['bg']})")
+st.markdown(f"<style>.ds-hero{{background-image:{hero_bg_val}!important;}}</style>", unsafe_allow_html=True)
 
 st.markdown(
-    '<div class="ds-hero">'
-    '<div style="position:absolute;inset:0;'
-    'background:linear-gradient(100deg,'+C["navbar"]+'EE 0%,'+C["navbar"]+'99 38%,'
-    +C["bg"]+'22 70%,transparent 100%);"></div>'
-    '<div style="position:relative;z-index:2;padding:80px 52px;max-width:600px;">'
+    f'<div class="ds-hero">'
+    f'<div style="position:absolute;inset:0;background:linear-gradient(100deg,{C["navbar"]}EE 0%,{C["navbar"]}99 38%,{C["bg"]}22 70%,transparent 100%);"></div>'
+    f'<div style="position:relative;z-index:2;padding:80px 52px;max-width:600px;">'
 
-    # pill badge
-    '<div style="display:inline-flex;align-items:center;'
-    'background:'+C["teal"]+'15;border:1px solid '+C["teal"]+'55;color:'+C["teal"]+';'
-    'font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
-    'padding:5px 14px;border-radius:4px;margin-bottom:22px;">'+t["pill"]+'</div>'
+    # pill
+    f'<div style="display:inline-flex;align-items:center;background:{C["teal"]}15;border:1px solid {C["teal"]}55;color:{C["teal"]};font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:5px 14px;border-radius:4px;margin-bottom:22px;">{t["pill"]}</div>'
 
     # ✅ عنوان موحد — نفس السطر — كله تيركوز
-    '<div style="font-size:3.4rem;font-weight:800;color:'+C["teal"]+';'
-    'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'
-    +t["h1"]+' '+t["h2"]+'</div>'
+    f'<div style="font-size:3.4rem;font-weight:800;color:{C["teal"]};line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">{t["h1"]} {t["h2"]}</div>'
 
     # subtitle
-    '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
-    'margin-bottom:30px;max-width:460px;">'+t["hs"]+'</p>'
+    f'<p style="font-size:.95rem;color:{C["grey"]};line-height:1.8;margin-bottom:30px;max-width:460px;">{t["hs"]}</p>'
 
-    # ✅ CTA زرار HTML جوّا الـ hero في مكانه الأصلي
-    '<a id="ds-hero-cta" style="'
-    'display:inline-block;background:#17B19B;color:#FFFFFF!important;'
-    'font-size:.92rem;font-weight:700;padding:13px 28px;border-radius:7px;'
-    'border:none;letter-spacing:.3px;text-decoration:none!important;'
-    'box-shadow:0 6px 28px rgba(23,177,155,.55);'
-    'animation:ds-pulse 2.6s ease-in-out infinite;cursor:pointer;'
-    'transition:background .2s,transform .2s;"'
-    ' onmouseover="this.style.background=\'#149581\';this.style.animation=\'none\';this.style.transform=\'translateX(4px)\'"'
-    ' onmouseout="this.style.background=\'#17B19B\';this.style.animation=\'ds-pulse 2.6s ease-in-out infinite\';this.style.transform=\'none\'"'
-    ' onclick="document.getElementById(\'ds-goto-btn\').click();return false;"'
-    '>'+t["hb"]+'</a>'
+    # ✅ CTA زرار HTML جوّا الـ hero
+    f'<a style="display:inline-block;background:#17B19B;color:#FFFFFF!important;'
+    f'font-size:.92rem;font-weight:700;padding:13px 28px;border-radius:7px;'
+    f'border:none;letter-spacing:.3px;text-decoration:none!important;'
+    f'box-shadow:0 6px 28px rgba(23,177,155,.55);'
+    f'animation:ds-pulse 2.6s ease-in-out infinite;cursor:pointer;"'
+    f' onmouseover="this.style.background=\'#149581\';this.style.animation=\'none\';this.style.transform=\'translateX(4px)\'"'
+    f' onmouseout="this.style.background=\'#17B19B\';this.style.animation=\'ds-pulse 2.6s ease-in-out infinite\';this.style.transform=\'none\'"'
+    f' onclick="window.parent.document.querySelector(\'[data-testid=stBaseButton-secondary][kind=secondary]\').click();return false;"'
+    f'>{t["hb"]}</a>'
 
-    '</div></div>',
+    f'</div></div>',
     unsafe_allow_html=True)
 
-# ✅ زرار Streamlit حقيقي مخفي — الـ HTML أعلاه بيضغطه عبر onclick
+# ✅ زرار Streamlit حقيقي مخفي بالكامل — الـ onclick أعلاه بيضغطه
 st.markdown("""
 <style>
-#ds-goto-btn { display:none !important; }
 div[data-testid="stMain"] > div > div:nth-child(3) {
-  height:0!important; overflow:hidden!important; margin:0!important; padding:0!important;
+  position:absolute!important; opacity:0!important;
+  pointer-events:none!important; height:0!important; overflow:hidden!important;
 }
-</style>
-""", unsafe_allow_html=True)
+</style>""", unsafe_allow_html=True)
 
-if st.button(t["hb"], key="ds-goto-btn"):
+if st.button(t["hb"], key="hero_cta", type="secondary"):
     st.switch_page(_page_path("01_Overview.py"))
 
 # ════════════════════════════════════════════════════════════════════
 # STATS STRIP
 # ════════════════════════════════════════════════════════════════════
 cells = ""
-for i,(val,lbl,ck,delta,ddir) in enumerate(t["stats"]):
-    br = "border-right:1px solid "+C["border"]+";" if i<3 else ""
+for i, (val, lbl, ck, delta, ddir) in enumerate(t["stats"]):
+    br = f"border-right:1px solid {C['border']};" if i < 3 else ""
     arrow = ""
     if delta:
-        a_color = "#17B19B" if ddir=="up" else "#C50A5D"
-        a_icon  = "▲" if ddir=="up" else "▼"
-        arrow = ('<span style="font-size:.72rem;color:'+a_color+';'
-                 'font-weight:700;margin-left:6px;font-family:IBM Plex Mono,monospace;">'
-                 +a_icon+' '+delta+'</span>')
+        a_color = "#17B19B" if ddir == "up" else "#C50A5D"
+        a_icon  = "▲" if ddir == "up" else "▼"
+        arrow = f'<span style="font-size:.72rem;color:{a_color};font-weight:700;margin-left:6px;font-family:IBM Plex Mono,monospace;">{a_icon} {delta}</span>'
     cells += (
-        '<div style="padding:28px 24px;'+br+'">'
-        '<div style="display:flex;align-items:baseline;gap:0;">'
-        '<div style="font-size:2rem;font-weight:700;color:'+clr(ck)+';'
-        'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;">'+val+'</div>'
-        +arrow+'</div>'
-        '<div style="font-size:.64rem;color:'+C["grey"]+';text-transform:uppercase;'
-        'letter-spacing:1.2px;font-weight:600;margin-top:6px;opacity:0.9;">'+lbl+'</div>'
-        '</div>')
+        f'<div style="padding:28px 24px;{br}">'
+        f'<div style="display:flex;align-items:baseline;">'
+        f'<div style="font-size:2rem;font-weight:700;color:{clr(ck)};font-family:IBM Plex Mono,monospace;letter-spacing:-1px;">{val}</div>'
+        f'{arrow}</div>'
+        f'<div style="font-size:.64rem;color:{C["grey"]};text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:6px;opacity:.9;">{lbl}</div>'
+        f'</div>')
 st.markdown(
-    '<div style="background:'+C["sec_bg"]+';'
-    'border-top:1px solid '+C["border"]+';border-bottom:1px solid '+C["border"]+';'
-    'display:grid;grid-template-columns:repeat(4,1fr);">'+cells+'</div>',
+    f'<div style="background:{C["sec_bg"]};border-top:1px solid {C["border"]};border-bottom:1px solid {C["border"]};display:grid;grid-template-columns:repeat(4,1fr);">{cells}</div>',
     unsafe_allow_html=True)
 
 # ── Section header helper ─────────────────────────────────────────
-def sec_head(badge,h2,sub=""):
-    o = ('<div style="margin-bottom:28px;">'
-         '<div style="display:inline-block;background:'+C["teal"]+'15;'
-         'border:1px solid '+C["teal"]+'44;color:'+C["teal"]+';'
-         'font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
-         'padding:4px 12px;border-radius:4px;margin-bottom:12px;">'+badge+'</div>'
-         '<div style="font-size:1.5rem;font-weight:700;color:'+C["white"]+';margin-bottom:6px;">'+h2+'</div>')
-    if sub: o += '<div style="font-size:.82rem;color:'+C["grey"]+';">'+sub+'</div>'
-    return o+'</div>'
+def sec_head(badge, h2, sub=""):
+    o = (f'<div style="margin-bottom:28px;">'
+         f'<div style="display:inline-block;background:{C["teal"]}15;border:1px solid {C["teal"]}44;color:{C["teal"]};font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:12px;">{badge}</div>'
+         f'<div style="font-size:1.5rem;font-weight:700;color:{C["white"]};margin-bottom:6px;">{h2}</div>')
+    if sub: o += f'<div style="font-size:.82rem;color:{C["grey"]};">{sub}</div>'
+    return o + '</div>'
 
 # ════════════════════════════════════════════════════════════════════
 # PAGES CARDS
@@ -448,72 +411,59 @@ def sec_head(badge,h2,sub=""):
 page_cards = ""
 for ico, title, desc in t["pages"]:
     page_cards += (
-        '<div class="ds-card" style="background:'+C["card_bg"]+';'
-        'border:1px solid '+C["border"]+';border-radius:10px;padding:20px 18px;">'
-        '<div style="font-size:1.6rem;margin-bottom:10px;line-height:1;">'+ico+'</div>'
-        '<div style="font-size:.87rem;font-weight:600;color:'+C["white"]+';margin-bottom:5px;">'+title+'</div>'
-        '<div style="font-size:.73rem;color:'+C["grey"]+';line-height:1.5;">'+desc+'</div>'
-        '</div>')
+        f'<div class="ds-card" style="background:{C["card_bg"]};border:1px solid {C["border"]};border-radius:10px;padding:20px 18px;">'
+        f'<div style="font-size:1.6rem;margin-bottom:10px;line-height:1;">{ico}</div>'
+        f'<div style="font-size:.87rem;font-weight:600;color:{C["white"]};margin-bottom:5px;">{title}</div>'
+        f'<div style="font-size:.73rem;color:{C["grey"]};line-height:1.5;">{desc}</div>'
+        f'</div>')
 st.markdown(
-    '<div style="padding:52px 40px;">'+sec_head(t["pt"],t["ph"],t["ps"])+
-    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'+page_cards+'</div></div>',
+    f'<div style="padding:52px 40px;">{sec_head(t["pt"],t["ph"],t["ps"])}'
+    f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">{page_cards}</div></div>',
     unsafe_allow_html=True)
-st.markdown('<div style="height:1px;background:'+C["border"]+';margin:0 40px;"></div>',
-            unsafe_allow_html=True)
+st.markdown(f'<div style="height:1px;background:{C["border"]};margin:0 40px;"></div>', unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
 # ML MODELS
 # ════════════════════════════════════════════════════════════════════
 def sparkline(color):
     pts = "0,28 8,22 16,25 24,18 32,20 40,12 48,15 56,8 64,10 72,4"
-    return (
-        '<svg class="ds-spark" width="80" height="32" '
-        'style="position:absolute;bottom:16px;right:14px;">'
-        '<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="2" '
-        'stroke-linecap="round" stroke-linejoin="round"/>'
-        '</svg>')
+    return (f'<svg class="ds-spark" width="80" height="32" style="position:absolute;bottom:16px;right:14px;">'
+            f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'</svg>')
 
 ml_cards = ""
-for ico,name,mtype,tooltip,desc,ck in t["ml"]:
+for ico, name, mtype, tooltip, desc, ck in t["ml"]:
     ml_cards += (
-        '<div style="background:'+C["card_bg"]+';border:1px solid '+C["border"]+';'
-        'border-radius:10px;padding:26px 22px;position:relative;overflow:hidden;">'
-        '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+clr(ck)+';"></div>'
-        +sparkline(clr(ck))+
-        '<div style="font-size:1.5rem;margin-bottom:14px;">'+ico+'</div>'
-        '<div class="ds-tooltip">'
-        '<div style="font-size:1rem;font-weight:700;color:'+C["white"]+';'
-        'font-family:IBM Plex Mono,monospace;margin-bottom:4px;'
-        'border-bottom:1px dashed '+clr(ck)+'55;padding-bottom:3px;display:inline-block;">'
-        +name+'</div>'
-        '<div class="ds-tip">'+tooltip+'</div>'
-        '</div>'
-        '<div style="font-size:.67rem;font-weight:700;text-transform:uppercase;'
-        'letter-spacing:1.2px;color:'+clr(ck)+';margin:8px 0 12px;">'+mtype+'</div>'
-        '<div style="font-size:.8rem;color:'+C["grey"]+';line-height:1.6;">'+desc+'</div>'
-        '</div>')
+        f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};border-radius:10px;padding:26px 22px;position:relative;overflow:hidden;">'
+        f'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:{clr(ck)};"></div>'
+        f'{sparkline(clr(ck))}'
+        f'<div style="font-size:1.5rem;margin-bottom:14px;">{ico}</div>'
+        f'<div class="ds-tooltip">'
+        f'<div style="font-size:1rem;font-weight:700;color:{C["white"]};font-family:IBM Plex Mono,monospace;margin-bottom:4px;border-bottom:1px dashed {clr(ck)}55;padding-bottom:3px;display:inline-block;">{name}</div>'
+        f'<div class="ds-tip">{tooltip}</div>'
+        f'</div>'
+        f'<div style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:{clr(ck)};margin:8px 0 12px;">{mtype}</div>'
+        f'<div style="font-size:.8rem;color:{C["grey"]};line-height:1.6;">{desc}</div>'
+        f'</div>')
 st.markdown(
-    '<div style="padding:52px 40px;background:'+C["sec_bg"]+';'
-    'border-top:1px solid '+C["border"]+';border-bottom:1px solid '+C["border"]+';">'+
-    sec_head(t["mt"],t["mh"],t["ms"])+
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">'+ml_cards+'</div></div>',
+    f'<div style="padding:52px 40px;background:{C["sec_bg"]};border-top:1px solid {C["border"]};border-bottom:1px solid {C["border"]};">'
+    f'{sec_head(t["mt"],t["mh"],t["ms"])}'
+    f'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">{ml_cards}</div></div>',
     unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
 # INSIGHTS
 # ════════════════════════════════════════════════════════════════════
 ins_cards = ""
-for ico,txt,ck in t["ins"]:
+for ico, txt, ck in t["ins"]:
     ins_cards += (
-        '<div style="background:'+C["card_bg"]+';border:1px solid '+C["border"]+';'
-        'border-left:3px solid '+clr(ck)+';border-radius:10px;'
-        'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
-        '<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">'+ico+'</div>'
-        '<div style="font-size:.83rem;color:'+C["white"]+';line-height:1.65;">'+txt+'</div>'
-        '</div>')
+        f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};border-left:3px solid {clr(ck)};border-radius:10px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
+        f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
+        f'<div style="font-size:.83rem;color:{C["white"]};line-height:1.65;">{txt}</div>'
+        f'</div>')
 st.markdown(
-    '<div style="padding:52px 40px;">'+sec_head(t["it"],t["ih"])+
-    '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">'+ins_cards+'</div></div>',
+    f'<div style="padding:52px 40px;">{sec_head(t["it"],t["ih"])}'
+    f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">{ins_cards}</div></div>',
     unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
@@ -521,52 +471,41 @@ st.markdown(
 # ════════════════════════════════════════════════════════════════════
 prog_bars = ""
 for label, current, target, note, ck in t["v30"]:
-    pct  = min(round(current/target*100), 100)
+    pct  = min(round(current / target * 100), 100)
     col  = clr(ck)
     done = pct >= 100
-    badge = (' <span style="color:'+col+';font-size:.8rem;">✅</span>' if done else "")
-    glow  = "filter:drop-shadow(0 0 5px "+col+");" if not done else ""
+    badge = (f' <span style="color:{col};font-size:.8rem;">✅</span>' if done else "")
+    glow  = f"filter:drop-shadow(0 0 5px {col});" if not done else ""
     prog_bars += (
-        '<div style="background:'+C["card_bg"]+';border:1px solid '+C["border"]+';'
-        +(('border-color:'+col+'88;') if done else '')+
-        'border-radius:10px;padding:18px 20px;">'
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-        '<div style="font-size:.84rem;font-weight:600;color:'+C["white"]+';">'+label+badge+'</div>'
-        '<div style="font-size:.82rem;font-weight:700;color:'+col+';'
-        'font-family:IBM Plex Mono,monospace;">'+str(pct)+'%</div>'
-        '</div>'
-        '<div class="ds-prog-bg">'
-        '<div class="ds-prog-fill" style="width:'+str(pct)+'%;background:'+col+';'+glow+'"></div>'
-        '</div>'
-        '<div style="font-size:.68rem;color:'+C["grey"]+';margin-top:7px;">'+note+'</div>'
-        '</div>')
+        f'<div style="background:{C["card_bg"]};border:1px solid {("border-color:"+col+"88;") if done else C["border"]};border-radius:10px;padding:18px 20px;">'
+        f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+        f'<div style="font-size:.84rem;font-weight:600;color:{C["white"]};">{label}{badge}</div>'
+        f'<div style="font-size:.82rem;font-weight:700;color:{col};font-family:IBM Plex Mono,monospace;">{pct}%</div>'
+        f'</div>'
+        f'<div class="ds-prog-bg"><div class="ds-prog-fill" style="width:{pct}%;background:{col};{glow}"></div></div>'
+        f'<div style="font-size:.68rem;color:{C["grey"]};margin-top:7px;">{note}</div>'
+        f'</div>')
 
 st.markdown(
-    '<div style="padding:52px 40px;background:'+C["sec_bg"]+';'
-    'border-top:1px solid '+C["border"]+';border-bottom:1px solid '+C["border"]+';">'+
-    sec_head(t["v30_title"],t["v30_h"])+
-    '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">'+prog_bars+'</div></div>',
+    f'<div style="padding:52px 40px;background:{C["sec_bg"]};border-top:1px solid {C["border"]};border-bottom:1px solid {C["border"]};">'
+    f'{sec_head(t["v30_title"],t["v30_h"])}'
+    f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">{prog_bars}</div></div>',
     unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
 # FOOTER
 # ════════════════════════════════════════════════════════════════════
 st.markdown(
-    '<div style="background:'+C["navbar"]+';border-top:2px solid '+C["teal"]+';'
-    'padding:28px 40px;display:flex;justify-content:space-between;'
-    'align-items:center;flex-wrap:wrap;gap:16px;">'
-    '<div style="display:flex;align-items:center;gap:14px;">'+logo_img+
-    '<div>'
-    '<div style="font-size:.9rem;font-weight:700;color:'+C["teal"]+';">'+t["name"]+'</div>'
-    '<div style="font-size:.68rem;color:'+C["foot_txt"]+';margin-top:3px;">'+t["copy"]+'</div>'
-    '<div style="font-size:.64rem;color:'+C["grey"]+';margin-top:3px;">📦 '+t["data"]+'</div>'
-    '</div></div>'
-    '<div style="display:flex;gap:24px;align-items:center;">'
-    '<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
-    'style="font-size:.78rem;color:'+C["foot_txt"]+';text-decoration:none;font-weight:500;">🐙 GitHub</a>'
-    '<a href="https://www.linkedin.com/in/goda-emad/" target="_blank" '
-    'style="font-size:.78rem;color:'+C["foot_txt"]+';text-decoration:none;font-weight:500;">💼 LinkedIn</a>'
-    '<a href="https://datasaudi.sa" target="_blank" '
-    'style="font-size:.78rem;color:'+C["teal"]+';text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
-    '</div></div>',
+    f'<div style="background:{C["navbar"]};border-top:2px solid {C["teal"]};padding:28px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">'
+    f'<div style="display:flex;align-items:center;gap:14px;">{logo_img}'
+    f'<div>'
+    f'<div style="font-size:.9rem;font-weight:700;color:{C["teal"]};">{t["name"]}</div>'
+    f'<div style="font-size:.68rem;color:{C["foot_txt"]};margin-top:3px;">{t["copy"]}</div>'
+    f'<div style="font-size:.64rem;color:{C["grey"]};margin-top:3px;">📦 {t["data"]}</div>'
+    f'</div></div>'
+    f'<div style="display:flex;gap:24px;align-items:center;">'
+    f'<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" style="font-size:.78rem;color:{C["foot_txt"]};text-decoration:none;font-weight:500;">🐙 GitHub</a>'
+    f'<a href="https://www.linkedin.com/in/goda-emad/" target="_blank" style="font-size:.78rem;color:{C["foot_txt"]};text-decoration:none;font-weight:500;">💼 LinkedIn</a>'
+    f'<a href="https://datasaudi.sa" target="_blank" style="font-size:.78rem;color:{C["teal"]};text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
+    f'</div></div>',
     unsafe_allow_html=True)
