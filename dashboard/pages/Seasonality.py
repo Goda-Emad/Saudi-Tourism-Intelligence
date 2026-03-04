@@ -343,52 +343,112 @@ st.markdown(f"""
 # ══════════════════════════════════════════
 # SIDEBAR
 # ══════════════════════════════════════════
-with st.sidebar:
+
+# ── Shared sidebar (identical across all pages) ──────────────────
+import base64 as _b64mod, glob as _glob, os as _os
+
+def _get_logo():
     try:
-        st.image("assets/logo.png", use_column_width=True)
-    except:
-        st.markdown(f"<div style='text-align:center;font-size:1.5rem;'>🇸🇦</div>", unsafe_allow_html=True)
+        base = _os.path.dirname(_os.path.abspath(__file__))
+        for p in ["assets/logo.jpg","assets/logo.png"]:
+            fp = _os.path.join(base, p)
+            if _os.path.exists(fp):
+                with open(fp,"rb") as f:
+                    d = _b64mod.b64encode(f.read()).decode()
+                ext = "png" if p.endswith("png") else "jpeg"
+                return f"data:image/{ext};base64,{d}"
+    except: pass
+    return ""
 
-    st.markdown(f"<div style='text-align:center;font-size:0.68rem;color:{text_secondary};margin-bottom:12px;'>Saudi Tourism Intelligence</div>", unsafe_allow_html=True)
-    st.divider()
+_logo_src = _get_logo()
+_logo_img = (f'<img src="{_logo_src}" style="height:42px;border-radius:8px;"/>'
+             if _logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
 
-    col_a, col_b = st.columns(2)
-    with col_a:
-        if st.button(t["light_mode"] if theme=="dark" else t["dark_mode"], use_container_width=True):
-            st.session_state.theme = "light" if theme=="dark" else "dark"
-            st.rerun()
-    with col_b:
-        if st.button(t["lang_toggle"], use_container_width=True):
-            st.session_state.lang = "AR" if lang=="EN" else "EN"
-            st.rerun()
+NAV_EN = [
+    ("🏠  Overview",        "Overview.py"),
+    ("📈  Tourist Trends",   "Tourist_Trends.py"),
+    ("📅  Seasonality",      "Seasonality.py"),
+    ("💰  Spending",         "Spending.py"),
+    ("🏨  Overnight Stays",  "Overnight_Stays.py"),
+    ("🔮  Forecasting",      "Forecasting.py"),
+    ("🎯  Segmentation",     "Segmentation.py"),
+    ("🌱  Carbon Impact",    "Carbon_Impact.py"),
+]
+NAV_AR = [
+    ("🏠  النظرة التنفيذية", "Overview.py"),
+    ("📈  اتجاهات السياحة",  "Tourist_Trends.py"),
+    ("📅  الموسمية",         "Seasonality.py"),
+    ("💰  الإنفاق",          "Spending.py"),
+    ("🏨  ليالي الإقامة",    "Overnight_Stays.py"),
+    ("🔮  التوقعات",         "Forecasting.py"),
+    ("🎯  التقسيم",          "Segmentation.py"),
+    ("🌱  الأثر الكربوني",   "Carbon_Impact.py"),
+]
 
-    st.divider()
-    st.markdown(f"<div style='font-size:0.72rem;font-weight:700;color:{text_secondary};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;'>{t['pages']}</div>", unsafe_allow_html=True)
-    for p in ["page_overview","page_trends","page_season","page_spend",
-              "page_overnight","page_forecast","page_segment","page_carbon"]:
-        active = p == "page_season"
-        bg = f"{accent_gold}22" if active else "transparent"
-        fw = "700" if active else "400"
-        bc = accent_gold if active else "transparent"
-        st.markdown(f"<div style='padding:7px 10px;border-radius:8px;background:{bg};border-left:3px solid {bc};font-size:0.83rem;font-weight:{fw};color:{text_primary};margin-bottom:3px;'>{t[p]}</div>", unsafe_allow_html=True)
+_C_NAV   = "#031414" if THEME=="dark" else "#172025"
+_C_WHITE = "#F4F9F8" if THEME=="dark" else "#0D1A1E"
+_C_TEAL  = "#17B19B"
+_C_GREY  = "#A1A6B7" if THEME=="dark" else "#374151"
+_C_GOLD  = "#C9A84C"
+_C_BDR   = "#2A3235" if THEME=="dark" else "#C8D8D5"
+_FF      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
 
-    st.divider()
-    tourist_filter = st.selectbox(t["filter_type"],
-        [t["all_types"], t["inbound"], t["domestic"]])
+st.markdown(
+    "<style>"
+    f"[data-testid='stSidebar']{{background:{_C_NAV}!important;border-right:1px solid {_C_BDR}!important;}}"
+    f"[data-testid='stSidebar'] div,span,p,label{{color:{_C_WHITE}!important;}}"
+    "[data-testid='stSidebar'] .stButton>button{"
+    f"background:transparent!important;border:1px solid transparent!important;"
+    f"color:{_C_GREY}!important;border-radius:8px!important;"
+    "width:100%!important;font-size:.84rem!important;font-weight:500!important;"
+    "padding:9px 12px!important;margin-bottom:2px!important;transition:all .15s!important;}"
+    "[data-testid='stSidebar'] .stButton>button:hover{"
+    f"background:{_C_TEAL}22!important;color:{_C_TEAL}!important;border-color:{_C_TEAL}44!important;}}"
+    "[data-testid='stSidebar'] div:nth-child(3) .stButton>button,"
+    "[data-testid='stSidebar'] div:nth-child(4) .stButton>button{"
+    "background:#2A3235!important;border:1px solid #3A4C50!important;"
+    "color:#F4F9F8!important;font-weight:600!important;margin-bottom:5px!important;}"
+    "[data-testid='stSidebar'] div:nth-child(3) .stButton>button:hover,"
+    "[data-testid='stSidebar'] div:nth-child(4) .stButton>button:hover{"
+    f"border-color:{_C_GOLD}!important;color:{_C_GOLD}!important;}}"
+    "</style>",
+    unsafe_allow_html=True)
 
-    st.divider()
-    st.markdown(f"""
-    <div style='font-size:0.7rem;color:{text_secondary};'>
-      <div style='font-weight:700;color:{accent_teal};margin-bottom:4px;'>{t['built_by']}</div>
-      <div style='color:{text_primary};font-weight:600;margin-bottom:4px;'>Eng. Goda Emad</div>
-      <a href='https://github.com/Goda-Emad/Saudi-Tourism-Intelligence/tree/main' target='_blank' style='color:{accent_blue};'>🐙 GitHub</a> &nbsp;
-      <a href='https://www.linkedin.com/in/goda-emad/' target='_blank' style='color:{accent_blue};'>💼 LinkedIn</a>
-    </div>
-    """, unsafe_allow_html=True)
+with st.sidebar:
+    _thm_label = ("☀️  Light" if THEME=="dark" else "🌙  Dark")
+    _lng_label = ("🌐  العربية" if LANG=="EN" else "🌐  English")
 
-# ══════════════════════════════════════════
-# PAGE HEADER
-# ══════════════════════════════════════════
+    st.markdown(
+        f'<div style="display:flex;align-items:center;gap:10px;padding:16px 4px 14px;">'+_logo_img+
+        f'<div><div style="font-size:.88rem;font-weight:700;color:{_C_WHITE};">'+
+        ("Saudi Tourism Intelligence" if LANG=="EN" else "ذكاء السياحة السعودية")+
+        f'</div><div style="font-size:.58rem;color:{_C_TEAL};font-weight:600;letter-spacing:1.2px;text-transform:uppercase;">AI ANALYTICS PLATFORM</div></div></div>',
+        unsafe_allow_html=True)
+
+    st.markdown(f'<div style="height:1px;background:{_C_BDR};margin-bottom:10px;"></div>', unsafe_allow_html=True)
+
+    if st.button(_thm_label, key="sb_thm", use_container_width=True):
+        st.session_state.theme = "light" if THEME=="dark" else "dark"; st.rerun()
+    if st.button(_lng_label, key="sb_lng", use_container_width=True):
+        st.session_state.lang = "AR" if LANG=="EN" else "EN"; st.rerun()
+
+    st.markdown(f'<div style="height:1px;background:{_C_BDR};margin:10px 0 6px;"></div>', unsafe_allow_html=True)
+
+    _nav_items = NAV_AR if LANG=="AR" else NAV_EN
+    for _lbl, _fname in _nav_items:
+        if st.button(_lbl, key="sb_nav_"+_fname, use_container_width=True):
+            st.switch_page("pages/" + _fname)
+
+    st.markdown(f'<div style="height:1px;background:{_C_BDR};margin:10px 0 8px;"></div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div style="font-size:.67rem;color:{_C_GREY};padding:0 2px;line-height:1.9;">'+
+        '📦 DataSaudi · 2015–2024<br>'+
+        f'🐙 <a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" style="color:{_C_TEAL};text-decoration:none;">GitHub</a>'+
+        '  ·  '+
+        f'💼 <a href="https://www.linkedin.com/in/goda-emad/" target="_blank" style="color:{_C_TEAL};text-decoration:none;">LinkedIn</a></div>',
+        unsafe_allow_html=True)
+# ── End sidebar ───────────────────────────────────────────────────
+
 st.markdown(f"""
 <div class='page-header'>
   <div class='page-title'>{t['page_title']}</div>
@@ -667,5 +727,4 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
 
