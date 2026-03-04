@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════
-#  Saudi Tourism Intelligence — Home Page  (FINAL v7)
+#  Saudi Tourism Intelligence — Home Page  (FINAL v8)
 #  Author : Eng. Goda Emad
 # ═══════════════════════════════════════════════════════════════════
 import streamlit as st
-import base64, os, glob, re
+import base64, os
 
 st.set_page_config(
     page_title="Saudi Tourism Intelligence",
@@ -19,11 +19,9 @@ for k, v in [("lang","EN"),("theme","dark")]:
 LANG  = st.session_state.lang
 THEME = st.session_state.theme
 
-# ── ML Model Accuracy (pull from model in production) ──
 ML_R2        = 0.986
-ML_ACCURACY  = f"{ML_R2*100:.1f}%"   # "98.6%"
+ML_ACCURACY  = f"{ML_R2*100:.1f}%"
 
-# ── Colors — both themes ─────────────────────────────────────────
 DARK = {
     "teal":"#17B19B","teal_act":"#149581","teal_sec":"#8BAFAA",
     "bg":"#1A1E1F","sec_bg":"#161B1C","card_bg":"#1E2528",
@@ -41,6 +39,30 @@ LIGHT = {
 C = DARK if THEME=="dark" else LIGHT
 def clr(k): return C.get(k, C["teal"])
 
+# ════════════════════════════════════════════════════════════════════
+# ✅ FIX: حساب مسار الصفحات الصح على Streamlit Cloud
+# ════════════════════════════════════════════════════════════════════
+def _page_path(fname):
+    """
+    Structure على Streamlit Cloud:
+      /mount/src/<repo>/dashboard/app.py       ← __file__
+      /mount/src/<repo>/dashboard/pages/*.py   ← الصفحات
+
+    st.switch_page بيحتاج المسار النسبي من مجلد الـ app (dashboard/)
+    يعني: pages/01_Overview.py
+    """
+    base = os.path.dirname(os.path.abspath(__file__))
+    # pages/ موجودة جنب app.py
+    if os.path.isdir(os.path.join(base, "pages")):
+        return "pages/" + fname
+    # pages/ في مستوى أعلى
+    parent = os.path.dirname(base)
+    if os.path.isdir(os.path.join(parent, "pages")):
+        folder = os.path.basename(base)
+        return folder + "/pages/" + fname
+    # fallback
+    return "pages/" + fname
+
 # ── Cached helpers ────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
 def _read(p):
@@ -57,33 +79,6 @@ def _load_css():
     try:    return "<style>"+_read("assets/style.css").decode()+"</style>"
     except: return ""
 
-@st.cache_data(show_spinner=False)
-def _get_pages():
-    """Hardcoded pages list — works on Streamlit Cloud regardless of folder structure."""
-    pages = [
-        ("🏠  Overview",        "🏠  النظرة التنفيذية"),
-        ("📈  Tourist Trends",   "📈  اتجاهات السياحة"),
-        ("📅  Seasonality",      "📅  الموسمية"),
-        ("💰  Spending",         "💰  الإنفاق"),
-        ("🏨  Overnight Stays",  "🏨  ليالي الإقامة"),
-        ("🔮  Forecasting",      "🔮  التوقعات"),
-        ("🎯  Segmentation",     "🎯  التقسيم"),
-        ("🌱  Carbon Impact",    "🌱  الأثر الكربوني"),
-    ]
-    base   = os.path.dirname(os.path.abspath(__file__))
-    in_sub = os.path.isdir(os.path.join(base, "pages"))
-    PREFIX = "pages/" if in_sub else ""
-    filenames = [
-        "01_Overview.py","02_Tourist_Trends.py","03_Seasonality.py",
-        "04_Spending.py","05_Overnight_Stays.py","06_Forecasting.py",
-        "07_Segmentation.py","08_Carbon_Impact.py",
-    ]
-    result = []
-    for i, (en, ar) in enumerate(pages):
-        rel = PREFIX + filenames[i]
-        result.append((rel, en, ar))
-    return result
-
 # ── Translations ──────────────────────────────────────────────────
 TR = {
 "EN":{
@@ -96,7 +91,7 @@ TR = {
         ("115.8M","Tourists 2024",       "teal",  "+23%","up"),
         ("1.10B", "Overnight Stays",     "teal",  "+41%","up"),
         ("5,622", "Avg Spend (SAR)",     "orange","+8%", "up"),
-        (ML_ACCURACY, "ML Accuracy R²",      "orange","",""),
+        (ML_ACCURACY, "ML Accuracy R²",  "orange","",""),
     ],
     "pt":"PLATFORM","ph":"8 Interactive Pages",
     "ps":"Comprehensive analysis covering every dimension of Saudi tourism",
@@ -218,23 +213,19 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&family=Tajawal:wght@400;700;800&display=swap');
 
-/* ── Hide Streamlit chrome ── */
 [data-testid="stHeader"],[data-testid="stToolbar"],
 [data-testid="stSidebarNav"],footer,#MainMenu{display:none!important;}
 .block-container{padding:0!important;max-width:100%!important;}
 section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
 
-/* ── Hero class ── */
 .ds-hero{position:relative!important;width:100%!important;height:520px!important;
   overflow:hidden!important;background-size:cover!important;
   background-position:center center!important;}
 
-/* ── Hover cards ── */
 .ds-card{transition:transform .22s ease,border-color .22s,box-shadow .22s!important;cursor:pointer;}
 .ds-card:hover{transform:translateY(-4px)!important;
   box-shadow:0 12px 32px rgba(23,177,155,.2)!important;}
 
-/* ── Tooltip ── */
 .ds-tooltip{position:relative;display:inline-block;}
 .ds-tooltip .ds-tip{
   visibility:hidden;opacity:0;
@@ -244,73 +235,32 @@ section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
   color:#F4F9F8;font-size:.72rem;line-height:1.5;
   padding:8px 12px;border-radius:6px;
   width:220px;text-align:center;
-  transition:opacity .2s;z-index:99;
-  pointer-events:none;}
+  transition:opacity .2s;z-index:99;pointer-events:none;}
 .ds-tooltip:hover .ds-tip{visibility:visible;opacity:1;}
 
-/* ── Progress bar ── */
 .ds-prog-bg{background:#2A3235;border-radius:8px;height:10px;overflow:hidden;}
-.ds-prog-fill{height:100%;border-radius:8px;transition:width .8s ease;}
+.ds-prog-fill{height:100%;border-radius:8px;transition:width .8s ease;
+  position:relative;box-shadow:4px 0 12px currentColor;}
+.ds-prog-fill::after{content:'';position:absolute;right:-1px;top:50%;
+  transform:translateY(-50%);width:10px;height:10px;border-radius:50%;
+  background:inherit;box-shadow:0 0 8px 3px currentColor;opacity:.7;}
 
-/* ── Sparkline SVG ── */
 .ds-spark{opacity:.35;}
 
-/* ── CTA Button — pulse on load + arrow slide on hover ── */
 @keyframes ds-pulse{
   0%,100%{box-shadow:0 6px 28px rgba(23,177,155,.55);}
   50%{box-shadow:0 6px 40px rgba(23,177,155,.9),0 0 0 8px rgba(23,177,155,.12);}
-}
-@keyframes ds-arrow{
-  0%,100%{transform:translateX(0);}
-  50%{transform:translateX(5px);}
-}
-.ds-cta{
-  animation:ds-pulse 2.6s ease-in-out infinite;
-  transition:background .2s,transform .2s!important;
-  color:#FFFFFF!important;
-  text-decoration:none!important;
-}
-.ds-cta:hover{
-  animation:none!important;
-  transform:translateX(4px)!important;
-  box-shadow:0 8px 40px rgba(23,177,155,.85)!important;
-  background:#149581!important;
-}
-.ds-cta .ds-arrow-icon{
-  display:inline-block;
-  transition:transform .25s ease;
-}
-.ds-cta:hover .ds-arrow-icon{
-  transform:translateX(6px);
-}
-
-/* ── Progress bar glow at tip ── */
-.ds-prog-fill{
-  position:relative;
-  box-shadow:4px 0 12px currentColor;
-}
-.ds-prog-fill::after{
-  content:'';position:absolute;
-  right:-1px;top:50%;transform:translateY(-50%);
-  width:10px;height:10px;border-radius:50%;
-  background:inherit;
-  box-shadow:0 0 8px 3px currentColor;
-  opacity:.7;
 }
 </style>
 """+
 "<style>"
 "html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']{"
 "background:"+C["bg"]+"!important;direction:"+dir_val+";font-family:'"+ff+"',sans-serif;}"
-
-# Sidebar
 "[data-testid='stSidebar']{background:"+C["navbar"]+"!important;"
 "border-right:1px solid "+C["border"]+"!important;}"
 "[data-testid='stSidebar'] label,[data-testid='stSidebar'] span,"
 "[data-testid='stSidebar'] p,[data-testid='stSidebar'] div{"
 "color:"+C["white"]+"!important;}"
-
-# ALL sidebar buttons base
 "[data-testid='stSidebar'] .stButton>button{"
 "background:transparent!important;border:1px solid transparent!important;"
 "color:"+C["grey"]+"!important;border-radius:8px!important;"
@@ -319,8 +269,6 @@ section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
 "[data-testid='stSidebar'] .stButton>button:hover{"
 "background:"+C["teal"]+"22!important;border-color:"+C["teal"]+"44!important;"
 "color:"+C["teal"]+"!important;}"
-
-# Theme + Lang buttons — always dark filled regardless of mode
 "[data-testid='stSidebar'] div:nth-child(3) .stButton>button,"
 "[data-testid='stSidebar'] div:nth-child(4) .stButton>button{"
 "background:#2A3235!important;border:1px solid #3A4C50!important;"
@@ -328,8 +276,6 @@ section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
 "[data-testid='stSidebar'] div:nth-child(3) .stButton>button:hover,"
 "[data-testid='stSidebar'] div:nth-child(4) .stButton>button:hover{"
 "border-color:"+C["gold"]+"!important;color:"+C["gold"]+"!important;background:#2A3235!important;}"
-
-# Gold slider
 "[data-baseweb='slider']>div>div:nth-child(2){background:"+C["gold"]+"!important;}"
 "[data-baseweb='slider'] [role='slider']{"
 "background:"+C["gold"]+"!important;border-color:"+C["gold"]+"!important;"
@@ -359,7 +305,6 @@ with st.sidebar:
     st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0 6px;"></div>',
                 unsafe_allow_html=True)
 
-    # ── Navigation — hardcoded, works on Streamlit Cloud ──────────
     NAV_EN = [
         ("🏠  Overview",       "01_Overview.py"),
         ("📈  Tourist Trends",  "02_Tourist_Trends.py"),
@@ -381,13 +326,11 @@ with st.sidebar:
         ("🌱  الأثر الكربوني",   "08_Carbon_Impact.py"),
     ]
     _nav = NAV_AR if LANG=="AR" else NAV_EN
-    _base    = os.path.dirname(os.path.abspath(__file__))
-    _in_sub  = os.path.isdir(os.path.join(_base,"pages"))
-    _prefix  = "pages/" if _in_sub else ""
 
     for label, fname in _nav:
         if st.button(label, key="nav_"+fname, use_container_width=True):
-            st.switch_page("pages/" + fname)
+            st.switch_page(_page_path(fname))   # ✅ مسار صح
+
     st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0;"></div>',
                 unsafe_allow_html=True)
     st.markdown(
@@ -415,56 +358,53 @@ st.markdown(
     'background:linear-gradient(100deg,'+C["navbar"]+'EE 0%,'+C["navbar"]+'99 38%,'
     +C["bg"]+'22 70%,transparent 100%);"></div>'
     '<div style="position:relative;z-index:2;padding:80px 52px;max-width:600px;">'
+
+    # pill badge
     '<div style="display:inline-flex;align-items:center;'
     'background:'+C["teal"]+'15;border:1px solid '+C["teal"]+'55;color:'+C["teal"]+';'
     'font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
     'padding:5px 14px;border-radius:4px;margin-bottom:22px;">'+t["pill"]+'</div>'
 
-    # ══ FIX: عنوان موحد على نفس السطر وكله تيركوز ══
+    # ✅ عنوان موحد — نفس السطر — كله تيركوز
     '<div style="font-size:3.4rem;font-weight:800;color:'+C["teal"]+';'
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'
     +t["h1"]+' '+t["h2"]+'</div>'
 
+    # subtitle
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
     'margin-bottom:30px;max-width:460px;">'+t["hs"]+'</p>'
-    '<div id="hero-cta-placeholder"></div>'
+
+    # ✅ CTA زرار HTML جوّا الـ hero في مكانه الأصلي
+    '<a id="ds-hero-cta" style="'
+    'display:inline-block;background:#17B19B;color:#FFFFFF!important;'
+    'font-size:.92rem;font-weight:700;padding:13px 28px;border-radius:7px;'
+    'border:none;letter-spacing:.3px;text-decoration:none!important;'
+    'box-shadow:0 6px 28px rgba(23,177,155,.55);'
+    'animation:ds-pulse 2.6s ease-in-out infinite;cursor:pointer;'
+    'transition:background .2s,transform .2s;"'
+    ' onmouseover="this.style.background=\'#149581\';this.style.animation=\'none\';this.style.transform=\'translateX(4px)\'"'
+    ' onmouseout="this.style.background=\'#17B19B\';this.style.animation=\'ds-pulse 2.6s ease-in-out infinite\';this.style.transform=\'none\'"'
+    ' onclick="document.getElementById(\'ds-goto-btn\').click();return false;"'
+    '>'+t["hb"]+'</a>'
+
     '</div></div>',
     unsafe_allow_html=True)
 
-# Hero CTA — real st.button overlaid on hero
+# ✅ زرار Streamlit حقيقي مخفي — الـ HTML أعلاه بيضغطه عبر onclick
 st.markdown("""
 <style>
-div[data-testid="stMain"] > div > div:nth-child(3){
-  margin-top:-82px!important;
-  padding-left:92px!important;
-  position:relative!important;
-  z-index:20!important;
-  width:fit-content!important;
-  pointer-events:auto!important;
-}
-div[data-testid="stMain"] > div > div:nth-child(3) button{
-  background:#17B19B!important;color:#FFFFFF!important;
-  font-size:.92rem!important;font-weight:700!important;
-  padding:13px 28px!important;border-radius:7px!important;
-  border:none!important;letter-spacing:.3px!important;
-  box-shadow:0 6px 28px rgba(23,177,155,.55)!important;
-  animation:ds-pulse 2.6s ease-in-out infinite!important;
-}
-div[data-testid="stMain"] > div > div:nth-child(3) button:hover{
-  background:#149581!important;animation:none!important;
-  transform:translateX(4px)!important;
+#ds-goto-btn { display:none !important; }
+div[data-testid="stMain"] > div > div:nth-child(3) {
+  height:0!important; overflow:hidden!important; margin:0!important; padding:0!important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-_cta = "Explore Dashboard  →" if LANG=="EN" else "←  استكشف لوحة التحكم"
-if st.button(_cta, key="hero_cta"):
-    st.switch_page("pages/01_Overview.py")
-
-
+if st.button(t["hb"], key="ds-goto-btn"):
+    st.switch_page(_page_path("01_Overview.py"))
 
 # ════════════════════════════════════════════════════════════════════
-# STATS STRIP  — with delta arrows
+# STATS STRIP
 # ════════════════════════════════════════════════════════════════════
 cells = ""
 for i,(val,lbl,ck,delta,ddir) in enumerate(t["stats"]):
@@ -483,8 +423,7 @@ for i,(val,lbl,ck,delta,ddir) in enumerate(t["stats"]):
         'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;">'+val+'</div>'
         +arrow+'</div>'
         '<div style="font-size:.64rem;color:'+C["grey"]+';text-transform:uppercase;'
-        'letter-spacing:1.2px;font-weight:600;margin-top:6px;'
-        'opacity:0.9;">'+lbl+'</div>'
+        'letter-spacing:1.2px;font-weight:600;margin-top:6px;opacity:0.9;">'+lbl+'</div>'
         '</div>')
 st.markdown(
     '<div style="background:'+C["sec_bg"]+';'
@@ -504,16 +443,15 @@ def sec_head(badge,h2,sub=""):
     return o+'</div>'
 
 # ════════════════════════════════════════════════════════════════════
-# PAGES — HTML cards (original design)
+# PAGES CARDS
 # ════════════════════════════════════════════════════════════════════
-TXT_COL = C["white"]
 page_cards = ""
 for ico, title, desc in t["pages"]:
     page_cards += (
         '<div class="ds-card" style="background:'+C["card_bg"]+';'
         'border:1px solid '+C["border"]+';border-radius:10px;padding:20px 18px;">'
         '<div style="font-size:1.6rem;margin-bottom:10px;line-height:1;">'+ico+'</div>'
-        '<div style="font-size:.87rem;font-weight:600;color:'+TXT_COL+';margin-bottom:5px;">'+title+'</div>'
+        '<div style="font-size:.87rem;font-weight:600;color:'+C["white"]+';margin-bottom:5px;">'+title+'</div>'
         '<div style="font-size:.73rem;color:'+C["grey"]+';line-height:1.5;">'+desc+'</div>'
         '</div>')
 st.markdown(
@@ -524,7 +462,7 @@ st.markdown('<div style="height:1px;background:'+C["border"]+';margin:0 40px;"><
             unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# ML MODELS — with tooltip + sparkline
+# ML MODELS
 # ════════════════════════════════════════════════════════════════════
 def sparkline(color):
     pts = "0,28 8,22 16,25 24,18 32,20 40,12 48,15 56,8 64,10 72,4"
@@ -579,15 +517,15 @@ st.markdown(
     unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# VISION 2030 PROGRESS
+# VISION 2030
 # ════════════════════════════════════════════════════════════════════
 prog_bars = ""
 for label, current, target, note, ck in t["v30"]:
-    pct     = min(round(current/target*100), 100)
-    col     = clr(ck)
-    done    = pct >= 100
-    badge   = (' <span style="color:'+col+';font-size:.8rem;">✅</span>' if done else "")
-    glow    = "filter:drop-shadow(0 0 5px "+col+");" if not done else ""
+    pct  = min(round(current/target*100), 100)
+    col  = clr(ck)
+    done = pct >= 100
+    badge = (' <span style="color:'+col+';font-size:.8rem;">✅</span>' if done else "")
+    glow  = "filter:drop-shadow(0 0 5px "+col+");" if not done else ""
     prog_bars += (
         '<div style="background:'+C["card_bg"]+';border:1px solid '+C["border"]+';'
         +(('border-color:'+col+'88;') if done else '')+
@@ -625,13 +563,10 @@ st.markdown(
     '</div></div>'
     '<div style="display:flex;gap:24px;align-items:center;">'
     '<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
-    'style="font-size:.78rem;color:'+C["foot_txt"]+';text-decoration:none;font-weight:500;'
-    'display:flex;align-items:center;gap:5px;">🐙 GitHub</a>'
+    'style="font-size:.78rem;color:'+C["foot_txt"]+';text-decoration:none;font-weight:500;">🐙 GitHub</a>'
     '<a href="https://www.linkedin.com/in/goda-emad/" target="_blank" '
-    'style="font-size:.78rem;color:'+C["foot_txt"]+';text-decoration:none;font-weight:500;'
-    'display:flex;align-items:center;gap:5px;">💼 LinkedIn</a>'
+    'style="font-size:.78rem;color:'+C["foot_txt"]+';text-decoration:none;font-weight:500;">💼 LinkedIn</a>'
     '<a href="https://datasaudi.sa" target="_blank" '
-    'style="font-size:.78rem;color:'+C["teal"]+';text-decoration:none;font-weight:600;'
-    'display:flex;align-items:center;gap:5px;">📊 DataSaudi</a>'
+    'style="font-size:.78rem;color:'+C["teal"]+';text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
     '</div></div>',
     unsafe_allow_html=True)
