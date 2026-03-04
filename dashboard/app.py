@@ -364,30 +364,26 @@ with st.sidebar:
 
     # ── Navigation — hardcoded, works on Streamlit Cloud ──────────
     NAV_EN = [
-        ("🏠  Overview",       "01_Overview.py"),
-        ("📈  Tourist Trends",  "02_Tourist_Trends.py"),
-        ("📅  Seasonality",     "03_Seasonality.py"),
-        ("💰  Spending",        "04_Spending.py"),
-        ("🏨  Overnight Stays", "05_Overnight_Stays.py"),
-        ("🔮  Forecasting",     "06_Forecasting.py"),
-        ("🎯  Segmentation",    "07_Segmentation.py"),
-        ("🌱  Carbon Impact",   "08_Carbon_Impact.py"),
+        ("🏠  Overview",        "Overview.py"),
+        ("📈  Tourist Trends",   "Tourist_Trends.py"),
+        ("📅  Seasonality",      "Seasonality.py"),
+        ("💰  Spending",         "Spending.py"),
+        ("🏨  Overnight Stays",  "Overnight_Stays.py"),
+        ("🔮  Forecasting",      "Forecasting.py"),
+        ("🎯  Segmentation",     "Segmentation.py"),
+        ("🌱  Carbon Impact",    "Carbon_Impact.py"),
     ]
     NAV_AR = [
-        ("🏠  النظرة التنفيذية", "01_Overview.py"),
-        ("📈  اتجاهات السياحة",  "02_Tourist_Trends.py"),
-        ("📅  الموسمية",         "03_Seasonality.py"),
-        ("💰  الإنفاق",          "04_Spending.py"),
-        ("🏨  ليالي الإقامة",    "05_Overnight_Stays.py"),
-        ("🔮  التوقعات",         "06_Forecasting.py"),
-        ("🎯  التقسيم",          "07_Segmentation.py"),
-        ("🌱  الأثر الكربوني",   "08_Carbon_Impact.py"),
+        ("🏠  النظرة التنفيذية", "Overview.py"),
+        ("📈  اتجاهات السياحة",  "Tourist_Trends.py"),
+        ("📅  الموسمية",         "Seasonality.py"),
+        ("💰  الإنفاق",          "Spending.py"),
+        ("🏨  ليالي الإقامة",    "Overnight_Stays.py"),
+        ("🔮  التوقعات",         "Forecasting.py"),
+        ("🎯  التقسيم",          "Segmentation.py"),
+        ("🌱  الأثر الكربوني",   "Carbon_Impact.py"),
     ]
     _nav = NAV_AR if LANG=="AR" else NAV_EN
-    # detect if pages are in a subfolder
-    _base    = os.path.dirname(os.path.abspath(__file__))
-    _in_sub  = os.path.isdir(os.path.join(_base,"pages"))
-    _prefix  = "pages/" if _in_sub else ""
 
     for label, fname in _nav:
         if st.button(label, key="nav_"+fname, use_container_width=True):
@@ -461,7 +457,7 @@ div[data-testid="stMain"] > div > div:nth-child(3) button:hover{
 
 _cta = "Explore Dashboard  →" if LANG=="EN" else "←  استكشف لوحة التحكم"
 if st.button(_cta, key="hero_cta"):
-    st.switch_page("pages/01_Overview.py")
+    st.switch_page("pages/Overview.py")
 
 
 
