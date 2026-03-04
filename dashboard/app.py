@@ -34,9 +34,9 @@ DARK = {
 LIGHT = {
     "teal":"#17B19B","teal_act":"#149581","teal_sec":"#4A8A82",
     "bg":"#F0F5F4","sec_bg":"#E4EDEB","card_bg":"#FFFFFF",
-    "navbar":"#172025","white":"#F4F9F8","grey":"#9DBFBA",
-    "foot_txt":"#9DBFBA","border":"#2A3235",
-    "orange":"#E8A020","gold":"#C9A84C","blue":"#5B8DC8",
+    "navbar":"#172025","white":"#0D1A1E","grey":"#374151",
+    "foot_txt":"#6B7280","border":"#C8D8D5",
+    "orange":"#B45309","gold":"#92650A","blue":"#1D4ED8",
 }
 C = DARK if THEME=="dark" else LIGHT
 def clr(k): return C.get(k, C["teal"])
@@ -402,43 +402,18 @@ st.markdown(
     '<div style="font-size:3.4rem;font-weight:800;color:'+C["teal"]+';'
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'+t["h2"]+'</div>'
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
-    'margin-bottom:16px;max-width:460px;">'+t["hs"]+'</p>'
+    'margin-bottom:30px;max-width:460px;">'+t["hs"]+'</p>'
+    '<a class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
+    'background:'+C["teal"]+';color:#FFFFFF!important;'
+    'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
+    'text-decoration:none!important;letter-spacing:.3px;cursor:default;">'
+    +("Explore Dashboard <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
+      else "<span class='ds-arrow-icon'>←</span> استكشف لوحة التحكم")+
+    '</a>'
     '</div></div>',
     unsafe_allow_html=True)
 
-# ── Hero CTA — st.button with ds-cta styling ─────────────────────
-st.markdown(
-    "<style>"
-    # Pull button up to overlap the hero bottom area
-    "div[data-testid='stMain'] > div > div:nth-child(3) {"
-    "margin-top:-68px!important;padding-left:92px!important;"
-    "position:relative!important;z-index:10!important;width:fit-content!important;}"
-    # Style the button exactly like ds-cta
-    "div[data-testid='stMain'] > div > div:nth-child(3) button{"
-    "background:"+C["teal"]+"!important;color:#FFFFFF!important;"
-    "font-size:.92rem!important;font-weight:700!important;"
-    "padding:12px 28px!important;border-radius:7px!important;"
-    "border:none!important;letter-spacing:.4px!important;"
-    "box-shadow:0 6px 28px rgba(23,177,155,0.55)!important;"
-    "animation:ds-pulse 2.6s ease-in-out infinite!important;}"
-    "div[data-testid='stMain'] > div > div:nth-child(3) button:hover{"
-    "background:"+C["teal_act"]+"!important;transform:translateX(4px)!important;"
-    "animation:none!important;}"
-    "</style>",
-    unsafe_allow_html=True)
 
-_hero_label = "Explore Dashboard  →" if LANG=="EN" else "←  استكشف لوحة التحكم"
-if st.button(_hero_label, key="hero_cta"):
-    try:
-        # find Overview page dynamically
-        import glob as _g
-        _base  = os.path.dirname(os.path.abspath(__file__))
-        _pages = sorted(_g.glob(os.path.join(_base,"pages","*.py")))
-        _ov    = next((p for p in _pages if "overview" in p.lower() or "01_" in p), None)
-        if _ov:
-            st.switch_page("pages/"+os.path.basename(_ov))
-    except Exception:
-        pass
 
 # ════════════════════════════════════════════════════════════════════
 # STATS STRIP  — with delta arrows
