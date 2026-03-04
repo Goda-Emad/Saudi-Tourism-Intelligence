@@ -59,32 +59,30 @@ def _load_css():
 
 @st.cache_data(show_spinner=False)
 def _get_pages():
-    base  = os.path.dirname(os.path.abspath(__file__))
-    # Support both: pages/ subfolder OR same dir as app.py
-    sub   = glob.glob(os.path.join(base,"pages","[0-9]*.py"))
-    same  = glob.glob(os.path.join(base,"[0-9]*.py"))
-    files = sorted(sub if sub else same)
-    NAME_MAP = {
-        "Overview":     ("🏠  Overview",        "🏠  النظرة التنفيذية"),
-        "Tourist":      ("📈  Tourist Trends",   "📈  اتجاهات السياحة"),
-        "Seasonality":  ("📅  Seasonality",      "📅  الموسمية"),
-        "Spending":     ("💰  Spending",         "💰  الإنفاق"),
-        "Overnight":    ("🏨  Overnight Stays",  "🏨  ليالي الإقامة"),
-        "Forecasting":  ("🔮  Forecasting",      "🔮  التوقعات"),
-        "Segmentation": ("🎯  Segmentation",     "🎯  التقسيم"),
-        "Carbon":       ("🌱  Carbon Impact",    "🌱  الأثر الكربوني"),
-    }
+    """Hardcoded pages list — works on Streamlit Cloud regardless of folder structure."""
+    pages = [
+        ("🏠  Overview",        "🏠  النظرة التنفيذية"),
+        ("📈  Tourist Trends",   "📈  اتجاهات السياحة"),
+        ("📅  Seasonality",      "📅  الموسمية"),
+        ("💰  Spending",         "💰  الإنفاق"),
+        ("🏨  Overnight Stays",  "🏨  ليالي الإقامة"),
+        ("🔮  Forecasting",      "🔮  التوقعات"),
+        ("🎯  Segmentation",     "🎯  التقسيم"),
+        ("🌱  Carbon Impact",    "🌱  الأثر الكربوني"),
+    ]
+    # Try to find actual .py files to get correct path
+    base   = os.path.dirname(os.path.abspath(__file__))
+    in_sub = os.path.isdir(os.path.join(base, "pages"))
+    PREFIX = "pages/" if in_sub else ""
+    filenames = [
+        "01_Overview.py","02_Tourist_Trends.py","03_Seasonality.py",
+        "04_Spending.py","05_Overnight_Stays.py","06_Forecasting.py",
+        "07_Segmentation.py","08_Carbon_Impact.py",
+    ]
     result = []
-    for f in files:
-        fname  = os.path.basename(f)
-        in_sub = "pages" + os.sep in f or "/pages/" in f
-        rel    = ("pages/"+fname) if in_sub else fname
-        key    = next((k for k in NAME_MAP if k.lower() in fname.lower()), None)
-        if key:
-            result.append((rel, NAME_MAP[key][0], NAME_MAP[key][1]))
-        else:
-            raw = re.sub(r"^d+_","",fname[:-3]).replace("_"," ")
-            result.append((rel, raw, raw))
+    for i, (en, ar) in enumerate(pages):
+        rel = PREFIX + filenames[i]
+        result.append((rel, en, ar))
     return result
 
 # ── Translations ──────────────────────────────────────────────────
@@ -363,11 +361,40 @@ with st.sidebar:
         st.session_state.lang  = "AR" if LANG=="EN" else "EN"; st.rerun()
     st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0 6px;"></div>',
                 unsafe_allow_html=True)
-    for rel_path, en_lbl, ar_lbl in _get_pages():
-        label = ar_lbl if LANG=="AR" else en_lbl
-        if st.button(label, key="nav_"+rel_path, use_container_width=True):
-            try: st.switch_page(rel_path)
-            except: pass
+
+    # ── Navigation — hardcoded, works on Streamlit Cloud ──────────
+    NAV_EN = [
+        ("🏠  Overview",       "01_Overview.py"),
+        ("📈  Tourist Trends",  "02_Tourist_Trends.py"),
+        ("📅  Seasonality",     "03_Seasonality.py"),
+        ("💰  Spending",        "04_Spending.py"),
+        ("🏨  Overnight Stays", "05_Overnight_Stays.py"),
+        ("🔮  Forecasting",     "06_Forecasting.py"),
+        ("🎯  Segmentation",    "07_Segmentation.py"),
+        ("🌱  Carbon Impact",   "08_Carbon_Impact.py"),
+    ]
+    NAV_AR = [
+        ("🏠  النظرة التنفيذية", "01_Overview.py"),
+        ("📈  اتجاهات السياحة",  "02_Tourist_Trends.py"),
+        ("📅  الموسمية",         "03_Seasonality.py"),
+        ("💰  الإنفاق",          "04_Spending.py"),
+        ("🏨  ليالي الإقامة",    "05_Overnight_Stays.py"),
+        ("🔮  التوقعات",         "06_Forecasting.py"),
+        ("🎯  التقسيم",          "07_Segmentation.py"),
+        ("🌱  الأثر الكربوني",   "08_Carbon_Impact.py"),
+    ]
+    _nav = NAV_AR if LANG=="AR" else NAV_EN
+    # detect if pages are in a subfolder
+    _base    = os.path.dirname(os.path.abspath(__file__))
+    _in_sub  = os.path.isdir(os.path.join(_base,"pages"))
+    _prefix  = "pages/" if _in_sub else ""
+
+    for label, fname in _nav:
+        if st.button(label, key="nav_"+fname, use_container_width=True):
+            try:
+                st.switch_page(_prefix + fname)
+            except Exception:
+                pass
     st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0;"></div>',
                 unsafe_allow_html=True)
     st.markdown(
