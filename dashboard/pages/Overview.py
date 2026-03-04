@@ -1,634 +1,461 @@
+# ═══════════════════════════════════════════════════════════════════
+#  Saudi Tourism Intelligence — Executive Overview
+#  Author : Eng. Goda Emad   |   Design : DataSaudi
+# ═══════════════════════════════════════════════════════════════════
 import streamlit as st
-import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
+import plotly.express as px
+import pandas as pd
+import base64, os, glob, re
 
-# ══════════════════════════════════════════
-# PAGE CONFIG
-# ══════════════════════════════════════════
 st.set_page_config(
-    page_title="Saudi Tourism Intelligence",
-    page_icon="🇸🇦",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Overview · Saudi Tourism Intelligence",
+    page_icon="🏠", layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-# ══════════════════════════════════════════
-# LANGUAGE & THEME STATE
-# ══════════════════════════════════════════
-if "lang" not in st.session_state:
-    st.session_state.lang = "EN"
-if "theme" not in st.session_state:
-    st.session_state.theme = "dark"
+for k, v in [("lang","EN"),("theme","dark")]:
+    if k not in st.session_state:
+        st.session_state[k] = v
 
-lang = st.session_state.lang
-theme = st.session_state.theme
+LANG  = st.session_state.lang
+THEME = st.session_state.theme
 
-# ══════════════════════════════════════════
-# TRANSLATIONS
-# ══════════════════════════════════════════
-T = {
-    "EN": {
-        "title": "Saudi Tourism Intelligence",
-        "subtitle": "AI-Powered Analytics Platform · Vision 2030",
-        "overview": "Executive Overview",
-        "built_by": "Built by",
-        "data_source": "Data Source",
-        "data_desc": "DataSaudi — Ministry of Economy & Planning",
-        "coverage": "Coverage",
-        "coverage_val": "2015 – 2024 · 11 Datasets · 3,210 Records",
-        "total_tourists": "Total Tourists 2024",
-        "inbound": "Inbound Tourists",
-        "domestic": "Domestic Tourists",
-        "overnight": "Overnight Stays",
-        "avg_spending": "Avg Spending (Inbound)",
-        "carbon": "Carbon Impact",
-        "recovery": "Recovery 2021→2024",
-        "peak_year": "Peak Year",
-        "covid_drop": "COVID Drop 2020",
-        "top_purpose": "Top Purpose 2024",
-        "key_insights": "Key Insights",
-        "insight_1": "Leisure overtook Religious as top purpose in 2024 — Vision 2030 working!",
-        "insight_2": "Inbound tourists spend 4x more than Domestic per trip",
-        "insight_3": "Inbound overnight stays grew +1,663% from 2021 to 2024",
-        "insight_4": "10% carbon reduction = saving 324,619 trees equivalent",
-        "tourists_trend": "Tourist Trend 2015–2024",
-        "inbound_label": "Inbound",
-        "domestic_label": "Domestic",
-        "purposes": "2024 Tourist Purpose Breakdown",
-        "forecast_preview": "Demand Forecast Preview 2025–2026",
-        "peak_2025": "Peak 2025",
-        "peak_2026": "Peak 2026",
-        "pages": "Navigation",
-        "page_overview": "🏠 Overview",
-        "page_trends": "📈 Tourist Trends",
-        "page_season": "📅 Seasonality",
-        "page_spend": "💰 Spending",
-        "page_overnight": "🏨 Overnight Stays",
-        "page_forecast": "🔮 Forecasting",
-        "page_segment": "🎯 Segmentation",
-        "page_carbon": "🌱 Carbon Impact",
-        "dark_mode": "🌙 Dark",
-        "light_mode": "☀️ Light",
-        "lang_toggle": "🌐 العربية",
-        "methodology": "Methodology",
-        "m1": "Prophet · Demand Forecasting",
-        "m2": "K-Means · Tourist Segmentation",
-        "m3": "Gradient Boosting · Spending Prediction (R²=0.986)",
-    },
-    "AR": {
-        "title": "ذكاء السياحة السعودية",
-        "subtitle": "منصة تحليلات مدعومة بالذكاء الاصطناعي · رؤية 2030",
-        "overview": "نظرة تنفيذية عامة",
-        "built_by": "من تطوير",
-        "data_source": "مصدر البيانات",
-        "data_desc": "داتا السعودية — وزارة الاقتصاد والتخطيط",
-        "coverage": "التغطية",
-        "coverage_val": "2015 – 2024 · 11 مجموعة بيانات · 3,210 سجل",
-        "total_tourists": "إجمالي السياح 2024",
-        "inbound": "السياح الوافدون",
-        "domestic": "السياح المحليون",
-        "overnight": "ليالي الإقامة",
-        "avg_spending": "متوسط الإنفاق (وافد)",
-        "carbon": "الأثر الكربوني",
-        "recovery": "التعافي 2021←2024",
-        "peak_year": "أفضل سنة",
-        "covid_drop": "انخفاض كوفيد 2020",
-        "top_purpose": "أبرز غرض 2024",
-        "key_insights": "أبرز الاستنتاجات",
-        "insight_1": "الترفيه تجاوز الديني كأول غرض سياحي في 2024 — رؤية 2030 تعمل!",
-        "insight_2": "السائح الوافد ينفق 4 أضعاف السائح المحلي لكل رحلة",
-        "insight_3": "ليالي إقامة الوافدين نمت +1,663% من 2021 إلى 2024",
-        "insight_4": "تخفيض 10% كربون = توفير ما يعادل زراعة 324,619 شجرة",
-        "tourists_trend": "اتجاه السياحة 2015–2024",
-        "inbound_label": "وافد",
-        "domestic_label": "محلي",
-        "purposes": "توزيع أغراض السياحة 2024",
-        "forecast_preview": "معاينة توقعات الطلب 2025–2026",
-        "peak_2025": "ذروة 2025",
-        "peak_2026": "ذروة 2026",
-        "pages": "التنقل",
-        "page_overview": "🏠 نظرة عامة",
-        "page_trends": "📈 اتجاهات السياحة",
-        "page_season": "📅 الموسمية",
-        "page_spend": "💰 الإنفاق",
-        "page_overnight": "🏨 ليالي الإقامة",
-        "page_forecast": "🔮 التوقعات",
-        "page_segment": "🎯 تقسيم السياح",
-        "page_carbon": "🌱 الأثر الكربوني",
-        "dark_mode": "🌙 داكن",
-        "light_mode": "☀️ فاتح",
-        "lang_toggle": "🌐 English",
-        "methodology": "المنهجية",
-        "m1": "Prophet · توقع الطلب",
-        "m2": "K-Means · تقسيم السياح",
-        "m3": "Gradient Boosting · توقع الإنفاق (R²=0.986)",
-    }
+# ── Colors ───────────────────────────────────────────────────────
+C = {
+    "teal":"#17B19B","teal_act":"#149581","bg":"#1A1E1F",
+    "sec_bg":"#161B1C","card_bg":"#1E2528","navbar":"#031414",
+    "white":"#F4F9F8","grey":"#A1A6B7","foot_txt":"#B5B8B7",
+    "border":"#2A3235","orange":"#F4D044","gold":"#C9A84C","blue":"#365C8D",
+} if THEME=="dark" else {
+    "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
+    "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
+    "white":"#0D1A1E","grey":"#374151","foot_txt":"#6B7280",
+    "border":"#C8D8D5","orange":"#B45309","gold":"#92650A","blue":"#1D4ED8",
 }
-t = T[lang]
+def clr(k): return C.get(k, C["teal"])
+ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
+dir_val = "rtl"     if LANG=="AR" else "ltr"
 
-# ══════════════════════════════════════════
-# THEME COLORS
-# ══════════════════════════════════════════
-if theme == "dark":
-    bg_main       = "#0D1B2A"
-    bg_card       = "#1A2B3C"
-    bg_card2      = "#162233"
-    text_primary  = "#F0F4F8"
-    text_secondary= "#8FA8C0"
-    accent_teal   = "#00C9B1"
-    accent_gold   = "#F0A500"
-    accent_blue   = "#3A86FF"
-    accent_green  = "#00E676"
-    accent_red    = "#FF5252"
-    border_color  = "#2A3F55"
-    chart_bg      = "rgba(13,27,42,0)"
-    plotly_template = "plotly_dark"
-else:
-    bg_main       = "#F4F7FB"
-    bg_card       = "#FFFFFF"
-    bg_card2      = "#EDF2F7"
-    text_primary  = "#1A2B3C"
-    text_secondary= "#4A6080"
-    accent_teal   = "#009688"
-    accent_gold   = "#E08C00"
-    accent_blue   = "#1565C0"
-    accent_green  = "#2E7D32"
-    accent_red    = "#C62828"
-    border_color  = "#CBD5E0"
-    chart_bg      = "rgba(244,247,251,0)"
-    plotly_template = "plotly_white"
+# ── Helpers ───────────────────────────────────────────────────────
+@st.cache_data(show_spinner=False)
+def _b64(p):
+    try:
+        base = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(base, p), "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except: return ""
 
-dir_attr = 'rtl' if lang == "AR" else 'ltr'
+@st.cache_data(show_spinner=False)
+def _get_pages():
+    base  = os.path.dirname(os.path.abspath(__file__))
+    sub   = glob.glob(os.path.join(base,"pages","[0-9]*.py"))
+    same  = glob.glob(os.path.join(base,"[0-9]*.py"))
+    files = sorted(sub if sub else same)
+    NAME_MAP = {
+        "Overview":     ("🏠  Overview",        "🏠  النظرة التنفيذية"),
+        "Tourist":      ("📈  Tourist Trends",   "📈  اتجاهات السياحة"),
+        "Seasonality":  ("📅  Seasonality",      "📅  الموسمية"),
+        "Spending":     ("💰  Spending",         "💰  الإنفاق"),
+        "Overnight":    ("🏨  Overnight Stays",  "🏨  ليالي الإقامة"),
+        "Forecasting":  ("🔮  Forecasting",      "🔮  التوقعات"),
+        "Segmentation": ("🎯  Segmentation",     "🎯  التقسيم"),
+        "Carbon":       ("🌱  Carbon Impact",    "🌱  الأثر الكربوني"),
+    }
+    result = []
+    for f in files:
+        fname  = os.path.basename(f)
+        in_sub = "/pages/" in f.replace("\\","/")
+        rel    = ("pages/"+fname) if in_sub else fname
+        key    = next((k for k in NAME_MAP if k.lower() in fname.lower()), None)
+        if key:
+            result.append((rel, NAME_MAP[key][0], NAME_MAP[key][1]))
+        else:
+            raw = re.sub(r"^\d+_","",fname[:-3]).replace("_"," ")
+            result.append((rel, raw, raw))
+    return result
 
-# ══════════════════════════════════════════
-# CSS
-# ══════════════════════════════════════════
-st.markdown(f"""
+logo_b64 = _b64("assets/logo.jpg")
+logo_src = "data:image/jpeg;base64,"+logo_b64 if logo_b64 else ""
+logo_img = ('<img src="'+logo_src+'" style="height:42px;border-radius:8px;"/>'
+            if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
+
+# ── Translations ──────────────────────────────────────────────────
+TR = {
+"EN":{
+    "name":"Saudi Tourism Intelligence","sub":"AI ANALYTICS PLATFORM",
+    "thm":"☀️  Light" if THEME=="dark" else "🌙  Dark",
+    "lng":"🌐  العربية",
+    "title":"🏠 Executive Overview",
+    "sub_pg":"KPIs · Trends · Recovery Analysis · Vision 2030 Progress",
+    # KPIs
+    "k":[
+        ("115.8M","Total Tourists 2024","teal","▲ +23%"),
+        ("30.1M", "Inbound Tourists",   "teal","▲ +10%"),
+        ("85.7M", "Domestic Tourists",  "blue","▲ +14%"),
+        ("1.10B", "Overnight Stays",    "teal","▲ +41%"),
+        ("19.2",  "Avg Stay (nights)",  "gold","▲ +18%"),
+        ("5,622", "Avg Spend (SAR)",    "orange","▲ +8%"),
+        ("98.6%", "ML Accuracy",        "green",""),
+        ("0.630", "Silhouette Score",   "blue",""),
+    ],
+    "s1":"TOURIST VOLUME","s1h":"Annual Tourist Arrivals 2015–2024",
+    "s2":"RECOVERY","s2h":"Post-COVID Recovery Index",
+    "s3":"PURPOSE","s3h":"Visit Purpose Breakdown 2024",
+    "s4":"NATIONALITY","s4h":"Top Inbound Nationalities 2024",
+    "s5":"TREND","s5h":"Monthly Seasonality Pattern",
+    "s6":"INSIGHTS","s6h":"Key Findings",
+    "ins":[
+        ("🚀","2024 record: 115.9M — exceeds Vision 2030 interim target of 100M","teal"),
+        ("🏖️","Leisure overtook Religious tourism as #1 purpose for first time in 2024","orange"),
+        ("📈","Inbound avg stay doubled: 8.6 → 19.2 nights (2021–2024) · +123%","blue"),
+        ("💰","Inbound spend = 4× domestic (SAR 5,622 vs 1,336 per trip)","gold"),
+    ],
+},
+"AR":{
+    "name":"ذكاء السياحة السعودية","sub":"AI ANALYTICS PLATFORM",
+    "thm":"☀️  فاتح" if THEME=="dark" else "🌙  داكن",
+    "lng":"🌐  English",
+    "title":"🏠 النظرة التنفيذية",
+    "sub_pg":"مؤشرات الأداء · الاتجاهات · تحليل التعافي · رؤية 2030",
+    "k":[
+        ("115.8M","إجمالي السياح 2024","teal","▲ +23%"),
+        ("30.1M", "السياح الوافدون",   "teal","▲ +10%"),
+        ("85.7M", "السياح المحليون",   "blue","▲ +14%"),
+        ("1.10B", "ليالي الإقامة",     "teal","▲ +41%"),
+        ("19.2",  "متوسط الإقامة (ليلة)","gold","▲ +18%"),
+        ("5,622", "متوسط الإنفاق (ريال)","orange","▲ +8%"),
+        ("98.6%", "دقة النموذج",       "green",""),
+        ("0.630", "معامل Silhouette",  "blue",""),
+    ],
+    "s1":"حجم السياحة","s1h":"الوصول السنوي للسياح 2015–2024",
+    "s2":"التعافي","s2h":"مؤشر التعافي ما بعد كوفيد",
+    "s3":"الغرض","s3h":"توزيع غرض الزيارة 2024",
+    "s4":"الجنسيات","s4h":"أبرز الجنسيات الوافدة 2024",
+    "s5":"الاتجاه","s5h":"النمط الموسمي الشهري",
+    "s6":"الاستنتاجات","s6h":"أبرز النتائج",
+    "ins":[
+        ("🚀","رقم قياسي 2024: 115.9M — يتجاوز المستهدف المرحلي لرؤية 2030 (100M)","teal"),
+        ("🏖️","الترفيه تجاوز الديني لأول مرة كغرض رئيسي في 2024","orange"),
+        ("📈","مدة الإقامة تضاعفت: 8.6 → 19.2 ليلة (2021–2024) · +123%","blue"),
+        ("💰","إنفاق الوافدين = 4× المحليين (5,622 مقابل 1,336 ريال/رحلة)","gold"),
+    ],
+},
+}
+t = TR[LANG]
+
+# ── Data ──────────────────────────────────────────────────────────
+YEARS     = list(range(2015,2025))
+INBOUND   = [17.5,18.0,16.1,15.3,14.1,6.3,11.5,16.0,27.4,30.1]
+DOMESTIC  = [68.2,72.0,74.0,77.0,80.5,40.0,55.0,62.0,75.0,85.7]
+TOTAL     = [i+d for i,d in zip(INBOUND,DOMESTIC)]
+RECOVERY  = [round(v/TOTAL[4]*100,1) for v in TOTAL]  # 2019 baseline=100%
+
+MONTHS    = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+MONTHLY   = [6.8,6.2,8.1,7.4,8.9,11.2,14.3,13.8,10.1,9.4,7.8,6.0]
+
+PURPOSE_EN = ["Leisure","Religious","Business","VFR","Other"]
+PURPOSE_AR = ["ترفيه","ديني","أعمال","زيارة أهل","أخرى"]
+PURPOSE_V  = [38,29,14,12,7]
+
+NAT_EN = ["GCC","Asia Pacific","Europe","Americas","Middle East","Africa"]
+NAT_AR = ["دول الخليج","آسيا والمحيط الهادئ","أوروبا","الأمريكتان","الشرق الأوسط","أفريقيا"]
+NAT_V  = [42,21,16,9,8,4]
+NAT_C  = [C["teal"],C["blue"],C["orange"],C["gold"],C["purple"] if "purple" in C else "#8B5CF6",C["grey"]]
+
+# ════════════════════════════════════════════════════════════════════
+# GLOBAL CSS
+# ════════════════════════════════════════════════════════════════════
+st.markdown("""
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@400;600&family=Tajawal:wght@300;400;700;800&display=swap');
-
-  html, body, [data-testid="stAppViewContainer"] {{
-    background-color: {bg_main} !important;
-    font-family: {'Tajawal' if lang=='AR' else 'Sora'}, sans-serif;
-    direction: {dir_attr};
-  }}
-  [data-testid="stSidebar"] {{
-    background: {bg_card} !important;
-    border-right: 1px solid {border_color};
-  }}
-  [data-testid="stSidebar"] * {{ color: {text_primary} !important; }}
-
-  .hero-banner {{
-    background: linear-gradient(135deg, {bg_card} 0%, {bg_card2} 100%);
-    border: 1px solid {border_color};
-    border-left: 4px solid {accent_teal};
-    border-radius: 16px;
-    padding: 32px 36px;
-    margin-bottom: 24px;
-    position: relative;
-    overflow: hidden;
-  }}
-  .hero-banner::before {{
-    content: '';
-    position: absolute;
-    top: -60px; right: -60px;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, {accent_teal}22 0%, transparent 70%);
-    border-radius: 50%;
-  }}
-  .hero-title {{
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: {text_primary};
-    margin: 0 0 6px 0;
-    letter-spacing: -0.5px;
-  }}
-  .hero-subtitle {{
-    font-size: 1rem;
-    color: {accent_teal};
-    font-weight: 600;
-    margin: 0 0 16px 0;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }}
-  .hero-meta {{
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-  }}
-  .meta-item {{
-    display: flex;
-    flex-direction: column;
-  }}
-  .meta-label {{
-    font-size: 0.7rem;
-    color: {text_secondary};
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-  }}
-  .meta-value {{
-    font-size: 0.85rem;
-    color: {text_primary};
-    font-weight: 600;
-  }}
-  .kpi-card {{
-    background: {bg_card};
-    border: 1px solid {border_color};
-    border-radius: 14px;
-    padding: 20px 18px;
-    text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-    height: 100%;
-  }}
-  .kpi-card:hover {{
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px {accent_teal}22;
-  }}
-  .kpi-icon {{ font-size: 1.6rem; margin-bottom: 6px; }}
-  .kpi-value {{
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: {accent_teal};
-    line-height: 1.1;
-    font-family: 'IBM Plex Mono', monospace;
-  }}
-  .kpi-label {{
-    font-size: 0.72rem;
-    color: {text_secondary};
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 600;
-    margin-top: 4px;
-  }}
-  .kpi-delta {{
-    font-size: 0.78rem;
-    font-weight: 700;
-    margin-top: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-  }}
-
-  .insight-card {{
-    background: {bg_card};
-    border: 1px solid {border_color};
-    border-radius: 12px;
-    padding: 16px 18px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }}
-  .insight-icon {{
-    font-size: 1.3rem;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }}
-  .insight-text {{
-    font-size: 0.88rem;
-    color: {text_primary};
-    line-height: 1.5;
-    font-weight: 400;
-  }}
-
-  .section-title {{
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: {text_primary};
-    margin: 28px 0 14px 0;
-    padding-bottom: 8px;
-    border-bottom: 2px solid {accent_teal};
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }}
-
-  .method-pill {{
-    display: inline-block;
-    background: {bg_card2};
-    border: 1px solid {border_color};
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 0.78rem;
-    color: {text_primary};
-    font-weight: 600;
-    margin: 4px;
-  }}
-
-  .footer-bar {{
-    background: {bg_card};
-    border: 1px solid {border_color};
-    border-radius: 12px;
-    padding: 16px 24px;
-    margin-top: 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-  }}
-  .footer-name {{
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: {accent_teal};
-  }}
-  .footer-link {{
-    font-size: 0.78rem;
-    color: {text_secondary};
-  }}
-  .footer-link a {{
-    color: {accent_blue} !important;
-    text-decoration: none;
-    font-weight: 600;
-  }}
-
-  div[data-testid="stVerticalBlock"] > div {{ gap: 0 !important; }}
-  .stPlotlyChart {{ border-radius: 12px; overflow: hidden; }}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&family=Tajawal:wght@400;700;800&display=swap');
+[data-testid="stHeader"],[data-testid="stToolbar"],
+[data-testid="stSidebarNav"],footer,#MainMenu{display:none!important;}
+.block-container{padding:0!important;max-width:100%!important;}
+section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
+.ds-card{transition:transform .22s,box-shadow .22s,border-color .22s;}
+.ds-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}
 </style>
-""", unsafe_allow_html=True)
+"""+
+"<style>"
+"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']{"
+"background:"+C["bg"]+"!important;direction:"+dir_val+";font-family:'"+ff+"',sans-serif;"
+"color:"+C["white"]+"!important;}"
+"[data-testid='stSidebar']{background:"+C["navbar"]+"!important;border-right:1px solid "+C["border"]+"!important;}"
+"[data-testid='stSidebar'] label,[data-testid='stSidebar'] span,"
+"[data-testid='stSidebar'] p,[data-testid='stSidebar'] div{color:"+C["white"]+"!important;}"
+"[data-testid='stSidebar'] .stButton>button{"
+"background:transparent!important;border:1px solid transparent!important;"
+"color:"+C["grey"]+"!important;border-radius:8px!important;"
+"width:100%!important;font-size:.84rem!important;font-weight:500!important;"
+"padding:9px 12px!important;margin-bottom:2px!important;transition:all .15s!important;}"
+"[data-testid='stSidebar'] .stButton>button:hover{"
+"background:"+C["teal"]+"22!important;border-color:"+C["teal"]+"44!important;"
+"color:"+C["teal"]+"!important;}"
+"[data-testid='stSidebar'] div:nth-child(3) .stButton>button,"
+"[data-testid='stSidebar'] div:nth-child(4) .stButton>button{"
+"background:#2A3235!important;border:1px solid #3A4C50!important;"
+"color:#F4F9F8!important;font-weight:600!important;margin-bottom:5px!important;}"
+"[data-testid='stSidebar'] div:nth-child(3) .stButton>button:hover,"
+"[data-testid='stSidebar'] div:nth-child(4) .stButton>button:hover{"
+"border-color:"+C["gold"]+"!important;color:"+C["gold"]+"!important;background:#2A3235!important;}"
+"[data-baseweb='slider']>div>div:nth-child(2){background:"+C["gold"]+"!important;}"
+"[data-baseweb='slider'] [role='slider']{"
+"background:"+C["gold"]+"!important;border-color:"+C["gold"]+"!important;"
+"box-shadow:0 0 0 4px "+C["gold"]+"22!important;}"
+"</style>",
+unsafe_allow_html=True)
 
-# ══════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
 # SIDEBAR
-# ══════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    st.image("assets/logo.png", use_column_width=True)
-    st.markdown(f"<div style='text-align:center; font-size:0.7rem; color:{text_secondary}; margin-bottom:16px;'>{t['subtitle']}</div>", unsafe_allow_html=True)
-    st.divider()
+    st.markdown(
+        '<div style="display:flex;align-items:center;gap:10px;padding:16px 4px 14px;">'
+        +logo_img+
+        '<div>'
+        '<div style="font-size:.88rem;font-weight:700;color:'+C["white"]+';">'+t["name"]+'</div>'
+        '<div style="font-size:.58rem;color:'+C["teal"]+';font-weight:600;'
+        'letter-spacing:1.2px;text-transform:uppercase;">'+t["sub"]+'</div>'
+        '</div></div>',
+        unsafe_allow_html=True)
+    st.markdown('<div style="height:1px;background:'+C["border"]+';margin-bottom:10px;"></div>',
+                unsafe_allow_html=True)
+    if st.button(t["thm"], key="k_thm", use_container_width=True):
+        st.session_state.theme = "light" if THEME=="dark" else "dark"; st.rerun()
+    if st.button(t["lng"], key="k_lng", use_container_width=True):
+        st.session_state.lang  = "AR" if LANG=="EN" else "EN"; st.rerun()
+    st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0 6px;"></div>',
+                unsafe_allow_html=True)
+    for rel_path, en_lbl, ar_lbl in _get_pages():
+        label = ar_lbl if LANG=="AR" else en_lbl
+        if st.button(label, key="nav_"+rel_path, use_container_width=True):
+            try: st.switch_page(rel_path)
+            except: pass
+    st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0 8px;"></div>',
+                unsafe_allow_html=True)
+    st.markdown(
+        '<div style="font-size:.67rem;color:'+C["grey"]+';padding:0 2px;line-height:1.9;">'
+        '📦 DataSaudi · 2015–2024<br>'
+        '🐙 <a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" '
+        'target="_blank" style="color:'+C["teal"]+';text-decoration:none;">GitHub</a>'
+        '  ·  '
+        '💼 <a href="https://www.linkedin.com/in/goda-emad/" '
+        'target="_blank" style="color:'+C["teal"]+';text-decoration:none;">LinkedIn</a>'
+        '</div>', unsafe_allow_html=True)
 
-    col_a, col_b = st.columns(2)
-    with col_a:
-        if st.button(t["dark_mode"] if theme == "light" else t["light_mode"], use_container_width=True):
-            st.session_state.theme = "light" if theme == "dark" else "dark"
-            st.rerun()
-    with col_b:
-        if st.button(t["lang_toggle"], use_container_width=True):
-            st.session_state.lang = "AR" if lang == "EN" else "EN"
-            st.rerun()
+# ════════════════════════════════════════════════════════════════════
+# HELPERS
+# ════════════════════════════════════════════════════════════════════
+def sec_head(badge, h2):
+    return (
+        '<div style="margin-bottom:22px;">'
+        '<div style="display:inline-block;background:'+C["teal"]+'15;'
+        'border:1px solid '+C["teal"]+'44;color:'+C["teal"]+';'
+        'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
+        'padding:4px 12px;border-radius:4px;margin-bottom:10px;">'+badge+'</div>'
+        '<div style="font-size:1.3rem;font-weight:700;color:'+C["white"]+';">'+h2+'</div>'
+        '</div>')
 
-    st.divider()
-    st.markdown(f"<div style='font-size:0.75rem; font-weight:700; color:{text_secondary}; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;'>{t['pages']}</div>", unsafe_allow_html=True)
-    pages = ["page_overview","page_trends","page_season","page_spend",
-             "page_overnight","page_forecast","page_segment","page_carbon"]
-    for p in pages:
-        st.markdown(f"<div style='padding:6px 10px; border-radius:8px; font-size:0.85rem; color:{text_primary}; margin-bottom:2px;'>{t[p]}</div>", unsafe_allow_html=True)
-
-    st.divider()
-    st.markdown(f"""
-    <div style='font-size:0.72rem; color:{text_secondary};'>
-      <div style='font-weight:700; color:{accent_teal}; margin-bottom:4px;'>{t['built_by']}</div>
-      <div style='color:{text_primary}; font-weight:600;'>Eng. Goda Emad</div>
-      <a href='https://github.com/Goda-Emad/Saudi-Tourism-Intelligence/tree/main' target='_blank'
-         style='color:{accent_blue}; font-size:0.7rem;'>🐙 GitHub</a> &nbsp;
-      <a href='https://www.linkedin.com/in/goda-emad/' target='_blank'
-         style='color:{accent_blue}; font-size:0.7rem;'>💼 LinkedIn</a>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ══════════════════════════════════════════
-# HERO BANNER
-# ══════════════════════════════════════════
-st.markdown(f"""
-<div class='hero-banner'>
-  <div class='hero-title'>🇸🇦 {t['title']}</div>
-  <div class='hero-subtitle'>{t['subtitle']}</div>
-  <div class='hero-meta'>
-    <div class='meta-item'>
-      <span class='meta-label'>{t['data_source']}</span>
-      <span class='meta-value'>{t['data_desc']}</span>
-    </div>
-    <div class='meta-item'>
-      <span class='meta-label'>{t['coverage']}</span>
-      <span class='meta-value'>{t['coverage_val']}</span>
-    </div>
-    <div class='meta-item'>
-      <span class='meta-label'>{t['built_by']}</span>
-      <span class='meta-value'>Eng. Goda Emad</span>
-    </div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════
-# KPI CARDS — ROW 1
-# ══════════════════════════════════════════
-st.markdown(f"<div class='section-title'>📊 {t['overview']}</div>", unsafe_allow_html=True)
-
-kpis_row1 = [
-    ("🌍", t["total_tourists"],  "115.8M",  f"+8.1% YoY",   accent_teal),
-    ("✈️", t["inbound"],         "29.7M",   "+8.4% YoY",    accent_blue),
-    ("🏠", t["domestic"],        "86.2M",   "+5.2% YoY",    accent_gold),
-    ("🌙", t["overnight"],       "1.1B",    "+19.1% YoY",   accent_green),
-]
-
-cols = st.columns(4)
-for col, (icon, label, val, delta, color) in zip(cols, kpis_row1):
-    with col:
-        st.markdown(f"""
-        <div class='kpi-card'>
-          <div class='kpi-icon'>{icon}</div>
-          <div class='kpi-value' style='color:{color};'>{val}</div>
-          <div class='kpi-label'>{label}</div>
-          <div class='kpi-delta' style='color:{accent_green};'>{delta}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-st.markdown("<div style='margin:10px 0;'></div>", unsafe_allow_html=True)
-
-# KPI CARDS — ROW 2
-kpis_row2 = [
-    ("💰", t["avg_spending"],  "SAR 5,622", "+12.3% YoY",  accent_gold),
-    ("🌱", t["carbon"],        "68.17 MT",  "+23.2% YoY",  accent_red),
-    ("🚀", t["recovery"],      "×1.72",     "2021 → 2024", accent_teal),
-    ("📅", t["peak_year"],     "2024",      "All-time high",accent_blue),
-]
-
-cols2 = st.columns(4)
-for col, (icon, label, val, delta, color) in zip(cols2, kpis_row2):
-    with col:
-        st.markdown(f"""
-        <div class='kpi-card'>
-          <div class='kpi-icon'>{icon}</div>
-          <div class='kpi-value' style='color:{color};'>{val}</div>
-          <div class='kpi-label'>{label}</div>
-          <div class='kpi-delta' style='color:{text_secondary};'>{delta}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-# ══════════════════════════════════════════
-# CHARTS ROW
-# ══════════════════════════════════════════
-st.markdown(f"<div class='section-title'>📈 {t['tourists_trend']}</div>", unsafe_allow_html=True)
-
-chart_col, pie_col = st.columns([3, 2])
-
-# Trend Chart
-with chart_col:
-    years = list(range(2015, 2025))
-    inbound_data =  [17.99, 18.04, 16.11, 15.33, 17.53, 4.14, 3.48, 16.64, 27.18, 29.73]
-    domestic_data = [46.45, 45.04, 43.82, 43.26, 47.81, 42.11, 63.83, 77.84, 81.92, 86.16]
-
-    fig_trend = go.Figure()
-    fig_trend.add_trace(go.Scatter(
-        x=years, y=inbound_data, name=t["inbound_label"],
-        line=dict(color=accent_blue, width=2.5),
-        fill='tozeroy', fillcolor=f"{accent_blue}15",
-        marker=dict(size=6)
-    ))
-    fig_trend.add_trace(go.Scatter(
-        x=years, y=domestic_data, name=t["domestic_label"],
-        line=dict(color=accent_teal, width=2.5),
-        fill='tozeroy', fillcolor=f"{accent_teal}15",
-        marker=dict(size=6)
-    ))
-    fig_trend.add_vrect(x0=2019.5, x1=2021.5,
-        fillcolor=accent_red, opacity=0.08,
-        annotation_text="COVID-19", annotation_position="top left",
-        annotation=dict(font_color=accent_red, font_size=10))
-    fig_trend.update_layout(
-        template=plotly_template,
-        paper_bgcolor=chart_bg, plot_bgcolor=chart_bg,
-        height=320, margin=dict(l=10, r=10, t=20, b=10),
-        legend=dict(orientation="h", y=-0.15, font=dict(size=11)),
-        xaxis=dict(showgrid=False, tickfont=dict(size=10)),
-        yaxis=dict(showgrid=True, gridcolor=border_color,
-                   tickfont=dict(size=10), title="Millions"),
-        font=dict(color=text_primary),
+def apply_layout(fig, height=360):
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=C["grey"], family=ff),
+        height=height, margin=dict(l=10,r=10,t=36,b=10),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11)),
+        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235", tickfont=dict(size=10)),
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235", tickfont=dict(size=10)),
     )
-    st.plotly_chart(fig_trend, use_container_width=True, config={"displayModeBar": False})
+    return fig
 
-# Purpose Pie
-with pie_col:
-    purposes = ["Leisure", "VFR", "Religious", "Business", "Other"]
-    values   = [39.8, 36.0, 23.7, 10.9, 5.4]
-    colors   = [accent_teal, accent_blue, accent_gold, accent_green, text_secondary]
+def chart(fig):
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
 
-    fig_pie = go.Figure(go.Pie(
-        labels=purposes, values=values,
-        hole=0.55,
-        marker=dict(colors=colors, line=dict(color=bg_main, width=2)),
-        textfont=dict(size=11),
-        hovertemplate="<b>%{label}</b><br>%{value}M tourists<extra></extra>"
-    ))
-    fig_pie.add_annotation(
-        text="<b>115.8M</b><br>Total",
-        x=0.5, y=0.5, showarrow=False,
-        font=dict(size=12, color=text_primary)
-    )
-    fig_pie.update_layout(
-        template=plotly_template,
-        paper_bgcolor=chart_bg, plot_bgcolor=chart_bg,
-        height=320, margin=dict(l=10, r=10, t=20, b=10),
-        showlegend=True,
-        legend=dict(orientation="v", font=dict(size=10), x=1.0),
-        font=dict(color=text_primary),
-        title=dict(text=t["purposes"], font=dict(size=12), x=0.5)
-    )
-    st.plotly_chart(fig_pie, use_container_width=True, config={"displayModeBar": False})
+# ════════════════════════════════════════════════════════════════════
+# PAGE HEADER
+# ════════════════════════════════════════════════════════════════════
+st.markdown(
+    '<div style="background:'+C["navbar"]+';border-bottom:1px solid '+C["border"]+';'
+    'padding:24px 40px 20px;">'
+    '<div style="display:inline-block;background:'+C["teal"]+'15;border:1px solid '+C["teal"]+'44;'
+    'color:'+C["teal"]+';font-size:.57rem;font-weight:700;letter-spacing:2.5px;'
+    'text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:10px;">'
+    'EXECUTIVE OVERVIEW · KPIs</div>'
+    '<div style="font-size:1.85rem;font-weight:800;color:'+C["white"]+';'
+    'letter-spacing:-.5px;margin-bottom:5px;">'+t["title"]+'</div>'
+    '<div style="font-size:.82rem;color:'+C["grey"]+';">'+t["sub_pg"]+'</div>'
+    '</div>',
+    unsafe_allow_html=True)
 
-# ══════════════════════════════════════════
-# INSIGHTS + FORECAST PREVIEW
-# ══════════════════════════════════════════
-ins_col, fore_col = st.columns([1, 1])
+# ════════════════════════════════════════════════════════════════════
+# KPI GRID — 8 cards
+# ════════════════════════════════════════════════════════════════════
+kpi_html = '<div style="padding:28px 40px 0;"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'
+for val, lbl, ck, delta in t["k"]:
+    arrow = ('<span style="font-size:.7rem;color:'+clr(ck)+';font-weight:700;margin-left:5px;">'+delta+'</span>'
+             if delta else "")
+    kpi_html += (
+        '<div class="ds-card" style="background:'+C["card_bg"]+';border:1px solid '+C["border"]+';'
+        'border-radius:10px;padding:20px 18px;">'
+        '<div style="font-size:.62rem;color:'+C["grey"]+';text-transform:uppercase;'
+        'letter-spacing:1px;font-weight:500;margin-bottom:8px;">'+lbl+'</div>'
+        '<div style="display:flex;align-items:baseline;">'
+        '<div style="font-size:1.75rem;font-weight:700;color:'+clr(ck)+';'
+        'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;">'+val+'</div>'
+        +arrow+'</div></div>')
+kpi_html += '</div></div>'
+st.markdown(kpi_html, unsafe_allow_html=True)
 
-with ins_col:
-    st.markdown(f"<div class='section-title'>💡 {t['key_insights']}</div>", unsafe_allow_html=True)
-    insights = [
-        ("🏖️", t["insight_1"], accent_teal),
-        ("💰", t["insight_2"], accent_gold),
-        ("🚀", t["insight_3"], accent_blue),
-        ("🌱", t["insight_4"], accent_green),
-    ]
-    for icon, text, color in insights:
-        st.markdown(f"""
-        <div class='insight-card' style='border-left: 3px solid {color};'>
-          <div class='insight-icon'>{icon}</div>
-          <div class='insight-text'>{text}</div>
-        </div>
-        """, unsafe_allow_html=True)
+# ════════════════════════════════════════════════════════════════════
+# ROW 1 — Tourist Volume + Recovery
+# ════════════════════════════════════════════════════════════════════
+st.markdown('<div style="padding:28px 40px 0;">'+sec_head(t["s1"],t["s1h"])+'</div>',
+            unsafe_allow_html=True)
+c1, c2 = st.columns([3,2], gap="large")
 
-with fore_col:
-    st.markdown(f"<div class='section-title'>🔮 {t['forecast_preview']}</div>", unsafe_allow_html=True)
+with c1:
+    fig1 = go.Figure()
+    fig1.add_trace(go.Bar(x=YEARS, y=DOMESTIC, name="Domestic" if LANG=="EN" else "محليون",
+        marker=dict(color=C["blue"], opacity=.85, line=dict(width=0)),
+        hovertemplate="%{x}: <b>%{y}M</b><extra></extra>"))
+    fig1.add_trace(go.Bar(x=YEARS, y=INBOUND, name="Inbound" if LANG=="EN" else "وافدون",
+        marker=dict(color=C["teal"], opacity=.85, line=dict(width=0)),
+        hovertemplate="%{x}: <b>%{y}M</b><extra></extra>"))
+    fig1.add_trace(go.Scatter(x=YEARS, y=TOTAL, name="Total" if LANG=="EN" else "الإجمالي",
+        line=dict(color=C["orange"], width=2.5),
+        mode="lines+markers", marker=dict(size=7, color=C["orange"]),
+        hovertemplate="%{x}: <b>%{y}M</b><extra></extra>"))
+    fig1.add_vrect(x0=2019.5, x1=2020.5, fillcolor="rgba(239,68,68,0.1)",
+                   line_width=0, annotation_text="COVID",
+                   annotation_font=dict(color="#EF4444", size=10))
+    apply_layout(fig1)
+    fig1.update_layout(barmode="stack", bargap=0.18)
+    fig1.update_yaxes(title_text="Millions")
+    chart(fig1)
 
-    months_2025 = [f"2025-{str(m).zfill(2)}" for m in range(1,13)]
-    months_2026 = [f"2026-{str(m).zfill(2)}" for m in range(1,13)]
-    forecast_2025 = [12307,10628,10812,10074,8964,11238,11832,11124,9846,9561,11710,10798]
-    forecast_2026 = [13680,11797,11963,11180,9927,12458,13063,12290,10831,10550,12905,11897]
+with c2:
+    st.markdown(sec_head(t["s2"], t["s2h"]), unsafe_allow_html=True)
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(x=YEARS, y=RECOVERY,
+        fill="tozeroy", fillcolor="rgba(23,177,155,0.15)",
+        line=dict(color=C["teal"], width=2.5),
+        mode="lines+markers", marker=dict(size=7, color=C["teal"]),
+        hovertemplate="%{x}: <b>%{y}%</b> of 2019<extra></extra>"))
+    fig2.add_hline(y=100, line_dash="dash", line_color=C["gold"],
+                   annotation_text="2019 Baseline",
+                   annotation_font=dict(color=C["gold"], size=10))
+    apply_layout(fig2, height=300)
+    fig2.update_yaxes(title_text="% of 2019 baseline")
+    chart(fig2)
 
-    all_months = months_2025 + months_2026
-    all_forecast = forecast_2025 + forecast_2026
+st.markdown('<div style="height:1px;background:'+C["border"]+';margin:8px 40px 0;"></div>',
+            unsafe_allow_html=True)
 
-    fig_fore = go.Figure()
-    fig_fore.add_trace(go.Scatter(
-        x=months_2025, y=forecast_2025, name="2025",
-        line=dict(color=accent_blue, width=2.5, dash='dot'),
-        marker=dict(size=5)
-    ))
-    fig_fore.add_trace(go.Scatter(
-        x=months_2026, y=forecast_2026, name="2026",
-        line=dict(color=accent_teal, width=2.5),
-        marker=dict(size=5)
-    ))
-    fig_fore.update_layout(
-        template=plotly_template,
-        paper_bgcolor=chart_bg, plot_bgcolor=chart_bg,
-        height=280, margin=dict(l=10, r=10, t=10, b=10),
-        legend=dict(orientation="h", y=-0.18, font=dict(size=11)),
-        xaxis=dict(showgrid=False, tickangle=45, tickfont=dict(size=9)),
-        yaxis=dict(showgrid=True, gridcolor=border_color,
-                   tickfont=dict(size=10), title="K Tourists"),
-        font=dict(color=text_primary),
-    )
-    st.plotly_chart(fig_fore, use_container_width=True, config={"displayModeBar": False})
+# ════════════════════════════════════════════════════════════════════
+# ROW 2 — Purpose + Nationality
+# ════════════════════════════════════════════════════════════════════
+st.markdown('<div style="padding:28px 40px 0;">'+sec_head(t["s3"],t["s3h"])+'</div>',
+            unsafe_allow_html=True)
+c3, c4 = st.columns([1,1], gap="large")
 
-    col_f1, col_f2 = st.columns(2)
-    with col_f1:
-        st.markdown(f"""
-        <div class='kpi-card' style='padding:14px;'>
-          <div class='kpi-icon'>📅</div>
-          <div class='kpi-value' style='font-size:1.2rem; color:{accent_blue};'>12,307K</div>
-          <div class='kpi-label'>{t['peak_2025']} · Jan</div>
-        </div>""", unsafe_allow_html=True)
-    with col_f2:
-        st.markdown(f"""
-        <div class='kpi-card' style='padding:14px;'>
-          <div class='kpi-icon'>📅</div>
-          <div class='kpi-value' style='font-size:1.2rem; color:{accent_teal};'>13,680K</div>
-          <div class='kpi-label'>{t['peak_2026']} · Jan</div>
-        </div>""", unsafe_allow_html=True)
+with c3:
+    lbls = PURPOSE_AR if LANG=="AR" else PURPOSE_EN
+    fig3 = go.Figure(go.Pie(
+        labels=lbls, values=PURPOSE_V, hole=.52,
+        marker=dict(colors=[C["teal"],C["gold"],C["blue"],C["orange"],C["grey"]],
+                    line=dict(color=C["navbar"], width=2)),
+        textfont=dict(size=11, color=C["white"]),
+        hovertemplate="<b>%{label}</b>: %{value}% (%{percent})<extra></extra>"))
+    fig3.add_annotation(text="2024",x=.5,y=.56,showarrow=False,
+                        font=dict(size=11,color=C["grey"]))
+    fig3.add_annotation(text="Purpose",x=.5,y=.42,showarrow=False,
+                        font=dict(size=13,color=C["white"],family="IBM Plex Mono"))
+    apply_layout(fig3, height=320)
+    fig3.update_layout(showlegend=True, legend=dict(orientation="h",x=.05,y=-.08))
+    chart(fig3)
 
-# ══════════════════════════════════════════
-# METHODOLOGY
-# ══════════════════════════════════════════
-st.markdown(f"<div class='section-title'>🧠 {t['methodology']}</div>", unsafe_allow_html=True)
-st.markdown(f"""
-<div style='display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;'>
-  <span class='method-pill'>🔮 {t['m1']}</span>
-  <span class='method-pill'>🎯 {t['m2']}</span>
-  <span class='method-pill'>💰 {t['m3']}</span>
-  <span class='method-pill'>📊 Plotly · Streamlit</span>
-  <span class='method-pill'>🐍 Python · Pandas · Scikit-learn</span>
-</div>
-""", unsafe_allow_html=True)
+with c4:
+    st.markdown(sec_head(t["s4"], t["s4h"]), unsafe_allow_html=True)
+    lbls4 = NAT_AR if LANG=="AR" else NAT_EN
+    fig4 = go.Figure(go.Bar(
+        x=NAT_V, y=lbls4, orientation="h",
+        marker=dict(color=NAT_C, line=dict(width=0), opacity=.88),
+        text=[f"{v}%" for v in NAT_V],
+        textposition="outside", textfont=dict(size=11, color=C["grey"]),
+        hovertemplate="<b>%{y}</b>: %{x}%<extra></extra>"))
+    apply_layout(fig4, height=320)
+    fig4.update_xaxes(title_text="% of inbound tourists")
+    chart(fig4)
 
-# ══════════════════════════════════════════
+st.markdown('<div style="height:1px;background:'+C["border"]+';margin:8px 40px 0;"></div>',
+            unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# ROW 3 — Monthly Seasonality
+# ════════════════════════════════════════════════════════════════════
+st.markdown('<div style="padding:28px 40px 0;">'+sec_head(t["s5"],t["s5h"])+'</div>',
+            unsafe_allow_html=True)
+
+fig5 = go.Figure()
+fig5.add_trace(go.Scatter(
+    x=MONTHS, y=MONTHLY,
+    fill="tozeroy", fillcolor="rgba(23,177,155,0.13)",
+    line=dict(color=C["teal"], width=2.5),
+    mode="lines+markers",
+    marker=dict(size=8, color=[C["orange"] if v==max(MONTHLY) else C["teal"] for v in MONTHLY],
+                line=dict(width=1.5, color=C["navbar"])),
+    hovertemplate="<b>%{x}</b>: %{y}M tourists<extra></extra>"))
+
+# Ramadan annotation (approx March)
+fig5.add_vrect(x0="Feb", x1="Mar", fillcolor="rgba(196,154,76,0.12)",
+               line_width=0, annotation_text="Ramadan",
+               annotation_font=dict(color=C["gold"], size=10))
+# Peak summer
+fig5.add_vrect(x0="Jun", x1="Aug", fillcolor="rgba(23,177,155,0.08)",
+               line_width=0, annotation_text="Peak",
+               annotation_font=dict(color=C["teal"], size=10))
+
+apply_layout(fig5, height=280)
+fig5.update_yaxes(title_text="Millions")
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
+chart(fig5)
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('<div style="height:1px;background:'+C["border"]+';margin:8px 40px 0;"></div>',
+            unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# KEY INSIGHTS
+# ════════════════════════════════════════════════════════════════════
+ins_html = '<div style="padding:28px 40px;">'+sec_head(t["s6"],t["s6h"])
+ins_html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">'
+for ico, txt, ck in t["ins"]:
+    ins_html += (
+        '<div style="background:'+C["card_bg"]+';border:1px solid '+C["border"]+';'
+        'border-left:3px solid '+clr(ck)+';border-radius:10px;'
+        'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;min-height:68px;">'
+        '<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">'+ico+'</div>'
+        '<div style="font-size:.83rem;color:'+C["white"]+';line-height:1.65;">'+txt+'</div>'
+        '</div>')
+ins_html += '</div></div>'
+st.markdown(ins_html, unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
 # FOOTER
-# ══════════════════════════════════════════
-st.markdown(f"""
-<div class='footer-bar'>
-  <div>
-    <div class='footer-name'>Eng. Goda Emad — Saudi Tourism Intelligence</div>
-    <div class='footer-link'>Data: DataSaudi · Ministry of Economy & Planning · 2015–2024</div>
-  </div>
-  <div style='display:flex; gap:16px;'>
-    <div class='footer-link'>
-      <a href='https://github.com/Goda-Emad/Saudi-Tourism-Intelligence/tree/main' target='_blank'>🐙 GitHub</a>
-    </div>
-    <div class='footer-link'>
-      <a href='https://www.linkedin.com/in/goda-emad/' target='_blank'>💼 LinkedIn</a>
-    </div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-
+# ════════════════════════════════════════════════════════════════════
+st.markdown(
+    '<div style="background:'+C["navbar"]+';border-top:2px solid '+C["teal"]+';'
+    'padding:22px 40px;display:flex;justify-content:space-between;'
+    'align-items:center;flex-wrap:wrap;gap:12px;margin-top:16px;">'
+    '<div style="display:flex;align-items:center;gap:14px;">'+logo_img+
+    '<div>'
+    '<div style="font-size:.88rem;font-weight:700;color:'+C["teal"]+';">'+t["name"]+'</div>'
+    '<div style="font-size:.66rem;color:'+C["foot_txt"]+';margin-top:2px;">🏠 Executive Overview · Eng. Goda Emad</div>'
+    '</div></div>'
+    '<div style="display:flex;gap:20px;">'
+    '<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
+    'style="font-size:.75rem;color:'+C["foot_txt"]+';text-decoration:none;">🐙 GitHub</a>'
+    '<a href="https://datasaudi.sa" target="_blank" '
+    'style="font-size:.75rem;color:'+C["teal"]+';text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
+    '</div></div>',
+    unsafe_allow_html=True)
