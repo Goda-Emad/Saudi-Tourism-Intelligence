@@ -70,7 +70,6 @@ def _get_pages():
         ("🎯  Segmentation",     "🎯  التقسيم"),
         ("🌱  Carbon Impact",    "🌱  الأثر الكربوني"),
     ]
-    # Try to find actual .py files to get correct path
     base   = os.path.dirname(os.path.abspath(__file__))
     in_sub = os.path.isdir(os.path.join(base, "pages"))
     PREFIX = "pages/" if in_sub else ""
@@ -93,7 +92,6 @@ TR = {
     "h1":"Saudi Tourism","h2":"Intelligence",
     "hs":"AI-powered analytics built on 10 years of official government data. Forecasting · Segmentation · Sustainability — all in one platform.",
     "hb":"Explore Dashboard →",
-    # val, label, color_key, delta, delta_dir(up/down)
     "stats":[
         ("115.8M","Tourists 2024",       "teal",  "+23%","up"),
         ("1.10B", "Overnight Stays",     "teal",  "+41%","up"),
@@ -132,7 +130,6 @@ TR = {
         ("💰","Inbound tourists spend 4× more than Domestic (SAR 5,622 vs 1,336)","blue"),
         ("🚀","2024 record: 115.9M tourists · +150% recovery from COVID low","teal_act"),
     ],
-    # Vision 2030 progress bars
     "v30":[
         ("🎯 Tourist Arrivals Target",     115.9, 150.0, "M tourists by 2030",    "teal"),
         ("💰 Tourism GDP Contribution",    10.0,  10.0,  "% of GDP (achieved ✅)", "gold"),
@@ -384,7 +381,6 @@ with st.sidebar:
         ("🌱  الأثر الكربوني",   "08_Carbon_Impact.py"),
     ]
     _nav = NAV_AR if LANG=="AR" else NAV_EN
-    # detect if pages are in a subfolder
     _base    = os.path.dirname(os.path.abspath(__file__))
     _in_sub  = os.path.isdir(os.path.join(_base,"pages"))
     _prefix  = "pages/" if _in_sub else ""
@@ -423,10 +419,12 @@ st.markdown(
     'background:'+C["teal"]+'15;border:1px solid '+C["teal"]+'55;color:'+C["teal"]+';'
     'font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
     'padding:5px 14px;border-radius:4px;margin-bottom:22px;">'+t["pill"]+'</div>'
-    '<div style="font-size:3.4rem;font-weight:800;color:'+C["white"]+';'
-    'line-height:1.0;letter-spacing:-1.5px;margin-bottom:4px;">'+t["h1"]+'</div>'
+
+    # ══ FIX: عنوان موحد على نفس السطر وكله تيركوز ══
     '<div style="font-size:3.4rem;font-weight:800;color:'+C["teal"]+';'
-    'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'+t["h2"]+'</div>'
+    'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'
+    +t["h1"]+' '+t["h2"]+'</div>'
+
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
     'margin-bottom:30px;max-width:460px;">'+t["hs"]+'</p>'
     '<div id="hero-cta-placeholder"></div>'
@@ -529,7 +527,6 @@ st.markdown('<div style="height:1px;background:'+C["border"]+';margin:0 40px;"><
 # ML MODELS — with tooltip + sparkline
 # ════════════════════════════════════════════════════════════════════
 def sparkline(color):
-    # Simple SVG sparkline trend
     pts = "0,28 8,22 16,25 24,18 32,20 40,12 48,15 56,8 64,10 72,4"
     return (
         '<svg class="ds-spark" width="80" height="32" '
@@ -590,7 +587,6 @@ for label, current, target, note, ck in t["v30"]:
     col     = clr(ck)
     done    = pct >= 100
     badge   = (' <span style="color:'+col+';font-size:.8rem;">✅</span>' if done else "")
-    # glow color via inline style trick — use filter
     glow    = "filter:drop-shadow(0 0 5px "+col+");" if not done else ""
     prog_bars += (
         '<div style="background:'+C["card_bg"]+';border:1px solid '+C["border"]+';'
