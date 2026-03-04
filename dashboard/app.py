@@ -363,7 +363,9 @@ with st.sidebar:
                 unsafe_allow_html=True)
     for rel_path, en_lbl, ar_lbl in _get_pages():
         label = ar_lbl if LANG=="AR" else en_lbl
-        st.button(label, key="nav_"+rel_path, use_container_width=True)
+        if st.button(label, key="nav_"+rel_path, use_container_width=True):
+            try: st.switch_page(rel_path)
+            except: pass
     st.markdown('<div style="height:1px;background:'+C["border"]+';margin:10px 0;"></div>',
                 unsafe_allow_html=True)
     st.markdown(
@@ -400,19 +402,43 @@ st.markdown(
     '<div style="font-size:3.4rem;font-weight:800;color:'+C["teal"]+';'
     'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">'+t["h2"]+'</div>'
     '<p style="font-size:.95rem;color:'+C["grey"]+';line-height:1.8;'
-    'margin-bottom:32px;max-width:460px;">'+t["hs"]+'</p>'
-
-    '<a class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
-    'background:'+C["teal"]+';color:#FFFFFF!important;'
-    'font-size:.9rem;font-weight:700;padding:13px 30px;border-radius:7px;'
-    'text-decoration:none!important;letter-spacing:.3px;cursor:pointer;">'
-    +("Explore Dashboard <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
-      else "<span class='ds-arrow-icon'>←</span> استكشف لوحة التحكم")+
-    '</a>'
-
-    '<div id="hero-btn-anchor"></div>'
+    'margin-bottom:16px;max-width:460px;">'+t["hs"]+'</p>'
     '</div></div>',
     unsafe_allow_html=True)
+
+# ── Hero CTA — st.button with ds-cta styling ─────────────────────
+st.markdown(
+    "<style>"
+    # Pull button up to overlap the hero bottom area
+    "div[data-testid='stMain'] > div > div:nth-child(3) {"
+    "margin-top:-68px!important;padding-left:92px!important;"
+    "position:relative!important;z-index:10!important;width:fit-content!important;}"
+    # Style the button exactly like ds-cta
+    "div[data-testid='stMain'] > div > div:nth-child(3) button{"
+    "background:"+C["teal"]+"!important;color:#FFFFFF!important;"
+    "font-size:.92rem!important;font-weight:700!important;"
+    "padding:12px 28px!important;border-radius:7px!important;"
+    "border:none!important;letter-spacing:.4px!important;"
+    "box-shadow:0 6px 28px rgba(23,177,155,0.55)!important;"
+    "animation:ds-pulse 2.6s ease-in-out infinite!important;}"
+    "div[data-testid='stMain'] > div > div:nth-child(3) button:hover{"
+    "background:"+C["teal_act"]+"!important;transform:translateX(4px)!important;"
+    "animation:none!important;}"
+    "</style>",
+    unsafe_allow_html=True)
+
+_hero_label = "Explore Dashboard  →" if LANG=="EN" else "←  استكشف لوحة التحكم"
+if st.button(_hero_label, key="hero_cta"):
+    try:
+        # find Overview page dynamically
+        import glob as _g
+        _base  = os.path.dirname(os.path.abspath(__file__))
+        _pages = sorted(_g.glob(os.path.join(_base,"pages","*.py")))
+        _ov    = next((p for p in _pages if "overview" in p.lower() or "01_" in p), None)
+        if _ov:
+            st.switch_page("pages/"+os.path.basename(_ov))
+    except Exception:
+        pass
 
 # ════════════════════════════════════════════════════════════════════
 # STATS STRIP  — with delta arrows
@@ -434,7 +460,8 @@ for i,(val,lbl,ck,delta,ddir) in enumerate(t["stats"]):
         'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;">'+val+'</div>'
         +arrow+'</div>'
         '<div style="font-size:.64rem;color:'+C["grey"]+';text-transform:uppercase;'
-        'letter-spacing:1px;font-weight:500;margin-top:6px;">'+lbl+'</div>'
+        'letter-spacing:1.2px;font-weight:600;margin-top:6px;'
+        'opacity:0.9;">'+lbl+'</div>'
         '</div>')
 st.markdown(
     '<div style="background:'+C["sec_bg"]+';'
@@ -454,22 +481,43 @@ def sec_head(badge,h2,sub=""):
     return o+'</div>'
 
 # ════════════════════════════════════════════════════════════════════
-# PAGES — with hover effect
+# PAGES — clickable cards via st.columns
 # ════════════════════════════════════════════════════════════════════
-page_cards = ""
-for ico,title,desc in t["pages"]:
-    page_cards += (
-        '<div class="ds-card" style="background:'+C["card_bg"]+';'
-        'border:1px solid '+C["border"]+';border-radius:10px;padding:20px 18px;">'
-        '<div style="font-size:1.6rem;margin-bottom:10px;line-height:1;">'+ico+'</div>'
-        '<div style="font-size:.87rem;font-weight:600;color:'+C["white"]+';margin-bottom:5px;">'+title+'</div>'
-        '<div style="font-size:.73rem;color:'+C["grey"]+';line-height:1.5;">'+desc+'</div>'
-        '</div>')
+TXT_COL = "#0D1414" if THEME=="light" else C["white"]
+st.markdown('<div style="padding:52px 40px 0px;">'+sec_head(t["pt"],t["ph"],t["ps"])+'</div>',
+            unsafe_allow_html=True)
+# CSS for page nav buttons
 st.markdown(
-    '<div style="padding:52px 40px;">'+sec_head(t["pt"],t["ph"],t["ps"])+
-    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'+page_cards+'</div></div>',
+    "<style>"
+    ".page-nav-btn button{"
+    "background:"+C["card_bg"]+"!important;border:1px solid "+C["border"]+"!important;"
+    "border-radius:10px!important;padding:18px 16px!important;"
+    "width:100%!important;height:120px!important;"
+    "color:"+TXT_COL+"!important;font-size:.85rem!important;font-weight:600!important;"
+    "text-align:left!important;transition:all .22s!important;"
+    "white-space:normal!important;line-height:1.4!important;}"
+    ".page-nav-btn button:hover{"
+    "border-color:"+C["teal"]+"!important;"
+    "box-shadow:0 8px 24px rgba(23,177,155,.2)!important;"
+    "transform:translateY(-3px)!important;}"
+    "</style>",
     unsafe_allow_html=True)
-st.markdown('<div style="height:1px;background:'+C["border"]+';margin:0 40px;"></div>',unsafe_allow_html=True)
+
+_page_nav = _get_pages()   # [(rel, en_lbl, ar_lbl), ...]
+_cols = st.columns(4, gap="small")
+for idx, (ico, title, desc) in enumerate(t["pages"]):
+    with _cols[idx % 4]:
+        st.markdown('<div class="page-nav-btn">', unsafe_allow_html=True)
+        _btn_label = ico + "  " + title + "\n" + desc
+        if st.button(_btn_label, key="pg_card_"+str(idx), use_container_width=True):
+            if idx < len(_page_nav):
+                try: st.switch_page(_page_nav[idx][0])
+                except: pass
+        st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('<div style="padding:0 40px;margin-top:10px;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="height:1px;background:'+C["border"]+';margin:16px 40px;"></div>',
+            unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
 # ML MODELS — with tooltip + sparkline
