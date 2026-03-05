@@ -1,730 +1,473 @@
+# ═══════════════════════════════════════════════════════════════════
+#  Saudi Tourism Intelligence — Seasonality
+#  Author : Eng. Goda Emad   |   Design : DataSaudi
+# ═══════════════════════════════════════════════════════════════════
 import streamlit as st
-import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import numpy as np
+import base64, os, sys
 
-# ══════════════════════════════════════════
-# PAGE CONFIG
-# ══════════════════════════════════════════
+# ── Path setup ───────────────────────────────────────────────────
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_ROOT = os.path.dirname(_HERE)
+for _p in [_HERE, _ROOT]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+from utils.sidebar import render_sidebar
+
 st.set_page_config(
     page_title="Seasonality · Saudi Tourism Intelligence",
-    page_icon="📅",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_icon="📅", layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-# ══════════════════════════════════════════
-# SESSION STATE
-# ══════════════════════════════════════════
-if "lang" not in st.session_state:
-    st.session_state.lang = "EN"
-if "theme" not in st.session_state:
-    st.session_state.theme = "dark"
+for k, v in [("lang","EN"),("theme","dark")]:
+    if k not in st.session_state:
+        st.session_state[k] = v
 
-lang  = st.session_state.lang
-theme = st.session_state.theme
+THEME, LANG = render_sidebar()
 
-# ══════════════════════════════════════════
-# TRANSLATIONS
-# ══════════════════════════════════════════
-T = {
-    "EN": {
-        "page_title":       "📅 Seasonality Analysis",
-        "subtitle":         "Peak & Low Seasons · Monthly Patterns · Ramadan vs Summer",
-        "built_by":         "Built by",
-        "dark_mode":        "🌙 Dark",
-        "light_mode":       "☀️ Light",
-        "lang_toggle":      "🌐 العربية",
-        "pages":            "Navigation",
-        "page_overview":    "🏠 Overview",
-        "page_trends":      "📈 Tourist Trends",
-        "page_season":      "📅 Seasonality",
-        "page_spend":       "💰 Spending",
-        "page_overnight":   "🏨 Overnight Stays",
-        "page_forecast":    "🔮 Forecasting",
-        "page_segment":     "🎯 Segmentation",
-        "page_carbon":      "🌱 Carbon Impact",
-        # KPIs
-        "peak_month":       "Peak Month",
-        "low_month":        "Low Month",
-        "peak_diff":        "Peak vs Low",
-        "inbound_peak":     "Inbound Peak",
-        "domestic_peak":    "Domestic Peak",
-        # Sections
-        "monthly_avg":      "Average Monthly Tourists (All Years)",
-        "monthly_heatmap":  "Monthly Heatmap by Year",
-        "seasonal_compare": "Seasonal Comparison: Inbound vs Domestic",
-        "quarter_analysis": "Quarterly Analysis",
-        "ramadan_effect":   "Ramadan & Holiday Effect",
-        "radar_chart":      "Seasonal Radar Chart",
-        # Labels
-        "inbound":          "Inbound",
-        "domestic":         "Domestic",
-        "total":            "Total",
-        "tourists_k":       "Tourists (Thousands)",
-        "tourists_m":       "Tourists (Millions)",
-        "month":            "Month",
-        "quarter":          "Quarter",
-        "filter_type":      "Tourist Type",
-        "all_types":        "All",
-        "insight_title":    "Key Insights",
-        "i1": "January is the overall peak month with 73,127K tourists — 41% above Low Season",
-        "i2": "Inbound peaks in December (winter tourism) — Domestic peaks in July (summer holidays)",
-        "i3": "Q1 (Jan–Mar) and Q3 (Jul–Sep) are nearly equal — both are high seasons",
-        "i4": "May is the lowest month — Ramadan + heat causes -29% below annual average",
-        "q1": "Q1 · Jan–Mar",
-        "q2": "Q2 · Apr–Jun",
-        "q3": "Q3 · Jul–Sep",
-        "q4": "Q4 · Oct–Dec",
-        "ramadan_note":     "Ramadan Effect: Inbound ↑ (Religious), Domestic ↓ (travel slows)",
-        "summer_note":      "Summer Effect: Domestic ↑ (school holidays), Inbound ↓ (heat)",
-    },
-    "AR": {
-        "page_title":       "📅 تحليل الموسمية",
-        "subtitle":         "ذروة ومواسم الانخفاض · الأنماط الشهرية · رمضان مقابل الصيف",
-        "built_by":         "من تطوير",
-        "dark_mode":        "🌙 داكن",
-        "light_mode":       "☀️ فاتح",
-        "lang_toggle":      "🌐 English",
-        "pages":            "التنقل",
-        "page_overview":    "🏠 نظرة عامة",
-        "page_trends":      "📈 اتجاهات السياحة",
-        "page_season":      "📅 الموسمية",
-        "page_spend":       "💰 الإنفاق",
-        "page_overnight":   "🏨 ليالي الإقامة",
-        "page_forecast":    "🔮 التوقعات",
-        "page_segment":     "🎯 تقسيم السياح",
-        "page_carbon":      "🌱 الأثر الكربوني",
-        "peak_month":       "شهر الذروة",
-        "low_month":        "أدنى شهر",
-        "peak_diff":        "الذروة مقابل الأدنى",
-        "inbound_peak":     "ذروة الوافدين",
-        "domestic_peak":    "ذروة المحليين",
-        "monthly_avg":      "متوسط السياح الشهري (كل السنوات)",
-        "monthly_heatmap":  "خريطة حرارية شهرية حسب السنة",
-        "seasonal_compare": "مقارنة موسمية: وافد مقابل محلي",
-        "quarter_analysis": "التحليل الربعي",
-        "ramadan_effect":   "تأثير رمضان والإجازات",
-        "radar_chart":      "مخطط رادار الموسمية",
-        "inbound":          "وافد",
-        "domestic":         "محلي",
-        "total":            "إجمالي",
-        "tourists_k":       "السياح (ألف)",
-        "tourists_m":       "السياح (مليون)",
-        "month":            "الشهر",
-        "quarter":          "الربع",
-        "filter_type":      "نوع السائح",
-        "all_types":        "الكل",
-        "insight_title":    "أبرز الاستنتاجات",
-        "i1": "يناير هو شهر الذروة الكلية بـ 73,127 ألف سائح — أعلى بـ 41% من موسم الانخفاض",
-        "i2": "الوافدون يبلغون ذروتهم في ديسمبر (سياحة الشتاء) — المحليون في يوليو (إجازة الصيف)",
-        "i3": "الربع الأول (يناير–مارس) والثالث (يوليو–سبتمبر) متقاربان — كلاهما موسم مرتفع",
-        "i4": "مايو هو الأدنى — رمضان + الحر يسببان -29% دون المتوسط السنوي",
-        "q1": "ر1 · يناير–مارس",
-        "q2": "ر2 · أبريل–يونيو",
-        "q3": "ر3 · يوليو–سبتمبر",
-        "q4": "ر4 · أكتوبر–ديسمبر",
-        "ramadan_note":     "تأثير رمضان: الوافدون ↑ (ديني)، المحليون ↓ (تباطؤ السفر)",
-        "summer_note":      "تأثير الصيف: المحليون ↑ (إجازات المدارس)، الوافدون ↓ (الحر)",
-    }
+# ── Colors ───────────────────────────────────────────────────────
+C = {
+    "teal":"#17B19B","teal_act":"#149581","bg":"#1A1E1F",
+    "sec_bg":"#161B1C","card_bg":"#1E2528","navbar":"#031414",
+    "white":"#F4F9F8","grey":"#A1A6B7","foot_txt":"#B5B8B7",
+    "border":"#2A3235","orange":"#F4D044","gold":"#C9A84C",
+    "blue":"#3A86FF","green":"#22C55E","red":"#EF4444","purple":"#BB86FC",
+} if THEME=="dark" else {
+    "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
+    "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
+    "white":"#F4F9F8","grey":"#9DBFBA","foot_txt":"#9DBFBA",
+    "border":"#2A3235","orange":"#E8A020","gold":"#C9A84C",
+    "blue":"#1565C0","green":"#16A34A","red":"#DC2626","purple":"#6A1B9A",
 }
-t = T[lang]
+def clr(k): return C.get(k, C["teal"])
+ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
+dir_val = "rtl"     if LANG=="AR" else "ltr"
 
-# ══════════════════════════════════════════
-# THEME
-# ══════════════════════════════════════════
-if theme == "dark":
-    bg_main        = "#0D1B2A"
-    bg_card        = "#1A2B3C"
-    bg_card2       = "#162233"
-    text_primary   = "#F0F4F8"
-    text_secondary = "#8FA8C0"
-    accent_teal    = "#00C9B1"
-    accent_gold    = "#F0A500"
-    accent_blue    = "#3A86FF"
-    accent_green   = "#00E676"
-    accent_red     = "#FF5252"
-    accent_purple  = "#BB86FC"
-    accent_orange  = "#FF9800"
-    border_color   = "#2A3F55"
-    chart_bg       = "rgba(13,27,42,0)"
-    plotly_template= "plotly_dark"
-else:
-    bg_main        = "#F4F7FB"
-    bg_card        = "#FFFFFF"
-    bg_card2       = "#EDF2F7"
-    text_primary   = "#1A2B3C"
-    text_secondary = "#4A6080"
-    accent_teal    = "#009688"
-    accent_gold    = "#E08C00"
-    accent_blue    = "#1565C0"
-    accent_green   = "#2E7D32"
-    accent_red     = "#C62828"
-    accent_purple  = "#6A1B9A"
-    accent_orange  = "#E65100"
-    border_color   = "#CBD5E0"
-    chart_bg       = "rgba(244,247,251,0)"
-    plotly_template= "plotly_white"
-
-dir_attr = 'rtl' if lang == "AR" else 'ltr'
-
-# ══════════════════════════════════════════
-# DATA
-# ══════════════════════════════════════════
-months_en  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-months_ar  = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"]
-months_lbl = months_ar if lang == "AR" else months_en
-
-# Monthly totals (thousands) — all years aggregated
-total_monthly   = [73127, 61529, 62585, 56938, 51868, 62935, 67220, 65582, 58646, 55202, 66627, 62376]
-inbound_monthly = [2470,  2130,  2800,  2320,  1890,  2120,  2220,  2160,  1930,  1880,  2220,  2590]
-domestic_monthly= [6960,  5320,  5710,  5330,  4780,  7850,  9610,  7980,  5790,  5370,  7350,  8110]
-
-# Yearly monthly heatmap data (inbound, thousands)
-heatmap_years = list(range(2015, 2025))
-heatmap_data  = [
-    [1189,1103, 978, 912, 589, 703, 701, 570, 589, 490, 487, 427],  # 2015
-    [1100,1050, 920, 870, 560, 670, 660, 540, 560, 460, 460, 410],  # 2016
-    [1000, 950, 850, 800, 500, 600, 600, 480, 500, 410, 410, 360],  # 2017
-    [ 980, 930, 830, 780, 490, 590, 580, 460, 480, 400, 395, 350],  # 2018
-    [1100,1050, 960, 900, 560, 670, 660, 540, 560, 460, 460, 410],  # 2019
-    [ 180, 160, 140, 130,  80, 100, 100,  80,  90,  70,  70,  60],  # 2020 COVID
-    [ 120, 110,  90,  85,  60,  80,  80,  60,  70,  55,  55,  50],  # 2021
-    [ 900, 850, 780, 720, 440, 530, 520, 420, 450, 360, 355, 315],  # 2022
-    [1800,1700,1560,1440, 900,1060,1050, 840, 900, 720, 720, 640],  # 2023
-    [2470,2130,2800,2320,1890,2120,2220,2160,1930,1880,2220,2590],  # 2024
-]
-
-# Quarterly
-quarters_lbl = [t["q1"], t["q2"], t["q3"], t["q4"]]
-inbound_q    = [7400,  6330,  6310,  7250]
-domestic_q   = [17990, 17960, 23380, 22830]
-
-# ══════════════════════════════════════════
-# CSS
-# ══════════════════════════════════════════
-st.markdown(f"""
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@400;600&family=Tajawal:wght@300;400;700;800&display=swap');
-
-  html, body, [data-testid="stAppViewContainer"] {{
-    background-color: {bg_main} !important;
-    font-family: {'Tajawal' if lang=='AR' else 'Sora'}, sans-serif;
-    direction: {dir_attr};
-  }}
-  [data-testid="stSidebar"] {{
-    background: {bg_card} !important;
-    border-right: 1px solid {border_color};
-  }}
-  [data-testid="stSidebar"] * {{ color: {text_primary} !important; }}
-
-  .page-header {{
-    background: linear-gradient(135deg, {bg_card} 0%, {bg_card2} 100%);
-    border: 1px solid {border_color};
-    border-left: 4px solid {accent_gold};
-    border-radius: 16px;
-    padding: 28px 32px;
-    margin-bottom: 24px;
-    position: relative;
-    overflow: hidden;
-  }}
-  .page-header::after {{
-    content: '📅';
-    position: absolute;
-    right: 24px; top: 50%;
-    transform: translateY(-50%);
-    font-size: 4rem;
-    opacity: 0.08;
-  }}
-  .page-title {{
-    font-size: 1.9rem;
-    font-weight: 800;
-    color: {text_primary};
-    margin: 0 0 4px 0;
-  }}
-  .page-subtitle {{
-    font-size: 0.88rem;
-    color: {accent_gold};
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-  }}
-
-  .kpi-card {{
-    background: {bg_card};
-    border: 1px solid {border_color};
-    border-radius: 14px;
-    padding: 18px 14px;
-    text-align: center;
-    height: 100%;
-    transition: transform 0.2s;
-  }}
-  .kpi-card:hover {{ transform: translateY(-2px); }}
-  .kpi-icon  {{ font-size: 1.5rem; margin-bottom: 6px; }}
-  .kpi-value {{
-    font-size: 1.5rem;
-    font-weight: 800;
-    line-height: 1.1;
-    font-family: 'IBM Plex Mono', monospace;
-  }}
-  .kpi-label {{
-    font-size: 0.68rem;
-    color: {text_secondary};
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 600;
-    margin-top: 4px;
-  }}
-  .kpi-sub {{
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-top: 4px;
-    color: {text_secondary};
-    font-family: 'IBM Plex Mono', monospace;
-  }}
-
-  .section-title {{
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: {text_primary};
-    margin: 24px 0 12px 0;
-    padding-bottom: 8px;
-    border-bottom: 2px solid {accent_gold};
-  }}
-
-  .insight-card {{
-    background: {bg_card};
-    border: 1px solid {border_color};
-    border-radius: 12px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 10px;
-  }}
-  .insight-icon {{ font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }}
-  .insight-text {{
-    font-size: 0.83rem;
-    color: {text_primary};
-    line-height: 1.5;
-  }}
-
-  .note-box {{
-    background: {bg_card2};
-    border: 1px solid {border_color};
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 0.82rem;
-    color: {text_secondary};
-    margin-top: 10px;
-    line-height: 1.6;
-  }}
-
-  .footer-bar {{
-    background: {bg_card};
-    border: 1px solid {border_color};
-    border-radius: 12px;
-    padding: 14px 20px;
-    margin-top: 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-  }}
-  .footer-name  {{ font-size: 0.82rem; font-weight: 700; color: {accent_teal}; }}
-  .footer-link  {{ font-size: 0.75rem; color: {text_secondary}; }}
-  .footer-link a {{ color: {accent_blue} !important; text-decoration: none; font-weight: 600; }}
-</style>
-""", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════
-# SIDEBAR
-# ══════════════════════════════════════════
-
-# ── Shared sidebar (identical across all pages) ──────────────────
-import base64 as _b64mod, glob as _glob, os as _os
-
-def _get_logo():
+# ── Logo ─────────────────────────────────────────────────────────
+@st.cache_data(show_spinner=False)
+def _b64(p):
     try:
-        base = _os.path.dirname(_os.path.abspath(__file__))
-        for p in ["assets/logo.jpg","assets/logo.png"]:
-            fp = _os.path.join(base, p)
-            if _os.path.exists(fp):
-                with open(fp,"rb") as f:
-                    d = _b64mod.b64encode(f.read()).decode()
-                ext = "png" if p.endswith("png") else "jpeg"
-                return f"data:image/{ext};base64,{d}"
-    except: pass
-    return ""
+        with open(os.path.join(_ROOT, p), "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except: return ""
 
-_logo_src = _get_logo()
-_logo_img = (f'<img src="{_logo_src}" style="height:42px;border-radius:8px;"/>'
-             if _logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
+logo_b64 = _b64("assets/logo.jpg")
+logo_src = "data:image/jpeg;base64,"+logo_b64 if logo_b64 else ""
+logo_img = (f'<img src="{logo_src}" style="height:42px;border-radius:8px;"/>'
+            if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
 
-NAV_EN = [
-    ("🏠  Overview",        "Overview.py"),
-    ("📈  Tourist Trends",   "Tourist_Trends.py"),
-    ("📅  Seasonality",      "Seasonality.py"),
-    ("💰  Spending",         "Spending.py"),
-    ("🏨  Overnight Stays",  "Overnight_Stays.py"),
-    ("🔮  Forecasting",      "Forecasting.py"),
-    ("🎯  Segmentation",     "Segmentation.py"),
-    ("🌱  Carbon Impact",    "Carbon_Impact.py"),
+# ── Translations ─────────────────────────────────────────────────
+TR = {
+"EN":{
+    "title":"📅 Seasonality Analysis",
+    "sub_pg":"Peak & Low Seasons · Monthly Patterns · Ramadan vs Summer · Quarterly Breakdown",
+    "f_type":"Tourist Type","f_all":"All",
+    "kpi_peak":"Peak Month","kpi_low":"Low Month","kpi_diff":"Peak vs Low",
+    "kpi_inb_peak":"Inbound Peak","kpi_dom_peak":"Domestic Peak",
+    "s1":"MONTHLY AVERAGE","s1h":"Average Monthly Tourists (All Years)",
+    "s2":"HEATMAP","s2h":"Monthly Heatmap by Year (Inbound, Thousands)",
+    "s3":"SEASONAL COMPARE","s3h":"Inbound vs Domestic Monthly Pattern",
+    "s4":"QUARTERLY","s4h":"Quarterly Tourist Distribution",
+    "s5":"RADAR","s5h":"Seasonal Radar Chart — Normalized",
+    "s6":"KEY INSIGHTS","s6h":"Seasonality Intelligence",
+    "inbound":"Inbound","domestic":"Domestic","total":"Total",
+    "tourists_m":"Tourists (Millions)",
+    "q1":"Q1 · Jan–Mar","q2":"Q2 · Apr–Jun",
+    "q3":"Q3 · Jul–Sep","q4":"Q4 · Oct–Dec",
+    "ramadan_note":"Ramadan Effect: Inbound ↑ (Religious tourism), Domestic ↓ (travel slows)",
+    "summer_note":"Summer Effect: Domestic ↑ (school holidays), Inbound ↓ (heat deterrent)",
+    "ins":[
+        ("🏆","January is the overall peak month at 73,127K tourists — 41% above the Low Season","gold"),
+        ("✈️","Inbound peaks in December (winter tourism) — Domestic peaks in July (school holidays)","blue"),
+        ("📊","Q1 (Jan–Mar) and Q3 (Jul–Sep) are nearly equal — both are high seasons","teal"),
+        ("🌙","May is the lowest month — Ramadan + summer heat causes -29% below annual average","red"),
+    ],
+},
+"AR":{
+    "title":"📅 تحليل الموسمية",
+    "sub_pg":"ذروة ومواسم الانخفاض · الأنماط الشهرية · رمضان مقابل الصيف · التحليل الربعي",
+    "f_type":"نوع السائح","f_all":"الكل",
+    "kpi_peak":"شهر الذروة","kpi_low":"أدنى شهر","kpi_diff":"الذروة مقابل الأدنى",
+    "kpi_inb_peak":"ذروة الوافدين","kpi_dom_peak":"ذروة المحليين",
+    "s1":"المتوسط الشهري","s1h":"متوسط السياح الشهري (كل السنوات)",
+    "s2":"الخريطة الحرارية","s2h":"خريطة حرارية شهرية حسب السنة (وافد، ألف)",
+    "s3":"المقارنة الموسمية","s3h":"النمط الشهري: وافد مقابل محلي",
+    "s4":"التحليل الربعي","s4h":"توزيع السياح ربعياً",
+    "s5":"رادار الموسمية","s5h":"مخطط رادار الموسمية — قيم معيارية",
+    "s6":"الاستنتاجات الرئيسية","s6h":"ذكاء الموسمية",
+    "inbound":"وافد","domestic":"محلي","total":"إجمالي",
+    "tourists_m":"السياح (مليون)",
+    "q1":"ر1 · يناير–مارس","q2":"ر2 · أبريل–يونيو",
+    "q3":"ر3 · يوليو–سبتمبر","q4":"ر4 · أكتوبر–ديسمبر",
+    "ramadan_note":"تأثير رمضان: الوافدون ↑ (السياحة الدينية)، المحليون ↓ (تباطؤ السفر)",
+    "summer_note":"تأثير الصيف: المحليون ↑ (إجازات المدارس)، الوافدون ↓ (الحر الشديد)",
+    "ins":[
+        ("🏆","يناير هو شهر الذروة الكلية بـ 73,127 ألف سائح — أعلى بـ 41% من موسم الانخفاض","gold"),
+        ("✈️","الوافدون يبلغون ذروتهم في ديسمبر (سياحة الشتاء) — المحليون في يوليو (إجازة الصيف)","blue"),
+        ("📊","الربع الأول (يناير–مارس) والثالث (يوليو–سبتمبر) متقاربان — كلاهما موسم مرتفع","teal"),
+        ("🌙","مايو هو الأدنى — رمضان + الحر يسببان -29% دون المتوسط السنوي","red"),
+    ],
+},
+}
+t = TR[LANG]
+
+# ── Data ─────────────────────────────────────────────────────────
+MONTHS_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"]
+MONTHS    = MONTHS_AR if LANG=="AR" else MONTHS_EN
+
+TOT_MON = [73127,61529,62585,56938,51868,62935,67220,65582,58646,55202,66627,62376]
+INB_MON = [2470, 2130, 2800, 2320, 1890, 2120, 2220, 2160, 1930, 1880, 2220, 2590]
+DOM_MON = [6960, 5320, 5710, 5330, 4780, 7850, 9610, 7980, 5790, 5370, 7350, 8110]
+
+HEAT_YEARS = list(range(2015,2025))
+HEAT_DATA  = [
+    [1189,1103, 978, 912, 589, 703, 701, 570, 589, 490, 487, 427],
+    [1100,1050, 920, 870, 560, 670, 660, 540, 560, 460, 460, 410],
+    [1000, 950, 850, 800, 500, 600, 600, 480, 500, 410, 410, 360],
+    [ 980, 930, 830, 780, 490, 590, 580, 460, 480, 400, 395, 350],
+    [1100,1050, 960, 900, 560, 670, 660, 540, 560, 460, 460, 410],
+    [ 180, 160, 140, 130,  80, 100, 100,  80,  90,  70,  70,  60],
+    [ 120, 110,  90,  85,  60,  80,  80,  60,  70,  55,  55,  50],
+    [ 900, 850, 780, 720, 440, 530, 520, 420, 450, 360, 355, 315],
+    [1800,1700,1560,1440, 900,1060,1050, 840, 900, 720, 720, 640],
+    [2470,2130,2800,2320,1890,2120,2220,2160,1930,1880,2220,2590],
 ]
-NAV_AR = [
-    ("🏠  النظرة التنفيذية", "Overview.py"),
-    ("📈  اتجاهات السياحة",  "Tourist_Trends.py"),
-    ("📅  الموسمية",         "Seasonality.py"),
-    ("💰  الإنفاق",          "Spending.py"),
-    ("🏨  ليالي الإقامة",    "Overnight_Stays.py"),
-    ("🔮  التوقعات",         "Forecasting.py"),
-    ("🎯  التقسيم",          "Segmentation.py"),
-    ("🌱  الأثر الكربوني",   "Carbon_Impact.py"),
-]
 
-_C_NAV   = "#031414" if THEME=="dark" else "#172025"
-_C_WHITE = "#F4F9F8" if THEME=="dark" else "#0D1A1E"
-_C_TEAL  = "#17B19B"
-_C_GREY  = "#A1A6B7" if THEME=="dark" else "#374151"
-_C_GOLD  = "#C9A84C"
-_C_BDR   = "#2A3235" if THEME=="dark" else "#C8D8D5"
-_FF      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
+QUARTERS = [t["q1"],t["q2"],t["q3"],t["q4"]]
+INB_Q    = [7400,  6330,  6310,  7250]
+DOM_Q    = [17990, 17960, 23380, 22830]
 
+# ════════════════════════════════════════════════════════════════════
+# GLOBAL CSS
+# ════════════════════════════════════════════════════════════════════
 st.markdown(
     "<style>"
-    f"[data-testid='stSidebar']{{background:{_C_NAV}!important;border-right:1px solid {_C_BDR}!important;}}"
-    f"[data-testid='stSidebar'] div,span,p,label{{color:{_C_WHITE}!important;}}"
-    "[data-testid='stSidebar'] .stButton>button{"
-    f"background:transparent!important;border:1px solid transparent!important;"
-    f"color:{_C_GREY}!important;border-radius:8px!important;"
-    "width:100%!important;font-size:.84rem!important;font-weight:500!important;"
-    "padding:9px 12px!important;margin-bottom:2px!important;transition:all .15s!important;}"
-    "[data-testid='stSidebar'] .stButton>button:hover{"
-    f"background:{_C_TEAL}22!important;color:{_C_TEAL}!important;border-color:{_C_TEAL}44!important;}}"
-    "[data-testid='stSidebar'] div:nth-child(3) .stButton>button,"
-    "[data-testid='stSidebar'] div:nth-child(4) .stButton>button{"
-    "background:#2A3235!important;border:1px solid #3A4C50!important;"
-    "color:#F4F9F8!important;font-weight:600!important;margin-bottom:5px!important;}"
-    "[data-testid='stSidebar'] div:nth-child(3) .stButton>button:hover,"
-    "[data-testid='stSidebar'] div:nth-child(4) .stButton>button:hover{"
-    f"border-color:{_C_GOLD}!important;color:{_C_GOLD}!important;}}"
+    "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700"
+    "&family=IBM+Plex+Mono:wght@400;600;700&family=Tajawal:wght@400;700;800&display=swap');"
+    "[data-testid='stHeader'],[data-testid='stToolbar'],"
+    "[data-testid='stSidebarNav'],footer,#MainMenu{display:none!important;}"
+    ".block-container{padding:0!important;max-width:100%!important;}"
+    "section[data-testid='stMain']>div:first-child{padding-top:0!important;}"
+    ".ds-card{transition:transform .22s,box-shadow .22s,border-color .22s;}"
+    ".ds-card:hover{transform:translateY(-3px);"
+    "box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}"
+    f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
+    f"{{background:{C['bg']}!important;direction:{dir_val};"
+    f"font-family:'{ff}',sans-serif;color:{C['white']}!important;}}"
     "</style>",
     unsafe_allow_html=True)
 
-with st.sidebar:
-    _thm_label = ("☀️  Light" if THEME=="dark" else "🌙  Dark")
-    _lng_label = ("🌐  العربية" if LANG=="EN" else "🌐  English")
+# ════════════════════════════════════════════════════════════════════
+# HELPERS
+# ════════════════════════════════════════════════════════════════════
+def sec_head(badge, h2):
+    return (
+        f'<div style="margin-bottom:18px;">'
+        f'<div style="display:inline-block;background:{C["teal"]}15;'
+        f'border:1px solid {C["teal"]}44;color:{C["teal"]};'
+        f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
+        f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
+        f'<div style="font-size:1.25rem;font-weight:700;color:{C["white"]};">{h2}</div>'
+        f'</div>')
 
-    st.markdown(
-        f'<div style="display:flex;align-items:center;gap:10px;padding:16px 4px 14px;">'+_logo_img+
-        f'<div><div style="font-size:.88rem;font-weight:700;color:{_C_WHITE};">'+
-        ("Saudi Tourism Intelligence" if LANG=="EN" else "ذكاء السياحة السعودية")+
-        f'</div><div style="font-size:.58rem;color:{_C_TEAL};font-weight:600;letter-spacing:1.2px;text-transform:uppercase;">AI ANALYTICS PLATFORM</div></div></div>',
-        unsafe_allow_html=True)
+def kpi_card(ico, lbl, val, sub, ck):
+    return (
+        f'<div class="ds-card" style="background:{C["card_bg"]};border:1px solid {C["border"]};'
+        f'border-top:3px solid {clr(ck)};border-radius:10px;padding:20px 16px;text-align:center;">'
+        f'<div style="font-size:1.4rem;margin-bottom:6px;">{ico}</div>'
+        f'<div style="font-size:1.45rem;font-weight:800;color:{clr(ck)};'
+        f'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;line-height:1.1;">{val}</div>'
+        f'<div style="font-size:.62rem;color:{C["grey"]};text-transform:uppercase;'
+        f'letter-spacing:.8px;font-weight:600;margin:6px 0 4px;">{lbl}</div>'
+        f'<div style="font-size:.72rem;color:{C["grey"]};font-family:IBM Plex Mono,monospace;">{sub}</div>'
+        f'</div>')
 
-    st.markdown(f'<div style="height:1px;background:{_C_BDR};margin-bottom:10px;"></div>', unsafe_allow_html=True)
+def apply_layout(fig, height=340):
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=C["grey"], family=ff),
+        height=height, margin=dict(l=10,r=10,t=36,b=10),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11),
+                    orientation="h", y=-0.14),
+        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235",
+                   tickfont=dict(size=10), showgrid=False),
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235",
+                   tickfont=dict(size=10)),
+    )
+    return fig
 
-    if st.button(_thm_label, key="sb_thm", use_container_width=True):
-        st.session_state.theme = "light" if THEME=="dark" else "dark"; st.rerun()
-    if st.button(_lng_label, key="sb_lng", use_container_width=True):
-        st.session_state.lang = "AR" if LANG=="EN" else "EN"; st.rerun()
+def chart(fig):
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
 
-    st.markdown(f'<div style="height:1px;background:{_C_BDR};margin:10px 0 6px;"></div>', unsafe_allow_html=True)
+# ════════════════════════════════════════════════════════════════════
+# PAGE HEADER
+# ════════════════════════════════════════════════════════════════════
+st.markdown(
+    f'<div style="background:{C["navbar"]};border-bottom:1px solid {C["border"]};'
+    f'padding:24px 40px 20px;">'
+    f'<div style="display:inline-block;background:{C["gold"]}22;border:1px solid {C["gold"]}55;'
+    f'color:{C["gold"]};font-size:.57rem;font-weight:700;letter-spacing:2.5px;'
+    f'text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:10px;">'
+    f'SEASONALITY · MONTHLY PATTERNS</div>'
+    f'<div style="font-size:1.85rem;font-weight:800;color:#F4F9F8;'
+    f'letter-spacing:-.5px;margin-bottom:5px;">{t["title"]}</div>'
+    f'<div style="font-size:.82rem;color:#A1A6B7;">{t["sub_pg"]}</div>'
+    f'</div>',
+    unsafe_allow_html=True)
 
-    _nav_items = NAV_AR if LANG=="AR" else NAV_EN
-    for _lbl, _fname in _nav_items:
-        if st.button(_lbl, key="sb_nav_"+_fname, use_container_width=True):
-            st.switch_page("pages/" + _fname)
+# ════════════════════════════════════════════════════════════════════
+# KPI STRIP
+# ════════════════════════════════════════════════════════════════════
+st.markdown(
+    f'<div style="padding:24px 40px 0;">'
+    f'<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">'
+    +kpi_card("🏆",t["kpi_peak"],"January","73,127K","gold")
+    +kpi_card("📉",t["kpi_low"],"May","51,868K","red")
+    +kpi_card("📊",t["kpi_diff"],"+41.0%","Peak vs Low","teal")
+    +kpi_card("✈️",t["kpi_inb_peak"],"December","17,890K","blue")
+    +kpi_card("🏠",t["kpi_dom_peak"],"July","58,076K","purple")
+    +'</div></div>',
+    unsafe_allow_html=True)
 
-    st.markdown(f'<div style="height:1px;background:{_C_BDR};margin:10px 0 8px;"></div>', unsafe_allow_html=True)
-    st.markdown(
-        f'<div style="font-size:.67rem;color:{_C_GREY};padding:0 2px;line-height:1.9;">'+
-        '📦 DataSaudi · 2015–2024<br>'+
-        f'🐙 <a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" style="color:{_C_TEAL};text-decoration:none;">GitHub</a>'+
-        '  ·  '+
-        f'💼 <a href="https://www.linkedin.com/in/goda-emad/" target="_blank" style="color:{_C_TEAL};text-decoration:none;">LinkedIn</a></div>',
-        unsafe_allow_html=True)
-# ── End sidebar ───────────────────────────────────────────────────
+st.markdown(f'<div style="height:1px;background:{C["border"]};margin:20px 40px 0;"></div>',
+            unsafe_allow_html=True)
 
-st.markdown(f"""
-<div class='page-header'>
-  <div class='page-title'>{t['page_title']}</div>
-  <div class='page-subtitle'>{t['subtitle']}</div>
-</div>
-""", unsafe_allow_html=True)
+# ════════════════════════════════════════════════════════════════════
+# FILTER
+# ════════════════════════════════════════════════════════════════════
+st.markdown('<div style="padding:16px 40px 0;">', unsafe_allow_html=True)
+tourist_filter = st.radio(
+    t["f_type"],
+    [t["f_all"], t["inbound"], t["domestic"]],
+    horizontal=True, key="tf")
+st.markdown('</div>', unsafe_allow_html=True)
 
-# ══════════════════════════════════════════
-# KPI CARDS
-# ══════════════════════════════════════════
-k1, k2, k3, k4, k5 = st.columns(5)
-kpi_items = [
-    (k1, "🏆", t["peak_month"],    "January",   "73,127K",  accent_gold),
-    (k2, "📉", t["low_month"],     "May",        "51,868K",  accent_red),
-    (k3, "📊", t["peak_diff"],     "+41.0%",     "Peak vs Low", accent_teal),
-    (k4, "✈️", t["inbound_peak"],  "December",   "17,890K",  accent_blue),
-    (k5, "🏠", t["domestic_peak"], "July",       "58,076K",  accent_purple),
-]
-for col, icon, label, val, sub, color in kpi_items:
-    with col:
-        st.markdown(f"""
-        <div class='kpi-card'>
-          <div class='kpi-icon'>{icon}</div>
-          <div class='kpi-value' style='color:{color};'>{val}</div>
-          <div class='kpi-label'>{label}</div>
-          <div class='kpi-sub'>{sub}</div>
-        </div>""", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════
-# CHART 1: Monthly Average Bar
-# ══════════════════════════════════════════
-st.markdown(f"<div class='section-title'>📊 {t['monthly_avg']}</div>", unsafe_allow_html=True)
-
+# pick data based on filter
 if tourist_filter == t["inbound"]:
-    y_data = [v/1000 for v in inbound_monthly]
-    bar_color = accent_blue
+    y_data    = [v/1000 for v in INB_MON]
+    bar_color = C["blue"]
 elif tourist_filter == t["domestic"]:
-    y_data = [v/1000 for v in domestic_monthly]
-    bar_color = accent_teal
+    y_data    = [v/1000 for v in DOM_MON]
+    bar_color = C["teal"]
 else:
-    y_data = [v/1000 for v in total_monthly]
-    bar_color = accent_gold
+    y_data    = [v/1000 for v in TOT_MON]
+    bar_color = C["gold"]
 
-avg_val = sum(y_data) / len(y_data)
-bar_colors = [accent_red if v == min(y_data) else
-              accent_green if v == max(y_data) else
-              bar_color for v in y_data]
+# ════════════════════════════════════════════════════════════════════
+# CHART 1 — Monthly Average Bar
+# ════════════════════════════════════════════════════════════════════
+st.markdown(f'<div style="padding:20px 40px 0;">{sec_head(t["s1"],t["s1h"])}</div>',
+            unsafe_allow_html=True)
 
-fig_bar = go.Figure()
-fig_bar.add_trace(go.Bar(
-    x=months_lbl, y=y_data,
+avg_val    = sum(y_data)/len(y_data)
+bar_colors = [C["red"] if v==min(y_data)
+              else C["green"] if v==max(y_data)
+              else bar_color for v in y_data]
+
+fig1 = go.Figure()
+fig1.add_trace(go.Bar(
+    x=MONTHS, y=y_data,
     marker_color=bar_colors,
     text=[f"{v:.1f}M" for v in y_data],
     textposition='outside',
-    textfont=dict(size=9, color=text_primary),
-))
-fig_bar.add_hline(
-    y=avg_val,
-    line_dash="dash", line_color=text_secondary, line_width=1.5,
-    annotation_text=f"Avg: {avg_val:.1f}M",
-    annotation_font_color=text_secondary,
-    annotation_font_size=10
-)
-
-# Ramadan & Summer zones
-fig_bar.add_vrect(x0=-0.5, x1=2.5,
-    fillcolor=accent_gold, opacity=0.05,
+    textfont=dict(size=9, color=C["grey"]),
+    hovertemplate="<b>%{x}</b>: %{y:.1f}M<extra></extra>"))
+fig1.add_hline(y=avg_val, line_dash="dash", line_color=C["grey"], line_width=1.5,
+               annotation_text=f"Avg: {avg_val:.1f}M",
+               annotation_font=dict(color=C["grey"], size=10))
+fig1.add_vrect(x0=-0.5, x1=2.5,
+    fillcolor="rgba(201,168,76,0.06)", line_width=0,
     annotation_text="🌙 Ramadan", annotation_position="top left",
-    annotation=dict(font_color=accent_gold, font_size=10))
-fig_bar.add_vrect(x0=5.5, x1=8.5,
-    fillcolor=accent_blue, opacity=0.05,
+    annotation=dict(font_color=C["gold"], font_size=10))
+fig1.add_vrect(x0=5.5, x1=8.5,
+    fillcolor="rgba(58,134,255,0.06)", line_width=0,
     annotation_text="☀️ Summer", annotation_position="top left",
-    annotation=dict(font_color=accent_blue, font_size=10))
+    annotation=dict(font_color=C["blue"], font_size=10))
 
-fig_bar.update_layout(
-    template=plotly_template,
-    paper_bgcolor=chart_bg, plot_bgcolor=chart_bg,
-    height=360, margin=dict(l=10, r=10, t=30, b=10),
-    xaxis=dict(showgrid=False, tickfont=dict(size=11)),
-    yaxis=dict(showgrid=True, gridcolor=border_color,
-               tickfont=dict(size=10), title=t["tourists_m"]),
-    font=dict(color=text_primary),
-    showlegend=False,
-)
-st.plotly_chart(fig_bar, use_container_width=True, config={"displayModeBar": False})
+apply_layout(fig1, height=360)
+fig1.update_layout(showlegend=False)
+fig1.update_yaxes(title_text=t["tourists_m"])
 
-# ══════════════════════════════════════════
-# CHART 2 + 3: Heatmap + Seasonal Compare
-# ══════════════════════════════════════════
-heat_col, compare_col = st.columns([3, 2])
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
+chart(fig1)
+st.markdown('</div>', unsafe_allow_html=True)
 
-with heat_col:
-    st.markdown(f"<div class='section-title'>🌡️ {t['monthly_heatmap']}</div>", unsafe_allow_html=True)
+st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
+            unsafe_allow_html=True)
 
-    fig_heat = go.Figure(go.Heatmap(
-        z=heatmap_data,
-        x=months_lbl,
-        y=[str(y) for y in heatmap_years],
+# ════════════════════════════════════════════════════════════════════
+# CHARTS 2+3 — Heatmap | Seasonal Compare
+# ════════════════════════════════════════════════════════════════════
+st.markdown(f'<div style="padding:28px 40px 0;">', unsafe_allow_html=True)
+c2, c3 = st.columns([3,2], gap="large")
+
+with c2:
+    st.markdown(sec_head(t["s2"], t["s2h"]), unsafe_allow_html=True)
+    fig2 = go.Figure(go.Heatmap(
+        z=HEAT_DATA,
+        x=MONTHS,
+        y=[str(y) for y in HEAT_YEARS],
         colorscale=[
-            [0.0,  bg_card2],
-            [0.15, accent_blue],
-            [0.5,  accent_teal],
-            [1.0,  accent_gold],
+            [0.0,  C["sec_bg"]],
+            [0.15, C["blue"]],
+            [0.5,  C["teal"]],
+            [1.0,  C["gold"]],
         ],
         showscale=True,
         hovertemplate="<b>%{y} %{x}</b><br>%{z:.0f}K tourists<extra></extra>",
         colorbar=dict(
-            tickfont=dict(size=9, color=text_primary),
-            title=dict(text="K", font=dict(color=text_secondary, size=10))
-        )
-    ))
-    # COVID annotation
-    fig_heat.add_annotation(
-        x="Jun", y="2020",
-        text="COVID-19",
-        showarrow=False,
-        font=dict(size=10, color=accent_red),
-        bgcolor=f"{accent_red}33",
-        borderpad=3
-    )
-    fig_heat.update_layout(
-        template=plotly_template,
-        paper_bgcolor=chart_bg, plot_bgcolor=chart_bg,
-        height=320, margin=dict(l=10, r=10, t=10, b=10),
-        xaxis=dict(tickfont=dict(size=10)),
+            tickfont=dict(size=9, color=C["grey"]),
+            title=dict(text="K", font=dict(color=C["grey"], size=10)))))
+    fig2.add_annotation(
+        x="Jun" if LANG=="EN" else "يونيو", y="2020",
+        text="COVID-19", showarrow=False,
+        font=dict(size=10, color=C["red"]),
+        bgcolor="rgba(239,68,68,0.2)", borderpad=3)
+    apply_layout(fig2, height=320)
+    fig2.update_layout(
         yaxis=dict(tickfont=dict(size=10), autorange="reversed"),
-        font=dict(color=text_primary),
-    )
-    st.plotly_chart(fig_heat, use_container_width=True, config={"displayModeBar": False})
+        margin=dict(l=10,r=10,t=10,b=10))
+    chart(fig2)
 
-with compare_col:
-    st.markdown(f"<div class='section-title'>⚡ {t['seasonal_compare']}</div>", unsafe_allow_html=True)
-
-    fig_comp = go.Figure()
-    fig_comp.add_trace(go.Scatter(
-        x=months_lbl, y=[v/1000 for v in inbound_monthly],
+with c3:
+    st.markdown(sec_head(t["s3"], t["s3h"]), unsafe_allow_html=True)
+    fig3 = go.Figure()
+    fig3.add_trace(go.Scatter(
+        x=MONTHS, y=[v/1000 for v in INB_MON],
         name=t["inbound"],
-        line=dict(color=accent_blue, width=2.5),
-        fill='tozeroy', fillcolor=f"{accent_blue}18",
-        marker=dict(size=7)
-    ))
-    fig_comp.add_trace(go.Scatter(
-        x=months_lbl, y=[v/1000 for v in domestic_monthly],
+        line=dict(color=C["blue"], width=2.5),
+        fill='tozeroy', fillcolor="rgba(58,134,255,0.12)",
+        marker=dict(size=7),
+        hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
+    fig3.add_trace(go.Scatter(
+        x=MONTHS, y=[v/1000 for v in DOM_MON],
         name=t["domestic"],
-        line=dict(color=accent_teal, width=2.5),
-        fill='tozeroy', fillcolor=f"{accent_teal}18",
-        marker=dict(size=7)
-    ))
-    fig_comp.add_annotation(x="Dec", y=max([v/1000 for v in inbound_monthly]),
-        text="Dec Peak", showarrow=True, arrowhead=2,
-        font=dict(size=9, color=accent_blue), arrowcolor=accent_blue, ay=-30)
-    fig_comp.add_annotation(x="Jul", y=max([v/1000 for v in domestic_monthly]),
-        text="Jul Peak", showarrow=True, arrowhead=2,
-        font=dict(size=9, color=accent_teal), arrowcolor=accent_teal, ay=-30)
+        line=dict(color=C["teal"], width=2.5),
+        fill='tozeroy', fillcolor="rgba(23,177,155,0.12)",
+        marker=dict(size=7),
+        hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
+    # Peak annotations
+    dec = "Dec" if LANG=="EN" else "ديسمبر"
+    jul = "Jul" if LANG=="EN" else "يوليو"
+    fig3.add_annotation(x=dec, y=max([v/1000 for v in INB_MON]),
+        text="Dec Peak" if LANG=="EN" else "ذروة ديسمبر",
+        showarrow=True, arrowhead=2,
+        font=dict(size=9, color=C["blue"]),
+        arrowcolor=C["blue"], ay=-30)
+    fig3.add_annotation(x=jul, y=max([v/1000 for v in DOM_MON]),
+        text="Jul Peak" if LANG=="EN" else "ذروة يوليو",
+        showarrow=True, arrowhead=2,
+        font=dict(size=9, color=C["teal"]),
+        arrowcolor=C["teal"], ay=-30)
+    apply_layout(fig3, height=260)
+    fig3.update_layout(xaxis=dict(tickfont=dict(size=9), tickangle=45))
+    fig3.update_yaxes(title_text=t["tourists_m"])
+    chart(fig3)
 
-    fig_comp.update_layout(
-        template=plotly_template,
-        paper_bgcolor=chart_bg, plot_bgcolor=chart_bg,
-        height=320, margin=dict(l=10, r=10, t=10, b=10),
-        legend=dict(orientation="h", y=-0.18, font=dict(size=10)),
-        xaxis=dict(showgrid=False, tickfont=dict(size=9)),
-        yaxis=dict(showgrid=True, gridcolor=border_color,
-                   tickfont=dict(size=10), title=t["tourists_m"]),
-        font=dict(color=text_primary),
-    )
-    st.plotly_chart(fig_comp, use_container_width=True, config={"displayModeBar": False})
+    st.markdown(
+        f'<div style="background:{C["sec_bg"]};border:1px solid {C["border"]};'
+        f'border-radius:8px;padding:12px 14px;font-size:.8rem;'
+        f'color:{C["grey"]};line-height:1.7;">'
+        f'🌙 {t["ramadan_note"]}<br><br>☀️ {t["summer_note"]}'
+        f'</div>',
+        unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div class='note-box'>
-      🌙 {t['ramadan_note']}<br><br>
-      ☀️ {t['summer_note']}
-    </div>""", unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
+            unsafe_allow_html=True)
 
-# ══════════════════════════════════════════
-# CHART 4 + 5: Quarterly + Radar
-# ══════════════════════════════════════════
-q_col, radar_col = st.columns([2, 2])
+# ════════════════════════════════════════════════════════════════════
+# CHARTS 4+5 — Quarterly | Radar
+# ════════════════════════════════════════════════════════════════════
+st.markdown(f'<div style="padding:28px 40px 0;">', unsafe_allow_html=True)
+c4, c5 = st.columns(2, gap="large")
 
-with q_col:
-    st.markdown(f"<div class='section-title'>📆 {t['quarter_analysis']}</div>", unsafe_allow_html=True)
+with c4:
+    st.markdown(sec_head(t["s4"], t["s4h"]), unsafe_allow_html=True)
+    fig4 = go.Figure()
+    fig4.add_trace(go.Bar(
+        x=QUARTERS, y=[v/1000 for v in INB_Q],
+        name=t["inbound"], marker_color=C["blue"], opacity=0.88,
+        hovertemplate="<b>%{x}</b>: %{y:.1f}M<extra></extra>"))
+    fig4.add_trace(go.Bar(
+        x=QUARTERS, y=[v/1000 for v in DOM_Q],
+        name=t["domestic"], marker_color=C["teal"], opacity=0.88,
+        hovertemplate="<b>%{x}</b>: %{y:.1f}M<extra></extra>"))
+    apply_layout(fig4, height=300)
+    fig4.update_layout(barmode='group', bargap=0.25)
+    fig4.update_yaxes(title_text=t["tourists_m"])
+    chart(fig4)
 
-    fig_q = go.Figure()
-    fig_q.add_trace(go.Bar(
-        x=quarters_lbl, y=[v/1000 for v in inbound_q],
-        name=t["inbound"],
-        marker_color=accent_blue, opacity=0.88
-    ))
-    fig_q.add_trace(go.Bar(
-        x=quarters_lbl, y=[v/1000 for v in domestic_q],
-        name=t["domestic"],
-        marker_color=accent_teal, opacity=0.88
-    ))
-    fig_q.update_layout(
-        template=plotly_template,
-        paper_bgcolor=chart_bg, plot_bgcolor=chart_bg,
-        height=300, barmode='group',
-        margin=dict(l=10, r=10, t=10, b=10),
-        legend=dict(orientation="h", y=-0.18, font=dict(size=10)),
-        xaxis=dict(showgrid=False, tickfont=dict(size=10)),
-        yaxis=dict(showgrid=True, gridcolor=border_color,
-                   tickfont=dict(size=10), title=t["tourists_m"]),
-        font=dict(color=text_primary),
-    )
-    st.plotly_chart(fig_q, use_container_width=True, config={"displayModeBar": False})
-
-with radar_col:
-    st.markdown(f"<div class='section-title'>🎯 {t['radar_chart']}</div>", unsafe_allow_html=True)
-
-    inb_norm = [v/max(inbound_monthly) for v in inbound_monthly]
-    dom_norm = [v/max(domestic_monthly) for v in domestic_monthly]
-
-    fig_radar = go.Figure()
-    fig_radar.add_trace(go.Scatterpolar(
-        r=inb_norm + [inb_norm[0]],
-        theta=months_lbl + [months_lbl[0]],
-        fill='toself',
-        name=t["inbound"],
-        line_color=accent_blue,
-        fillcolor=f"{accent_blue}25"
-    ))
-    fig_radar.add_trace(go.Scatterpolar(
-        r=dom_norm + [dom_norm[0]],
-        theta=months_lbl + [months_lbl[0]],
-        fill='toself',
-        name=t["domestic"],
-        line_color=accent_teal,
-        fillcolor=f"{accent_teal}25"
-    ))
-    fig_radar.update_layout(
-        template=plotly_template,
-        paper_bgcolor=chart_bg, plot_bgcolor=chart_bg,
-        height=300, margin=dict(l=30, r=30, t=20, b=10),
+with c5:
+    st.markdown(sec_head(t["s5"], t["s5h"]), unsafe_allow_html=True)
+    inb_norm = [v/max(INB_MON) for v in INB_MON]
+    dom_norm = [v/max(DOM_MON) for v in DOM_MON]
+    fig5 = go.Figure()
+    fig5.add_trace(go.Scatterpolar(
+        r=inb_norm+[inb_norm[0]],
+        theta=MONTHS+[MONTHS[0]],
+        fill='toself', name=t["inbound"],
+        line_color=C["blue"],
+        fillcolor="rgba(58,134,255,0.15)"))
+    fig5.add_trace(go.Scatterpolar(
+        r=dom_norm+[dom_norm[0]],
+        theta=MONTHS+[MONTHS[0]],
+        fill='toself', name=t["domestic"],
+        line_color=C["teal"],
+        fillcolor="rgba(23,177,155,0.15)"))
+    fig5.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=C["grey"], family=ff),
+        height=300, margin=dict(l=30,r=30,t=20,b=10),
         polar=dict(
-            bgcolor=bg_card2,
-            radialaxis=dict(showticklabels=False, gridcolor=border_color),
-            angularaxis=dict(tickfont=dict(size=10, color=text_primary),
-                             gridcolor=border_color)
-        ),
-        legend=dict(orientation="h", y=-0.1, font=dict(size=10)),
-        font=dict(color=text_primary),
-    )
-    st.plotly_chart(fig_radar, use_container_width=True, config={"displayModeBar": False})
+            bgcolor="rgba(0,0,0,0)",
+            radialaxis=dict(showticklabels=False,
+                           gridcolor="rgba(42,50,53,0.5)"),
+            angularaxis=dict(tickfont=dict(size=10, color=C["grey"]),
+                             gridcolor="rgba(42,50,53,0.5)")),
+        legend=dict(orientation="h", y=-0.1, font=dict(size=10),
+                    bgcolor="rgba(0,0,0,0)"))
+    chart(fig5)
 
-# ══════════════════════════════════════════
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
+            unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
 # KEY INSIGHTS
-# ══════════════════════════════════════════
-st.markdown(f"<div class='section-title'>💡 {t['insight_title']}</div>", unsafe_allow_html=True)
+# ════════════════════════════════════════════════════════════════════
+ins_html = f'<div style="padding:28px 40px 40px;">{sec_head(t["s6"],t["s6h"])}'
+ins_html += f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">'
+for ico, txt, ck in t["ins"]:
+    ins_html += (
+        f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};'
+        f'border-left:3px solid {clr(ck)};border-radius:10px;'
+        f'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
+        f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
+        f'<div style="font-size:.83rem;color:{C["white"]};line-height:1.65;">{txt}</div>'
+        f'</div>')
+ins_html += '</div></div>'
+st.markdown(ins_html, unsafe_allow_html=True)
 
-insights = [
-    ("🏆", t["i1"], accent_gold),
-    ("✈️", t["i2"], accent_blue),
-    ("📊", t["i3"], accent_teal),
-    ("🌙", t["i4"], accent_red),
-]
-ins_cols = st.columns(2)
-for i, (icon, text, color) in enumerate(insights):
-    with ins_cols[i % 2]:
-        st.markdown(f"""
-        <div class='insight-card' style='border-left:3px solid {color};'>
-          <div class='insight-icon'>{icon}</div>
-          <div class='insight-text'>{text}</div>
-        </div>""", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
 # FOOTER
-# ══════════════════════════════════════════
-st.markdown(f"""
-<div class='footer-bar'>
-  <div>
-    <div class='footer-name'>Eng. Goda Emad — Saudi Tourism Intelligence</div>
-    <div class='footer-link'>Data: DataSaudi · Ministry of Economy & Planning · 2015–2024</div>
-  </div>
-  <div style='display:flex;gap:14px;'>
-    <div class='footer-link'><a href='https://github.com/Goda-Emad/Saudi-Tourism-Intelligence/tree/main' target='_blank'>🐙 GitHub</a></div>
-    <div class='footer-link'><a href='https://www.linkedin.com/in/goda-emad/' target='_blank'>💼 LinkedIn</a></div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
+# ════════════════════════════════════════════════════════════════════
+st.markdown(
+    f'<div style="background:{C["navbar"]};border-top:2px solid {C["teal"]};'
+    f'padding:22px 40px;display:flex;justify-content:space-between;'
+    f'align-items:center;flex-wrap:wrap;gap:12px;">'
+    f'<div style="display:flex;align-items:center;gap:14px;">{logo_img}'
+    f'<div>'
+    f'<div style="font-size:.88rem;font-weight:700;color:{C["teal"]};">Saudi Tourism Intelligence</div>'
+    f'<div style="font-size:.66rem;color:#B5B8B7;margin-top:2px;">📅 Seasonality · Eng. Goda Emad</div>'
+    f'</div></div>'
+    f'<div style="display:flex;gap:20px;">'
+    f'<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
+    f'style="font-size:.75rem;color:#B5B8B7;text-decoration:none;">🐙 GitHub</a>'
+    f'<a href="https://datasaudi.sa" target="_blank" '
+    f'style="font-size:.75rem;color:{C["teal"]};text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
+    f'</div></div>',
+    unsafe_allow_html=True)
