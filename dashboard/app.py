@@ -47,15 +47,15 @@ def _b64(p):
 logo_b64 = _b64("assets/logo.jpg") or _b64("assets/logo.png")
 hero_b64 = _b64("assets/hero.jpg") or _b64("assets/hero.png")
 logo_src = f"data:image/jpeg;base64,{logo_b64}" if logo_b64 else ""
-hero_src = f"data:image/jpeg;base64,{hero_b64}" if hero_b64 else ""
 logo_img = (f'<img src="{logo_src}" style="height:44px;border-radius:8px;"/>'
             if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
 
 TR = {
 "EN":{
     "pill":"🇸🇦  OFFICIAL DATA · MINISTRY OF ECONOMY & PLANNING",
-    "h1":"Saudi Tourism","h2":"Intelligence",
+    "hero_title":"Saudi Tourism <span style='color:#17B19B;'>Intelligence</span>",
     "hs":"AI-powered analytics built on 10 years of official government data.\nForecasting · Segmentation · Sustainability — all in one platform.",
+    "cta":"Explore Dashboard  →",
     "stats":[
         ("115.8M","TOURISTS 2024",   "teal",  "▲ +23%","up"),
         ("1.10B", "OVERNIGHT STAYS", "teal",  "▲ +41%","up"),
@@ -93,20 +93,19 @@ TR = {
     ],
     "v30_title":"VISION 2030","v30_h":"Progress Toward Vision 2030 Targets",
     "v30":[
-        ("Inbound Tourists",   30.1,150.0,"30.1M of 150M target · 20%",          "teal"),
-        ("Tourism GDP %",      11.5, 10.0,"11.5% — target exceeded ✅",            "green"),
-        ("Hotel Capacity (k)", 550.0,650.0,"550k of 650k rooms · 85%",            "gold"),
-        ("Carbon Reduction %", 18.0, 30.0,"18% of 30% target · in progress",     "orange"),
+        ("Inbound Tourists",   30.1,150.0,"30.1M of 150M target · 20%",      "teal"),
+        ("Tourism GDP %",      11.5, 10.0,"11.5% — target exceeded ✅",        "green"),
+        ("Hotel Capacity (k)", 550.0,650.0,"550k of 650k rooms · 85%",        "gold"),
+        ("Carbon Reduction %", 18.0, 30.0,"18% of 30% target · in progress", "orange"),
     ],
-    "name":"Saudi Tourism Intelligence","sub":"AI ANALYTICS PLATFORM",
+    "name":"Saudi Tourism Intelligence",
     "copy":"© 2025 Saudi Tourism Intelligence · Eng. Goda Emad",
-    # FIX 1: Updated CTA button text
-    "cta_btn": "Overview  →",
 },
 "AR":{
     "pill":"🇸🇦  بيانات رسمية · وزارة الاقتصاد والتخطيط",
-    "h1":"ذكاء السياحة","h2":"السعودية",
+    "hero_title":"ذكاء السياحة <span style='color:#17B19B;'>السعودية</span>",
     "hs":"تحليلات مدعومة بالذكاء الاصطناعي بناءً على 10 سنوات من البيانات الرسمية.\nالتوقعات · التقسيم · الاستدامة — كل شيء في منصة واحدة.",
+    "cta":"←  استكشف لوحة التحكم",
     "stats":[
         ("115.8M","السياح 2024",         "teal",  "▲ +23%","up"),
         ("1.10B", "ليالي الإقامة",       "teal",  "▲ +41%","up"),
@@ -144,15 +143,13 @@ TR = {
     ],
     "v30_title":"رؤية 2030","v30_h":"التقدم نحو أهداف رؤية 2030",
     "v30":[
-        ("السياح الوافدون",    30.1,150.0,"30.1M من هدف 150M · 20%",         "teal"),
-        ("نسبة السياحة من GDP",11.5, 10.0,"11.5% — تجاوز الهدف ✅",           "green"),
-        ("طاقة الفنادق (ألف)", 550.0,650.0,"550k من 650k غرفة · 85%",         "gold"),
-        ("تخفيض الكربون %",    18.0, 30.0,"18% من هدف 30% · قيد التنفيذ",    "orange"),
+        ("السياح الوافدون",    30.1,150.0,"30.1M من هدف 150M · 20%",       "teal"),
+        ("نسبة السياحة من GDP",11.5, 10.0,"11.5% — تجاوز الهدف ✅",         "green"),
+        ("طاقة الفنادق (ألف)", 550.0,650.0,"550k من 650k غرفة · 85%",       "gold"),
+        ("تخفيض الكربون %",    18.0, 30.0,"18% من هدف 30% · قيد التنفيذ", "orange"),
     ],
-    "name":"ذكاء السياحة السعودية","sub":"AI ANALYTICS PLATFORM",
+    "name":"ذكاء السياحة السعودية",
     "copy":"© 2025 ذكاء السياحة السعودية · م. جودة عماد",
-    # FIX 1: Updated CTA button text (Arabic)
-    "cta_btn": "←  النظرة التنفيذية",
 },
 }
 t = TR[LANG]
@@ -160,6 +157,7 @@ t = TR[LANG]
 hero_bg = (f'url("data:image/jpeg;base64,{hero_b64}")' if hero_b64
            else f"linear-gradient(135deg,{C['navbar']},{C['bg']})")
 
+# ══ GLOBAL CSS ═══════════════════════════════════════════════════════
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&family=Tajawal:wght@400;700;800&display=swap');
@@ -170,20 +168,31 @@ section[data-testid="stMain"]>div:first-child{{padding-top:0!important;}}
 html,body,[data-testid="stAppViewContainer"],[data-testid="stMain"]{{
   background:{C['bg']}!important;direction:{dr};
   font-family:'{ff}',sans-serif;color:{C['white']}!important;}}
-.ds-hero{{position:relative;width:100%;height:520px;
+.ds-hero{{
+  position:relative;width:100%;height:520px;
   background-image:{hero_bg};background-size:cover;
   background-position:center top;overflow:hidden;}}
 .ds-card{{transition:transform .22s,box-shadow .22s,border-color .22s;}}
-.ds-card:hover{{transform:translateY(-3px);
+.ds-card:hover{{
+  transform:translateY(-3px);
   box-shadow:0 10px 28px rgba(23,177,155,.18)!important;
   border-color:{C['teal']}88!important;}}
 @keyframes ds-pulse{{
-  0%,100%{{box-shadow:0 0 0 0 rgba(23,177,155,.55);}}
-  50%{{box-shadow:0 0 0 12px rgba(23,177,155,0);}}}}
-.ds-cta{{animation:ds-pulse 2.6s ease-in-out infinite;}}
-.ds-cta:hover{{animation:none;transform:translateX(4px);}}
-.ds-arrow-icon{{transition:transform .2s;display:inline-block;}}
-.ds-cta:hover .ds-arrow-icon{{transform:translateX(5px);}}
+  0%,100%{{box-shadow:0 0 0 0 rgba(23,177,155,.6);}}
+  50%{{box-shadow:0 0 0 14px rgba(23,177,155,0);}}}}
+.ds-cta-btn{{
+  background:{C['teal']};color:#FFFFFF;
+  font-size:.92rem;font-weight:700;
+  padding:13px 32px;border-radius:7px;border:none;
+  cursor:pointer;letter-spacing:.3px;
+  box-shadow:0 6px 28px rgba(23,177,155,.55);
+  animation:ds-pulse 2.6s ease-in-out infinite;
+  transition:background .2s,transform .2s;
+  font-family:'{ff}',sans-serif;}}
+.ds-cta-btn:hover{{
+  background:{C['teal_act']};
+  animation:none;
+  transform:translateX(4px);}}
 </style>""", unsafe_allow_html=True)
 
 def sec_head(badge, h2, sub=""):
@@ -199,52 +208,32 @@ def sec_head(badge, h2, sub=""):
         +'</div>')
 
 # ══ HERO ════════════════════════════════════════════════════════════
-# FIX 3: Hero CTA inside image is purely decorative — no interaction, no onclick
-cta_arrow = (f"Overview <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
-             else f"<span class='ds-arrow-icon'>←</span> النظرة التنفيذية")
+# - Title: ONE line, white + teal via inline <span>
+# - Button: ONE instance inside hero, pure HTML <button> with pulse
+# - onclick navigates to Overview page
 st.markdown(
     f'<div class="ds-hero">'
     f'<div style="position:absolute;inset:0;background:linear-gradient('
-    f'100deg,{C["navbar"]}EE 0%,{C["navbar"]}99 38%,{C["bg"]}22 70%,transparent 100%);"></div>'
-    f'<div style="position:relative;z-index:2;padding:80px 52px;max-width:600px;">'
+    f'100deg,{C["navbar"]}EE 0%,{C["navbar"]}99 40%,{C["bg"]}22 72%,transparent 100%);"></div>'
+    f'<div style="position:relative;z-index:2;padding:70px 52px;max-width:700px;">'
+    # pill
     f'<div style="display:inline-flex;align-items:center;background:{C["teal"]}15;'
     f'border:1px solid {C["teal"]}55;color:{C["teal"]};font-size:.58rem;font-weight:700;'
     f'letter-spacing:2.5px;text-transform:uppercase;padding:5px 14px;border-radius:4px;'
     f'margin-bottom:22px;">{t["pill"]}</div>'
+    # title — single line
     f'<div style="font-size:3.4rem;font-weight:800;color:{C["white"]};'
-    f'line-height:1.0;letter-spacing:-1.5px;margin-bottom:4px;">{t["h1"]}</div>'
-    f'<div style="font-size:3.4rem;font-weight:800;color:{C["teal"]};'
-    f'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">{t["h2"]}</div>'
+    f'line-height:1.1;letter-spacing:-1.5px;margin-bottom:22px;white-space:nowrap;">'
+    f'{t["hero_title"]}</div>'
+    # subtitle
     f'<p style="font-size:.95rem;color:{C["grey"]};line-height:1.8;'
-    f'margin-bottom:32px;max-width:460px;">{t["hs"]}</p>'
-    # FIX 3: pointer-events:none → purely visual, not clickable
-    f'<div style="display:inline-flex;align-items:center;gap:10px;'
-    f'background:{C["teal"]};color:#FFFFFF;font-size:.9rem;font-weight:700;'
-    f'padding:13px 30px;border-radius:7px;letter-spacing:.3px;'
-    f'pointer-events:none;user-select:none;">{cta_arrow}</div>'
+    f'margin-bottom:36px;max-width:480px;">{t["hs"]}</p>'
+    # single teal pulse button
+    f'<button class="ds-cta-btn" onclick="window.location.href=\'./Overview\'">'
+    f'{t["cta"]}'
+    f'</button>'
     f'</div></div>',
     unsafe_allow_html=True)
-
-# FIX 1 & 2: Only ONE real functional button with updated text — NO duplicate button below
-st.markdown(f"""<style>
-div[data-testid="stMain"]>div>div:nth-child(3){{
-  margin-top:-68px!important;padding-left:92px!important;
-  position:relative!important;z-index:20!important;width:fit-content!important;}}
-div[data-testid="stMain"]>div>div:nth-child(3) button{{
-  background:{C["teal"]}!important;color:#FFFFFF!important;
-  font-size:.92rem!important;font-weight:700!important;
-  padding:13px 28px!important;border-radius:7px!important;
-  border:none!important;letter-spacing:.3px!important;
-  box-shadow:0 6px 28px rgba(23,177,155,.55)!important;
-  animation:ds-pulse 2.6s ease-in-out infinite!important;}}
-div[data-testid="stMain"]>div>div:nth-child(3) button:hover{{
-  background:{C["teal_act"]}!important;animation:none!important;
-  transform:translateX(4px)!important;}}
-</style>""", unsafe_allow_html=True)
-
-# FIX 1: Updated button label
-if st.button(t["cta_btn"], key="hero_cta"):
-    st.switch_page("pages/Overview.py")
 
 # ══ STATS STRIP ═════════════════════════════════════════════════════
 cells = ""
@@ -253,9 +242,8 @@ for i,(val,lbl,ck,delta,ddir) in enumerate(t["stats"]):
     a  = ""
     if delta:
         ac = C["teal"] if ddir=="up" else C["red"]
-        ai = "▲" if ddir=="up" else "▼"
         a  = (f'<span style="font-size:.72rem;color:{ac};font-weight:700;'
-              f'margin-left:6px;font-family:IBM Plex Mono,monospace;">{ai} {delta}</span>')
+              f'margin-left:6px;font-family:IBM Plex Mono,monospace;">▲ {delta}</span>')
     cells += (
         f'<div style="padding:28px 24px;{br}">'
         f'<div style="display:flex;align-items:baseline;">'
@@ -283,7 +271,7 @@ for ico,title,desc in t["pages"]:
 st.markdown(
     f'<div style="padding:52px 40px;">{sec_head(t["pt"],t["ph"],t["ps"])}'
     f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'
-    +page_cards+'</div></div>',unsafe_allow_html=True)
+    +page_cards+'</div></div>', unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:0 40px;"></div>',
             unsafe_allow_html=True)
 
@@ -302,7 +290,7 @@ for val,lbl,ck,note in t["metrics"]:
 st.markdown(
     f'<div style="padding:52px 40px 40px;">{sec_head(t["mt"],t["mh"],t["ms"])}'
     f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'
-    +m_cards+'</div></div>',unsafe_allow_html=True)
+    +m_cards+'</div></div>', unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:0 40px;"></div>',
             unsafe_allow_html=True)
 
