@@ -314,56 +314,58 @@ c2, c3 = st.columns([3,2], gap="large")
 with c2:
     st.markdown(sec_head(t["s2"], t["s2h"]), unsafe_allow_html=True)
 
+    # ── colorscale: same style as Tourist_Trends heatmap ─────────
     if THEME == "dark":
         heatmap_cs = [
-            [0.00, "#0A1628"],
-            [0.06, "#0D2744"],
-            [0.18, "#0D3B6E"],
-            [0.35, "#1565C0"],
-            [0.55, "#1976D2"],
-            [0.72, "#17B19B"],
-            [0.88, "#C9A84C"],
+            [0.00, "#0D2340"],
+            [0.25, "#1565C0"],
+            [0.55, "#17B19B"],
+            [0.80, "#C9A84C"],
             [1.00, "#F4D044"],
         ]
+        cell_txt_clr = "#FFFFFF"
         cb_bgcolor   = "#1E2528"
         cb_border    = "#2A3235"
-        cell_txt_clr = "#FFFFFF"
     else:
         heatmap_cs = [
-            [0.00, "#EFF8F6"],
-            [0.10, "#B2DFDB"],
-            [0.28, "#4DB6AC"],
-            [0.48, "#1976D2"],
-            [0.68, "#17B19B"],
-            [0.84, "#C9A84C"],
-            [1.00, "#E65100"],
+            [0.00, "#DBEAFE"],
+            [0.30, "#60A5FA"],
+            [0.60, "#17B19B"],
+            [0.85, "#C9A84C"],
+            [1.00, "#D97706"],
         ]
+        cell_txt_clr = "#0D1A1E"
         cb_bgcolor   = "#FFFFFF"
         cb_border    = "#CBD5E0"
-        cell_txt_clr = "#0D1A1E"
 
-    # ✅ FIX: show values only for cells with enough data to read
-    text_matrix = [
-        [str(v) if v >= 80 else "" for v in row]
-        for row in HEAT_DATA
-    ]
+    # Every cell gets a label — format as integer (K tourists)
+    text_matrix = [[str(v) for v in row] for row in HEAT_DATA]
+
+    # Years displayed top→bottom (2015 at top, 2024 at bottom)
+    y_labels = HEAT_YEARS_STR[::-1]          # reversed list for display
+    heat_z   = list(reversed(HEAT_DATA))     # match reversed order
+
+    # Re-build text matrix to match reversed order
+    text_rev = list(reversed(text_matrix))
+
+    # Mark COVID rows (2020=idx4, 2021=idx3 after reverse)
+    covid_marker = ["⚠️" if y in ("2020","2021") else "" for y in y_labels]
 
     fig2 = go.Figure(go.Heatmap(
-        z=HEAT_DATA,
+        z=heat_z,
         x=MONTHS,
-        # ✅ FIX: use string year list directly — no autorange issues
-        y=HEAT_YEARS_STR,
+        y=y_labels,
         zmin=0, zmax=2600,
         colorscale=heatmap_cs,
         showscale=True,
-        text=text_matrix,
+        text=text_rev,
         texttemplate="%{text}",
-        textfont=dict(size=8, color=cell_txt_clr, family=ff),
-        xgap=3, ygap=3,
+        textfont=dict(size=10, color=cell_txt_clr, family=ff),
+        xgap=4, ygap=4,
         hovertemplate="<b>%{y} · %{x}</b><br>%{z:,}K tourists<extra></extra>",
         colorbar=dict(
-            thickness=16,
-            len=0.90,
+            thickness=14,
+            len=0.95,
             bgcolor=cb_bgcolor,
             bordercolor=cb_border,
             borderwidth=1,
@@ -378,30 +380,18 @@ with c2:
         )
     ))
 
-    # ✅ FIX: COVID band uses integer index range, not year strings
-    # y0/y1 are category indices: 2020=idx5, 2021=idx6 → indices 4.5 to 6.5
-    fig2.add_shape(
-        type="rect",
-        xref="paper", yref="y",
-        x0=0, x1=1,
-        y0=4.5, y1=6.5,
-        fillcolor="rgba(239,68,68,0.10)",
-        line_color=C["red"], line_width=1,
-        layer="below"
-    )
+    # COVID annotation on the 2020 row
     fig2.add_annotation(
-        x=MONTHS[5],
-        y="2020",
+        x=MONTHS[5], y="2020",
         text="⚠️ COVID-19",
         showarrow=False,
         font=dict(size=10, color=C["red"], family=ff),
         bgcolor="rgba(239,68,68,0.22)",
         bordercolor=C["red"], borderwidth=1, borderpad=4,
     )
-    # ✅ 2024 Peak label
+    # Peak Year annotation on 2024 row
     fig2.add_annotation(
-        x=MONTHS[2],
-        y="2024",
+        x=MONTHS[2], y="2024",
         text="📈 Peak Year",
         showarrow=False,
         font=dict(size=9, color=C["gold"], family=ff),
@@ -414,13 +404,9 @@ with c2:
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color=C["grey"], family=ff),
         height=420,
-        margin=dict(l=10, r=10, t=10, b=10),
-        # ✅ FIX: category axis, NOT reversed — data order matches display
+        margin=dict(l=10, r=10, t=10, b=40),
         yaxis=dict(
             type="category",
-            categoryorder="array",
-            categoryarray=HEAT_YEARS_STR,   # 2015 top → 2024 bottom
-            autorange="reversed",            # flip so 2015 is at top
             tickfont=dict(size=11, color=txt_dark),
             showgrid=False,
             linecolor=C["border"],
@@ -431,7 +417,6 @@ with c2:
             showgrid=False,
             linecolor=C["border"],
         ),
-        legend=dict(bgcolor="rgba(0,0,0,0)"),
     )
     chart(fig2)
 
