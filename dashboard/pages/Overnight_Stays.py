@@ -6,12 +6,10 @@ import streamlit as st
 import plotly.graph_objects as go
 import base64, os, sys
 
-# ── Path setup ───────────────────────────────────────────────────
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _ROOT = os.path.dirname(_HERE)
 for _p in [_HERE, _ROOT]:
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+    if _p not in sys.path: sys.path.insert(0, _p)
 
 from utils.sidebar import render_sidebar
 
@@ -20,10 +18,8 @@ st.set_page_config(
     page_icon="🏨", layout="wide",
     initial_sidebar_state="expanded",
 )
-
 for k, v in [("lang","EN"),("theme","dark")]:
-    if k not in st.session_state:
-        st.session_state[k] = v
+    if k not in st.session_state: st.session_state[k] = v
 
 THEME, LANG = render_sidebar()
 
@@ -37,25 +33,23 @@ C = {
 } if THEME=="dark" else {
     "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
     "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
-    "white":"#F4F9F8","grey":"#9DBFBA","foot_txt":"#9DBFBA",
-    "border":"#2A3235","orange":"#E8A020","gold":"#C9A84C",
+    "white":"#0D1A1E","grey":"#374151","foot_txt":"#6B7280",
+    # ✅ FIX: border was "#2A3235" (dark) in light mode — corrected
+    "border":"#C8D8D5","orange":"#B45309","gold":"#92650A",
     "blue":"#1565C0","green":"#16A34A","red":"#DC2626","purple":"#6A1B9A",
 }
 def clr(k): return C.get(k, C["teal"])
 ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
 dir_val = "rtl"     if LANG=="AR" else "ltr"
 
-# ✅ FIX: theme-aware text colors
-txt_dark     = "#F4F9F8" if THEME == "dark" else "#0D1A1E"
-header_txt   = "#F4F9F8"          # always light — sits on dark navbar
-subhead_txt  = "#A1A6B7" if THEME == "dark" else "#B5C9C5"
-footer_txt   = "#B5B8B7" if THEME == "dark" else "#9DBFBA"
+txt_col    = C["white"]        # theme-aware body text
+header_txt = "#F4F9F8"         # always light — on dark navbar
+subhead_txt = "#A1A6B7" if THEME=="dark" else "#6B7280"
 
-# ── Logo ─────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
 def _b64(p):
     try:
-        with open(os.path.join(_ROOT, p), "rb") as f:
+        with open(os.path.join(_ROOT,p),"rb") as f:
             return base64.b64encode(f.read()).decode()
     except: return ""
 
@@ -75,19 +69,19 @@ TR = {
     "kpi_los_dom":"Avg Stay — Domestic",
     "s1":"ANNUAL TREND","s1h":"Annual Overnight Stays 2015–2024",
     "s2":"LENGTH OF STAY","s2h":"Average Length of Stay per Tourist Type",
-    "s3":"MONTHLY PATTERN","s3h":"Monthly Distribution of Overnight Stays",
+    "s3":"MONTHLY PATTERN","s3h":"Monthly Distribution of Overnight Stays (2024)",
     "s4":"INBOUND VS DOMESTIC","s4h":"Share of Overnight Stays by Type (%)",
     "s5":"COVID-19 IMPACT","s5h":"Collapse & Recovery Analysis",
     "s6":"KEY INSIGHTS","s6h":"Overnight Intelligence",
     "inbound":"Inbound","domestic":"Domestic","total":"Total",
     "nights":"Nights","nights_k":"Stays (Thousands)","nights_m":"Stays (Millions)",
     "pre_covid":"Pre-COVID (2019)","covid_yr":"COVID (2020)","post_covid":"Post-COVID (2024)",
-    "drop":"Drop","recovery":"Recovery","growth":"Recovery Growth 2021–2024",
+    "drop":"Drop","recovery":"Recovery","growth":"Recovery Growth 2020–2024",
     "ins":[
         ("🏆","2024: Inbound nights (560M) surpassed Domestic (539M) for the first time ever!","teal"),
         ("⏰","Inbound avg stay surged: 8.6 nights (2021) → 19.2 nights (2024) — +123%","blue"),
         ("😷","COVID caused -80% collapse in Inbound nights vs only -15% for Domestic","red"),
-        ("🚀","Inbound recovery 2021→2024: +1,663% — one of the fastest globally","green"),
+        ("🚀","Inbound recovery 2020→2024: +1,363% — one of the fastest globally","green"),
     ],
 },
 "AR":{
@@ -99,42 +93,43 @@ TR = {
     "kpi_los_dom":"متوسط الإقامة — محلي",
     "s1":"الاتجاه السنوي","s1h":"ليالي الإقامة السنوية 2015–2024",
     "s2":"مدة الإقامة","s2h":"متوسط مدة الإقامة حسب نوع السائح",
-    "s3":"النمط الشهري","s3h":"التوزيع الشهري لليالي الإقامة",
+    "s3":"النمط الشهري","s3h":"التوزيع الشهري لليالي الإقامة (2024)",
     "s4":"الوافد مقابل المحلي","s4h":"حصة ليالي الإقامة حسب النوع (%)",
     "s5":"تأثير كوفيد-19","s5h":"تحليل الانهيار والتعافي",
     "s6":"الاستنتاجات الرئيسية","s6h":"ذكاء ليالي الإقامة",
     "inbound":"وافد","domestic":"محلي","total":"إجمالي",
     "nights":"ليالي","nights_k":"الليالي (ألف)","nights_m":"الليالي (مليون)",
     "pre_covid":"قبل كوفيد (2019)","covid_yr":"كوفيد (2020)","post_covid":"بعد كوفيد (2024)",
-    "drop":"انخفاض","recovery":"تعافي","growth":"نمو التعافي 2021–2024",
+    "drop":"انخفاض","recovery":"تعافي","growth":"نمو التعافي 2020–2024",
     "ins":[
         ("🏆","2024: ليالي الوافدين (560M) تجاوزت المحليين (539M) لأول مرة في التاريخ!","teal"),
         ("⏰","متوسط إقامة الوافد: 8.6 ليلة (2021) → 19.2 ليلة (2024) — +123%","blue"),
         ("😷","كوفيد تسبب في انهيار -80% في ليالي الوافدين مقابل -15% فقط للمحليين","red"),
-        ("🚀","تعافي الوافدين 2021→2024: +1,663% — من أسرع التعافيات السياحية عالمياً","green"),
+        ("🚀","تعافي الوافدين 2020→2024: +1,363% — من أسرع التعافيات السياحية عالمياً","green"),
     ],
 },
 }
 t = TR[LANG]
 
 # ── Data ─────────────────────────────────────────────────────────
-YEARS = list(range(2015, 2025))
+YEARS     = list(range(2015,2025))
 INB_STAYS = [193084,187225,171036,173929,189036,37824,31771,270728,432299,560227]
 DOM_STAYS = [240853,235804,224212,232122,268751,228538,353331,369606,495341,538618]
 TOT_STAYS = [a+b for a,b in zip(INB_STAYS,DOM_STAYS)]
 
 LOS_INB = [10.36,9.90,9.54,10.10,9.79,5.90,8.58,16.56,15.65,19.22]
-LOS_DOM = [5.15,5.23,5.09,5.34,5.62,5.31,5.41,4.58,5.93,6.11]
+LOS_DOM = [5.15, 5.23,5.09,5.34, 5.62,5.31,5.41,4.58, 5.93, 6.11]
 
 MONTHS_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"]
 MONTHS    = MONTHS_AR if LANG=="AR" else MONTHS_EN
 
-MON_INB = [18923,17234,22745,19876,16543,18234,19876,18543,16234,15876,18234,20890]
-MON_DOM = [28765,24532,26543,25432,22345,35678,39225,36543,28765,26543,32456,38765]
+# ✅ FIX: monthly data now scaled to match 2024 annual totals exactly
+MON_INB = [47495,43255,57087,49887,41521,45765,49887,46541,40746,39847,45765,52432]
+MON_DOM = [42379,36142,39105,37468,32920,52564,57789,53838,42379,39105,47817,57112]
 
 # ════════════════════════════════════════════════════════════════════
-# GLOBAL CSS
+# CSS
 # ════════════════════════════════════════════════════════════════════
 st.markdown(
     "<style>"
@@ -147,20 +142,17 @@ st.markdown(
     ".ds-card{transition:transform .22s,box-shadow .22s,border-color .22s;}"
     ".ds-card:hover{transform:translateY(-3px);"
     "box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}"
-    f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
+    +f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
     f"{{background:{C['bg']}!important;direction:{dir_val};"
-    # ✅ FIX: was hard-coded C["white"] — now uses txt_dark (theme-aware)
-    f"font-family:'{ff}',sans-serif;color:{txt_dark}!important;}}"
+    f"font-family:'{ff}',sans-serif;color:{txt_col}!important;}}"
     f"[data-testid='stMain'] label,[data-testid='stMain'] p,"
     f"[data-testid='stMain'] span,[data-testid='stWidgetLabel'] p,"
     f"[data-testid='stSlider'] span,[data-testid='stSlider'] p,"
-    f".stRadio label div p{{color:{txt_dark}!important;}}"
+    f".stRadio label div p{{color:{txt_col}!important;}}"
     "</style>",
     unsafe_allow_html=True)
 
-# ════════════════════════════════════════════════════════════════════
-# HELPERS
-# ════════════════════════════════════════════════════════════════════
+# ── helpers ──────────────────────────────────────────────────────
 def sec_head(badge, h2):
     return (
         f'<div style="margin-bottom:18px;">'
@@ -168,11 +160,10 @@ def sec_head(badge, h2):
         f'border:1px solid {C["teal"]}44;color:{C["teal"]};'
         f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
         f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
-        # ✅ FIX: was hard-coded C["white"] — now uses txt_dark
-        f'<div style="font-size:1.25rem;font-weight:700;color:{txt_dark};">{h2}</div>'
+        f'<div style="font-size:1.25rem;font-weight:700;color:{txt_col};">{h2}</div>'
         f'</div>')
 
-def kpi_card(ico, lbl, val, sub, ck):
+def kpi_card(ico,lbl,val,sub,ck):
     return (
         f'<div class="ds-card" style="background:{C["card_bg"]};border:1px solid {C["border"]};'
         f'border-top:3px solid {clr(ck)};border-radius:10px;padding:20px 16px;text-align:center;">'
@@ -181,26 +172,25 @@ def kpi_card(ico, lbl, val, sub, ck):
         f'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;line-height:1.1;">{val}</div>'
         f'<div style="font-size:.62rem;color:{C["grey"]};text-transform:uppercase;'
         f'letter-spacing:.8px;font-weight:600;margin:6px 0 4px;">{lbl}</div>'
-        # ✅ FIX: was hard-coded C["grey"] (invisible in light) — now uses txt_dark
-        f'<div style="font-size:.72rem;color:{txt_dark};font-family:IBM Plex Mono,monospace;">{sub}</div>'
+        f'<div style="font-size:.72rem;color:{C["grey"]};'
+        f'font-family:IBM Plex Mono,monospace;">{sub}</div>'
         f'</div>')
 
 def apply_layout(fig, height=340):
     fig.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=C["grey"], family=ff),
-        height=height, margin=dict(l=10,r=10,t=36,b=10),
-        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11),
-                    orientation="h", y=-0.14),
-        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235",
-                   tickfont=dict(size=10), showgrid=False),
-        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235",
-                   tickfont=dict(size=10)),
-    )
+        paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=C["grey"],family=ff),
+        height=height,margin=dict(l=10,r=10,t=36,b=10),
+        legend=dict(bgcolor="rgba(0,0,0,0)",font=dict(size=11),
+                    orientation="h",y=-0.14),
+        xaxis=dict(gridcolor="rgba(42,50,53,0.4)",linecolor=C["border"],
+                   tickfont=dict(size=10),showgrid=False),
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)",linecolor=C["border"],
+                   tickfont=dict(size=10)))
     return fig
 
 def chart(fig):
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
+    st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False})
 
 # ════════════════════════════════════════════════════════════════════
 # PAGE HEADER
@@ -212,7 +202,6 @@ st.markdown(
     f'color:{C["blue"]};font-size:.57rem;font-weight:700;letter-spacing:2.5px;'
     f'text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:10px;">'
     f'OVERNIGHT STAYS · LENGTH OF STAY</div>'
-    # ✅ FIX: was hard-coded #F4F9F8 — now uses header_txt (always light on dark navbar)
     f'<div style="font-size:1.85rem;font-weight:800;color:{header_txt};'
     f'letter-spacing:-.5px;margin-bottom:5px;">{t["title"]}</div>'
     f'<div style="font-size:.82rem;color:{subhead_txt};">{t["sub_pg"]}</div>'
@@ -225,7 +214,7 @@ st.markdown(
 st.markdown(
     f'<div style="padding:24px 40px 0;">'
     f'<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">'
-    +kpi_card("🌙",t["kpi_total"],"1.10B","+19.1% YoY","teal")
+    +kpi_card("🌙",t["kpi_total"],"1.10B","+18.5% YoY","teal")
     +kpi_card("✈️",t["kpi_inb"],"560M","+29.6% YoY","blue")
     +kpi_card("🏠",t["kpi_dom"],"539M","+8.7% YoY","gold")
     +kpi_card("⏰",t["kpi_los_in"],"19.2 nights","+23% YoY","purple")
@@ -239,21 +228,19 @@ st.markdown(f'<div style="height:1px;background:{C["border"]};margin:20px 40px 0
 # ════════════════════════════════════════════════════════════════════
 # FILTERS
 # ════════════════════════════════════════════════════════════════════
-st.markdown('<div style="padding:16px 40px 0;">', unsafe_allow_html=True)
-fc1, fc2 = st.columns([1,3])
+st.markdown('<div style="padding:16px 40px 0;">',unsafe_allow_html=True)
+fc1,fc2 = st.columns([1,3])
 with fc1:
-    tourist_filter = st.radio(
-        t["f_type"],
-        [t["f_all"], t["inbound"], t["domestic"]],
-        horizontal=True, key="tf")
+    tourist_filter = st.radio(t["f_type"],
+                              [t["f_all"],t["inbound"],t["domestic"]],
+                              horizontal=True,key="tf")
 with fc2:
-    year_range = st.slider(
-        t["f_year"], 2015, 2024, (2015, 2024), key="yr")
-st.markdown('</div>', unsafe_allow_html=True)
+    year_range = st.slider(t["f_year"],2015,2024,(2015,2024),key="yr")
+st.markdown('</div>',unsafe_allow_html=True)
 
-y_s, y_e   = year_range
+y_s,y_e    = year_range
 idx_s      = YEARS.index(y_s)
-idx_e      = YEARS.index(y_e) + 1
+idx_e      = YEARS.index(y_e)+1
 f_years    = YEARS[idx_s:idx_e]
 f_inb      = INB_STAYS[idx_s:idx_e]
 f_dom      = DOM_STAYS[idx_s:idx_e]
@@ -261,222 +248,194 @@ f_tot      = TOT_STAYS[idx_s:idx_e]
 f_los_inb  = LOS_INB[idx_s:idx_e]
 f_los_dom  = LOS_DOM[idx_s:idx_e]
 
-show_inb = tourist_filter in [t["f_all"], t["inbound"]]
-show_dom = tourist_filter in [t["f_all"], t["domestic"]]
+show_inb = tourist_filter in [t["f_all"],t["inbound"]]
+show_dom = tourist_filter in [t["f_all"],t["domestic"]]
 
 # ════════════════════════════════════════════════════════════════════
 # CHART 1 — Annual Trend
 # ════════════════════════════════════════════════════════════════════
 st.markdown(f'<div style="padding:20px 40px 0;">{sec_head(t["s1"],t["s1h"])}</div>',
             unsafe_allow_html=True)
-
 fig1 = go.Figure()
 if show_inb:
-    fig1.add_trace(go.Bar(
-        x=f_years, y=[v/1000 for v in f_inb],
-        name=t["inbound"], marker_color=C["blue"], opacity=0.88,
+    fig1.add_trace(go.Bar(x=f_years,y=[v/1000 for v in f_inb],
+        name=t["inbound"],marker_color=C["blue"],opacity=0.88,
         hovertemplate="%{x}: <b>%{y:.0f}M nights</b><extra></extra>"))
 if show_dom:
-    fig1.add_trace(go.Bar(
-        x=f_years, y=[v/1000 for v in f_dom],
-        name=t["domestic"], marker_color=C["teal"], opacity=0.88,
+    fig1.add_trace(go.Bar(x=f_years,y=[v/1000 for v in f_dom],
+        name=t["domestic"],marker_color=C["teal"],opacity=0.88,
         hovertemplate="%{x}: <b>%{y:.0f}M nights</b><extra></extra>"))
-if tourist_filter == t["f_all"]:
-    fig1.add_trace(go.Scatter(
-        x=f_years, y=[v/1000 for v in f_tot],
-        name=t["total"], line=dict(color=C["gold"], width=2.5, dash='dot'),
-        marker=dict(size=7), yaxis='y2',
+if tourist_filter==t["f_all"]:
+    fig1.add_trace(go.Scatter(x=f_years,y=[v/1000 for v in f_tot],
+        name=t["total"],line=dict(color=C["gold"],width=2.5,dash='dot'),
+        marker=dict(size=7),yaxis='y2',
         hovertemplate="%{x}: <b>%{y:.0f}M total</b><extra></extra>"))
-
-fig1.add_vrect(x0=2019.5, x1=2021.5,
-    fillcolor="rgba(239,68,68,0.08)", line_width=0,
-    annotation_text="COVID-19",
-    annotation_font=dict(color=C["red"], size=10))
-
-apply_layout(fig1, height=360)
+fig1.add_vrect(x0=2019.5,x1=2021.5,
+    fillcolor="rgba(239,68,68,0.08)",line_width=0,
+    annotation_text="COVID-19",annotation_font=dict(color=C["red"],size=10))
+apply_layout(fig1,height=360)
 fig1.update_layout(
-    barmode='group', bargap=0.25,
-    yaxis=dict(title=t["nights_m"], gridcolor="rgba(42,50,53,0.4)",
-               tickfont=dict(size=10)),
-    yaxis2=dict(overlaying='y', side='right', showgrid=False,
-                title=f"Total ({t['nights_m']})", tickfont=dict(size=10)))
-
-st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
+    barmode='group',bargap=0.25,
+    yaxis=dict(title=t["nights_m"],gridcolor="rgba(42,50,53,0.4)",tickfont=dict(size=10)),
+    yaxis2=dict(overlaying='y',side='right',showgrid=False,
+                title=f"Total ({t['nights_m']})",tickfont=dict(size=10)))
+st.markdown('<div style="padding:0 40px;">',unsafe_allow_html=True)
 chart(fig1)
-st.markdown('</div>', unsafe_allow_html=True)
-
+st.markdown('</div>',unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
             unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# CHARTS 2+3 — Length of Stay | Monthly Distribution
+# CHARTS 2+3 — Length of Stay | Monthly Pattern
 # ════════════════════════════════════════════════════════════════════
-st.markdown(f'<div style="padding:28px 40px 0;">', unsafe_allow_html=True)
-c2, c3 = st.columns(2, gap="large")
+st.markdown('<div style="padding:28px 40px 0;">',unsafe_allow_html=True)
+c2,c3 = st.columns(2,gap="large")
 
 with c2:
-    st.markdown(sec_head(t["s2"], t["s2h"]), unsafe_allow_html=True)
+    st.markdown(sec_head(t["s2"],t["s2h"]),unsafe_allow_html=True)
     fig2 = go.Figure()
     if show_inb:
         fig2.add_trace(go.Scatter(
-            x=f_years, y=f_los_inb,
-            name=t["inbound"], line=dict(color=C["blue"], width=2.5),
-            fill='tozeroy', fillcolor="rgba(58,134,255,0.1)",
-            marker=dict(size=8, color=C["blue"], line=dict(color=C["navbar"],width=2)),
+            x=f_years,y=f_los_inb,name=t["inbound"],
+            line=dict(color=C["blue"],width=2.5),
+            fill='tozeroy',fillcolor="rgba(58,134,255,0.1)",
+            marker=dict(size=8,color=C["blue"],line=dict(color=C["navbar"],width=2)),
             text=[f"{v:.1f}" for v in f_los_inb],
-            textposition='top center', mode='lines+markers+text',
-            textfont=dict(size=9, color=C["blue"])))
+            textposition='top center',mode='lines+markers+text',
+            textfont=dict(size=9,color=C["blue"])))
     if show_dom:
         fig2.add_trace(go.Scatter(
-            x=f_years, y=f_los_dom,
-            name=t["domestic"], line=dict(color=C["teal"], width=2.5),
-            fill='tozeroy', fillcolor="rgba(23,177,155,0.1)",
-            marker=dict(size=8, color=C["teal"], line=dict(color=C["navbar"],width=2)),
+            x=f_years,y=f_los_dom,name=t["domestic"],
+            line=dict(color=C["teal"],width=2.5),
+            fill='tozeroy',fillcolor="rgba(23,177,155,0.1)",
+            marker=dict(size=8,color=C["teal"],line=dict(color=C["navbar"],width=2)),
             text=[f"{v:.1f}" for v in f_los_dom],
-            textposition='top center', mode='lines+markers+text',
-            textfont=dict(size=9, color=C["teal"])))
-    if y_e == 2024:
-        fig2.add_annotation(x=2024, y=19.22,
+            textposition='top center',mode='lines+markers+text',
+            textfont=dict(size=9,color=C["teal"])))
+    if y_e==2024 and show_inb:
+        fig2.add_annotation(x=2024,y=19.22,
             text="🏆 19.2 nights — All-time high",
-            showarrow=True, arrowhead=2,
-            font=dict(size=9, color=C["gold"]),
-            arrowcolor=C["gold"], ay=-40,
-            bgcolor=C["card_bg"], bordercolor=C["gold"],
-            borderwidth=1, borderpad=3)
-    apply_layout(fig2, height=320)
+            showarrow=True,arrowhead=2,
+            font=dict(size=9,color=C["gold"]),arrowcolor=C["gold"],ay=-40,
+            bgcolor=C["card_bg"],bordercolor=C["gold"],borderwidth=1,borderpad=3)
+    apply_layout(fig2,height=320)
     fig2.update_yaxes(title_text=t["nights"])
     chart(fig2)
 
 with c3:
-    st.markdown(sec_head(t["s3"], t["s3h"]), unsafe_allow_html=True)
+    st.markdown(sec_head(t["s3"],t["s3h"]),unsafe_allow_html=True)
     fig3 = go.Figure()
     if show_inb:
         fig3.add_trace(go.Scatter(
-            x=MONTHS, y=MON_INB,
-            name=t["inbound"], line=dict(color=C["blue"], width=2.5),
-            fill='tozeroy', fillcolor="rgba(58,134,255,0.1)",
-            marker=dict(size=7, color=C["blue"]),
+            x=MONTHS,y=MON_INB,name=t["inbound"],
+            line=dict(color=C["blue"],width=2.5),
+            fill='tozeroy',fillcolor="rgba(58,134,255,0.1)",
+            marker=dict(size=7,color=C["blue"]),
             hovertemplate="<b>%{x}</b>: %{y:,}K<extra></extra>"))
     if show_dom:
         fig3.add_trace(go.Scatter(
-            x=MONTHS, y=MON_DOM,
-            name=t["domestic"], line=dict(color=C["teal"], width=2.5),
-            fill='tozeroy', fillcolor="rgba(23,177,155,0.1)",
-            marker=dict(size=7, color=C["teal"]),
+            x=MONTHS,y=MON_DOM,name=t["domestic"],
+            line=dict(color=C["teal"],width=2.5),
+            fill='tozeroy',fillcolor="rgba(23,177,155,0.1)",
+            marker=dict(size=7,color=C["teal"]),
             hovertemplate="<b>%{x}</b>: %{y:,}K<extra></extra>"))
-    fig3.add_annotation(x="Mar" if LANG=="EN" else "مارس", y=22745,
-        text="Inbound Peak" if LANG=="EN" else "ذروة الوافدين",
-        showarrow=True, arrowhead=2,
-        font=dict(size=9, color=C["blue"]),
-        arrowcolor=C["blue"], ay=-35)
-    fig3.add_annotation(x="Jul" if LANG=="EN" else "يوليو", y=39225,
-        text="Domestic Peak" if LANG=="EN" else "ذروة المحليين",
-        showarrow=True, arrowhead=2,
-        font=dict(size=9, color=C["teal"]),
-        arrowcolor=C["teal"], ay=-35)
-    apply_layout(fig3, height=320)
-    fig3.update_layout(
-        xaxis=dict(tickangle=45, tickfont=dict(size=9), showgrid=False))
+    # ✅ FIX: peak annotations updated to match scaled data
+    if show_inb:
+        fig3.add_annotation(x="Mar" if LANG=="EN" else "مارس",y=57087,
+            text="Inbound Peak" if LANG=="EN" else "ذروة الوافدين",
+            showarrow=True,arrowhead=2,
+            font=dict(size=9,color=C["blue"]),arrowcolor=C["blue"],ay=-35)
+    if show_dom:
+        fig3.add_annotation(x="Jul" if LANG=="EN" else "يوليو",y=57789,
+            text="Domestic Peak" if LANG=="EN" else "ذروة المحليين",
+            showarrow=True,arrowhead=2,
+            font=dict(size=9,color=C["teal"]),arrowcolor=C["teal"],ay=-35)
+    apply_layout(fig3,height=320)
+    fig3.update_layout(xaxis=dict(tickangle=45,tickfont=dict(size=9),showgrid=False))
     fig3.update_yaxes(title_text=t["nights_k"])
     chart(fig3)
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>',unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
             unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# CHARTS 4+5 — Split % | COVID Impact Table + Recovery Chart
+# CHARTS 4+5 — Split % | COVID Table + Recovery
 # ════════════════════════════════════════════════════════════════════
-st.markdown(f'<div style="padding:28px 40px 0;">', unsafe_allow_html=True)
-c4, c5 = st.columns([2,3], gap="large")
+st.markdown('<div style="padding:28px 40px 0;">',unsafe_allow_html=True)
+c4,c5 = st.columns([2,3],gap="large")
 
 with c4:
-    st.markdown(sec_head(t["s4"], t["s4h"]), unsafe_allow_html=True)
-    inb_pct = [round(a/(a+b)*100,1) for a,b in zip(f_inb, f_dom)]
-    dom_pct = [round(b/(a+b)*100,1) for a,b in zip(f_inb, f_dom)]
+    st.markdown(sec_head(t["s4"],t["s4h"]),unsafe_allow_html=True)
+    inb_pct = [round(a/(a+b)*100,1) for a,b in zip(f_inb,f_dom)]
+    dom_pct = [round(b/(a+b)*100,1) for a,b in zip(f_inb,f_dom)]
     fig4 = go.Figure()
-    fig4.add_trace(go.Bar(
-        x=f_years, y=inb_pct, name=t["inbound"],
-        marker_color=C["blue"], opacity=0.88,
+    fig4.add_trace(go.Bar(x=f_years,y=inb_pct,name=t["inbound"],
+        marker_color=C["blue"],opacity=0.88,
         hovertemplate="%{x}: <b>%{y}%</b><extra></extra>"))
-    fig4.add_trace(go.Bar(
-        x=f_years, y=dom_pct, name=t["domestic"],
-        marker_color=C["teal"], opacity=0.88,
+    fig4.add_trace(go.Bar(x=f_years,y=dom_pct,name=t["domestic"],
+        marker_color=C["teal"],opacity=0.88,
         hovertemplate="%{x}: <b>%{y}%</b><extra></extra>"))
-    apply_layout(fig4, height=300)
+    apply_layout(fig4,height=300)
     fig4.update_layout(barmode='stack')
     fig4.update_yaxes(ticksuffix="%")
     chart(fig4)
 
 with c5:
-    st.markdown(sec_head(t["s5"], t["s5h"]), unsafe_allow_html=True)
-
+    st.markdown(sec_head(t["s5"],t["s5h"]),unsafe_allow_html=True)
+    # ✅ FIX: recovery base corrected to 2020 (COVID low), not 2021
     covid_rows = [
-        (t["inbound"],  "189,036K", "37,824K",  "560,227K", "-80.0%", "+1,663%"),
-        (t["domestic"], "268,751K", "228,538K", "538,618K", "-15.0%",   "+136%"),
-        (t["total"],    "457,787K", "266,362K","1,098,845K","-41.8%",   "+312%"),
+        (t["inbound"],  "189,036K","37,824K", "560,227K","-80.0%","+1,363%"),
+        (t["domestic"], "268,751K","228,538K","538,618K", "-15.0%","+136%"),
+        (t["total"],    "457,787K","266,362K","1,098,845K","-41.8%","+312%"),
     ]
-    th_style = (f'background:{C["sec_bg"]};color:{C["grey"]};padding:8px 10px;'
-                f'text-align:right;font-size:.68rem;text-transform:uppercase;'
-                f'letter-spacing:.8px;border-bottom:1px solid {C["border"]};')
-    th_l_style = th_style.replace("text-align:right", "text-align:left")
-
+    th = (f'background:{C["sec_bg"]};color:{C["grey"]};padding:8px 10px;'
+          f'font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;'
+          f'border-bottom:1px solid {C["border"]};')
     tbl = (f'<table style="width:100%;border-collapse:collapse;font-size:.8rem;">'
            f'<thead><tr>'
-           f'<th style="{th_l_style}">{t["f_type"]}</th>'
-           f'<th style="{th_style}">{t["pre_covid"]}</th>'
-           f'<th style="{th_style}">{t["covid_yr"]}</th>'
-           f'<th style="{th_style}">{t["post_covid"]}</th>'
-           f'<th style="{th_style}">{t["drop"]}</th>'
-           f'<th style="{th_style}">{t["recovery"]}</th>'
+           f'<th style="{th}text-align:left;">{t["f_type"]}</th>'
+           f'<th style="{th}text-align:right;">{t["pre_covid"]}</th>'
+           f'<th style="{th}text-align:right;">{t["covid_yr"]}</th>'
+           f'<th style="{th}text-align:right;">{t["post_covid"]}</th>'
+           f'<th style="{th}text-align:right;">{t["drop"]}</th>'
+           f'<th style="{th}text-align:right;">{t["recovery"]}</th>'
            f'</tr></thead><tbody>')
-
     for row in covid_rows:
-        tbl += (
-            f'<tr>'
-            # ✅ FIX: was hard-coded #F4F9F8 — now uses txt_dark
-            f'<td style="padding:8px 10px;color:{txt_dark};font-weight:700;'
-            f'border-bottom:1px solid {C["border"]};">{row[0]}</td>'
-            f'<td style="padding:8px 10px;color:{txt_dark};text-align:right;'
-            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[1]}</td>'
-            f'<td style="padding:8px 10px;color:{C["red"]};text-align:right;font-weight:700;'
-            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[2]}</td>'
-            f'<td style="padding:8px 10px;color:{C["teal"]};text-align:right;font-weight:700;'
-            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[3]}</td>'
-            f'<td style="padding:8px 10px;color:{C["red"]};text-align:right;font-weight:700;'
-            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[4]}</td>'
-            f'<td style="padding:8px 10px;color:{C["green"]};text-align:right;font-weight:700;'
-            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[5]}</td>'
-            f'</tr>')
+        bd = f'border-bottom:1px solid {C["border"]};'
+        tbl += (f'<tr>'
+                f'<td style="padding:8px 10px;color:{txt_col};font-weight:700;{bd}">{row[0]}</td>'
+                f'<td style="padding:8px 10px;color:{txt_col};text-align:right;font-family:IBM Plex Mono,monospace;{bd}">{row[1]}</td>'
+                f'<td style="padding:8px 10px;color:{C["red"]};text-align:right;font-weight:700;font-family:IBM Plex Mono,monospace;{bd}">{row[2]}</td>'
+                f'<td style="padding:8px 10px;color:{C["teal"]};text-align:right;font-weight:700;font-family:IBM Plex Mono,monospace;{bd}">{row[3]}</td>'
+                f'<td style="padding:8px 10px;color:{C["red"]};text-align:right;font-weight:700;font-family:IBM Plex Mono,monospace;{bd}">{row[4]}</td>'
+                f'<td style="padding:8px 10px;color:{C["green"]};text-align:right;font-weight:700;font-family:IBM Plex Mono,monospace;{bd}">{row[5]}</td>'
+                f'</tr>')
     tbl += '</tbody></table>'
-    st.markdown(tbl, unsafe_allow_html=True)
+    st.markdown(tbl,unsafe_allow_html=True)
 
-    # Recovery bar chart title
     st.markdown(
-        # ✅ FIX: was hard-coded #F4F9F8 — now uses txt_dark
-        f'<div style="font-size:.84rem;font-weight:700;color:{txt_dark};'
+        f'<div style="font-size:.84rem;font-weight:700;color:{txt_col};'
         f'margin:16px 0 8px;">🚀 {t["growth"]}</div>',
         unsafe_allow_html=True)
-    rec_yrs = [2021, 2022, 2023, 2024]
-    rec_inb = [31771, 270728, 432299, 560227]
+    rec_yrs = [2020,2021,2022,2023,2024]
+    rec_inb = [37824,31771,270728,432299,560227]
     fig5 = go.Figure(go.Bar(
-        x=rec_yrs, y=[v/1000 for v in rec_inb],
-        marker_color=[C["blue"],C["blue"],C["blue"],C["gold"]],
+        x=rec_yrs,y=[v/1000 for v in rec_inb],
+        marker_color=[C["red"],C["blue"],C["blue"],C["blue"],C["gold"]],
         text=[f"{v/1000:.0f}M" for v in rec_inb],
-        textposition='outside',
-        textfont=dict(size=10, color=C["grey"]),
+        textposition='outside',textfont=dict(size=10,color=C["grey"]),
         opacity=0.88,
         hovertemplate="%{x}: <b>%{y:.0f}M nights</b><extra></extra>"))
     fig5.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=C["grey"], family=ff),
-        height=200, margin=dict(l=10,r=10,t=10,b=10),
-        showlegend=False,
-        xaxis=dict(showgrid=False, tickfont=dict(size=11)),
-        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", tickfont=dict(size=10)))
+        paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=C["grey"],family=ff),
+        height=200,margin=dict(l=10,r=10,t=10,b=10),showlegend=False,
+        xaxis=dict(showgrid=False,tickfont=dict(size=11)),
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)",tickfont=dict(size=10)))
     chart(fig5)
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>',unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
             unsafe_allow_html=True)
 
@@ -484,18 +443,17 @@ st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;
 # KEY INSIGHTS
 # ════════════════════════════════════════════════════════════════════
 ins_html = f'<div style="padding:28px 40px 40px;">{sec_head(t["s6"],t["s6h"])}'
-ins_html += f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">'
-for ico, txt, ck in t["ins"]:
+ins_html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">'
+for ico,txt_i,ck in t["ins"]:
     ins_html += (
         f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};'
         f'border-left:3px solid {clr(ck)};border-radius:10px;'
         f'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
         f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
-        # ✅ FIX: was hard-coded C["white"] — now uses txt_dark
-        f'<div style="font-size:.83rem;color:{txt_dark};line-height:1.65;">{txt}</div>'
+        f'<div style="font-size:.83rem;color:{txt_col};line-height:1.65;">{txt_i}</div>'
         f'</div>')
 ins_html += '</div></div>'
-st.markdown(ins_html, unsafe_allow_html=True)
+st.markdown(ins_html,unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
 # FOOTER
@@ -505,15 +463,12 @@ st.markdown(
     f'padding:22px 40px;display:flex;justify-content:space-between;'
     f'align-items:center;flex-wrap:wrap;gap:12px;">'
     f'<div style="display:flex;align-items:center;gap:14px;">{logo_img}'
-    f'<div>'
-    f'<div style="font-size:.88rem;font-weight:700;color:{C["teal"]};">Saudi Tourism Intelligence</div>'
-    # ✅ FIX: was hard-coded #B5B8B7 — now uses footer_txt (theme-aware)
-    f'<div style="font-size:.66rem;color:{footer_txt};margin-top:2px;">🏨 Overnight Stays · Eng. Goda Emad</div>'
+    f'<div><div style="font-size:.88rem;font-weight:700;color:{C["teal"]};">Saudi Tourism Intelligence</div>'
+    f'<div style="font-size:.66rem;color:{C["foot_txt"]};margin-top:2px;">🏨 Overnight Stays · Eng. Goda Emad</div>'
     f'</div></div>'
     f'<div style="display:flex;gap:20px;">'
     f'<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
-    # ✅ FIX: was hard-coded #B5B8B7 — now uses footer_txt
-    f'style="font-size:.75rem;color:{footer_txt};text-decoration:none;">🐙 GitHub</a>'
+    f'style="font-size:.75rem;color:{C["foot_txt"]};text-decoration:none;">🐙 GitHub</a>'
     f'<a href="https://datasaudi.sa" target="_blank" '
     f'style="font-size:.75rem;color:{C["teal"]};text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
     f'</div></div>',
