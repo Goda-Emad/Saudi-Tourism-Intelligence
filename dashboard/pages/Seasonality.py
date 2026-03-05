@@ -44,7 +44,10 @@ C = {
 def clr(k): return C.get(k, C["teal"])
 ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
 dir_val = "rtl"     if LANG=="AR" else "ltr"
-txt_dark = "#F4F9F8" if THEME=="dark" else "#0D1A1E"
+txt_dark     = "#F4F9F8" if THEME=="dark" else "#0D1A1E"
+header_txt   = "#F4F9F8"
+subhead_txt  = "#A1A6B7" if THEME=="dark" else "#B5C9C5"
+footer_txt   = "#B5B8B7" if THEME=="dark" else "#9DBFBA"
 
 # ── Logo ─────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
@@ -123,8 +126,9 @@ TOT_MON = [73127,61529,62585,56938,51868,62935,67220,65582,58646,55202,66627,623
 INB_MON = [2470, 2130, 2800, 2320, 1890, 2120, 2220, 2160, 1930, 1880, 2220, 2590]
 DOM_MON = [6960, 5320, 5710, 5330, 4780, 7850, 9610, 7980, 5790, 5370, 7350, 8110]
 
-HEAT_YEARS = list(range(2015,2025))
-HEAT_DATA  = [
+# ✅ FIX: years as strings so category axis works correctly
+HEAT_YEARS_STR = [str(y) for y in range(2015, 2025)]
+HEAT_DATA = [
     [1189,1103, 978, 912, 589, 703, 701, 570, 589, 490, 487, 427],
     [1100,1050, 920, 870, 560, 670, 660, 540, 560, 460, 460, 410],
     [1000, 950, 850, 800, 500, 600, 600, 480, 500, 410, 410, 360],
@@ -186,7 +190,7 @@ def kpi_card(ico, lbl, val, sub, ck):
         f'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;line-height:1.1;">{val}</div>'
         f'<div style="font-size:.62rem;color:{C["grey"]};text-transform:uppercase;'
         f'letter-spacing:.8px;font-weight:600;margin:6px 0 4px;">{lbl}</div>'
-        f'<div style="font-size:.72rem;color:{C["grey"]};font-family:IBM Plex Mono,monospace;">{sub}</div>'
+        f'<div style="font-size:.72rem;color:{txt_dark};font-family:IBM Plex Mono,monospace;">{sub}</div>'
         f'</div>')
 
 def apply_layout(fig, height=340):
@@ -216,9 +220,9 @@ st.markdown(
     f'color:{C["gold"]};font-size:.57rem;font-weight:700;letter-spacing:2.5px;'
     f'text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:10px;">'
     f'SEASONALITY · MONTHLY PATTERNS</div>'
-    f'<div style="font-size:1.85rem;font-weight:800;color:#F4F9F8;'
+    f'<div style="font-size:1.85rem;font-weight:800;color:{header_txt};'
     f'letter-spacing:-.5px;margin-bottom:5px;">{t["title"]}</div>'
-    f'<div style="font-size:.82rem;color:#A1A6B7;">{t["sub_pg"]}</div>'
+    f'<div style="font-size:.82rem;color:{subhead_txt};">{t["sub_pg"]}</div>'
     f'</div>',
     unsafe_allow_html=True)
 
@@ -276,17 +280,17 @@ fig1.add_trace(go.Bar(
     marker_color=bar_colors,
     text=[f"{v:.1f}M" for v in y_data],
     textposition='outside',
-    textfont=dict(size=9, color=C["grey"]),
+    textfont=dict(size=9, color=txt_dark),
     hovertemplate="<b>%{x}</b>: %{y:.1f}M<extra></extra>"))
 fig1.add_hline(y=avg_val, line_dash="dash", line_color=C["grey"], line_width=1.5,
                annotation_text=f"Avg: {avg_val:.1f}M",
                annotation_font=dict(color=C["grey"], size=10))
 fig1.add_vrect(x0=-0.5, x1=2.5,
-    fillcolor="rgba(201,168,76,0.06)", line_width=0,
+    fillcolor="rgba(201,168,76,0.08)", line_width=0,
     annotation_text="🌙 Ramadan", annotation_position="top left",
     annotation=dict(font_color=C["gold"], font_size=10))
 fig1.add_vrect(x0=5.5, x1=8.5,
-    fillcolor="rgba(58,134,255,0.06)", line_width=0,
+    fillcolor="rgba(58,134,255,0.08)", line_width=0,
     annotation_text="☀️ Summer", annotation_position="top left",
     annotation=dict(font_color=C["blue"], font_size=10))
 
@@ -310,7 +314,6 @@ c2, c3 = st.columns([3,2], gap="large")
 with c2:
     st.markdown(sec_head(t["s2"], t["s2h"]), unsafe_allow_html=True)
 
-    # ── Theme-aware colorscale ────────────────────────────────────
     if THEME == "dark":
         heatmap_cs = [
             [0.00, "#0A1628"],
@@ -324,7 +327,7 @@ with c2:
         ]
         cb_bgcolor   = "#1E2528"
         cb_border    = "#2A3235"
-        cell_txt_clr = "#F4F9F8"
+        cell_txt_clr = "#FFFFFF"
     else:
         heatmap_cs = [
             [0.00, "#EFF8F6"],
@@ -339,7 +342,7 @@ with c2:
         cb_border    = "#CBD5E0"
         cell_txt_clr = "#0D1A1E"
 
-    # Value labels inside cells (only rows with decent data)
+    # ✅ FIX: show values only for cells with enough data to read
     text_matrix = [
         [str(v) if v >= 80 else "" for v in row]
         for row in HEAT_DATA
@@ -348,7 +351,8 @@ with c2:
     fig2 = go.Figure(go.Heatmap(
         z=HEAT_DATA,
         x=MONTHS,
-        y=[str(y) for y in HEAT_YEARS],
+        # ✅ FIX: use string year list directly — no autorange issues
+        y=HEAT_YEARS_STR,
         zmin=0, zmax=2600,
         colorscale=heatmap_cs,
         showscale=True,
@@ -374,51 +378,60 @@ with c2:
         )
     ))
 
-    # COVID band
-    fig2.add_hrect(
-        y0="2019", y1="2021",
-        fillcolor="rgba(239,68,68,0.08)",
+    # ✅ FIX: COVID band uses integer index range, not year strings
+    # y0/y1 are category indices: 2020=idx5, 2021=idx6 → indices 4.5 to 6.5
+    fig2.add_shape(
+        type="rect",
+        xref="paper", yref="y",
+        x0=0, x1=1,
+        y0=4.5, y1=6.5,
+        fillcolor="rgba(239,68,68,0.10)",
         line_color=C["red"], line_width=1,
         layer="below"
     )
     fig2.add_annotation(
-        x=MONTHS[5] if LANG=="EN" else "يونيو",
+        x=MONTHS[5],
         y="2020",
         text="⚠️ COVID-19",
         showarrow=False,
         font=dict(size=10, color=C["red"], family=ff),
-        bgcolor="rgba(239,68,68,0.20)",
+        bgcolor="rgba(239,68,68,0.22)",
         bordercolor=C["red"], borderwidth=1, borderpad=4,
     )
-
-    # 2024 Peak label
+    # ✅ 2024 Peak label
     fig2.add_annotation(
-        x=MONTHS[2] if LANG=="EN" else "مارس",
+        x=MONTHS[2],
         y="2024",
         text="📈 Peak Year",
         showarrow=False,
         font=dict(size=9, color=C["gold"], family=ff),
-        bgcolor="rgba(201,168,76,0.20)",
+        bgcolor="rgba(201,168,76,0.22)",
         bordercolor=C["gold"], borderwidth=1, borderpad=3,
     )
 
-    apply_layout(fig2, height=380)
     fig2.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=C["grey"], family=ff),
+        height=420,
+        margin=dict(l=10, r=10, t=10, b=10),
+        # ✅ FIX: category axis, NOT reversed — data order matches display
         yaxis=dict(
             type="category",
-            tickfont=dict(size=11, color=C["grey"]),
-            autorange="reversed",
+            categoryorder="array",
+            categoryarray=HEAT_YEARS_STR,   # 2015 top → 2024 bottom
+            autorange="reversed",            # flip so 2015 is at top
+            tickfont=dict(size=11, color=txt_dark),
             showgrid=False,
             linecolor=C["border"],
-            ticklabelposition="outside",
         ),
         xaxis=dict(
-            tickfont=dict(size=10, color=C["grey"]),
+            tickfont=dict(size=10, color=txt_dark),
             side="bottom",
             showgrid=False,
             linecolor=C["border"],
         ),
-        margin=dict(l=10, r=10, t=10, b=10),
+        legend=dict(bgcolor="rgba(0,0,0,0)"),
     )
     chart(fig2)
 
@@ -515,7 +528,7 @@ with c5:
             bgcolor="rgba(0,0,0,0)",
             radialaxis=dict(showticklabels=False,
                            gridcolor="rgba(42,50,53,0.5)"),
-            angularaxis=dict(tickfont=dict(size=10, color=C["grey"]),
+            angularaxis=dict(tickfont=dict(size=10, color=txt_dark),
                              gridcolor="rgba(42,50,53,0.5)")),
         legend=dict(orientation="h", y=-0.1, font=dict(size=10),
                     bgcolor="rgba(0,0,0,0)"))
@@ -551,11 +564,11 @@ st.markdown(
     f'<div style="display:flex;align-items:center;gap:14px;">{logo_img}'
     f'<div>'
     f'<div style="font-size:.88rem;font-weight:700;color:{C["teal"]};">Saudi Tourism Intelligence</div>'
-    f'<div style="font-size:.66rem;color:#B5B8B7;margin-top:2px;">📅 Seasonality · Eng. Goda Emad</div>'
+    f'<div style="font-size:.66rem;color:{footer_txt};margin-top:2px;">📅 Seasonality · Eng. Goda Emad</div>'
     f'</div></div>'
     f'<div style="display:flex;gap:20px;">'
     f'<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
-    f'style="font-size:.75rem;color:#B5B8B7;text-decoration:none;">🐙 GitHub</a>'
+    f'style="font-size:.75rem;color:{footer_txt};text-decoration:none;">🐙 GitHub</a>'
     f'<a href="https://datasaudi.sa" target="_blank" '
     f'style="font-size:.75rem;color:{C["teal"]};text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
     f'</div></div>',
