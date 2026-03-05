@@ -53,7 +53,7 @@ logo_img = (f'<img src="{logo_src}" style="height:44px;border-radius:8px;"/>'
 TR = {
 "EN":{
     "pill":"🇸🇦  OFFICIAL DATA · MINISTRY OF ECONOMY & PLANNING",
-    "hero_title":"Saudi Tourism <span style='color:#17B19B;'>Intelligence</span>",
+    "hero_title":"<span style='color:#17B19B;'>Saudi Tourism Intelligence</span>",
     "hs":"AI-powered analytics built on 10 years of official government data.\nForecasting · Segmentation · Sustainability — all in one platform.",
     "cta":"Explore Dashboard  →",
     "stats":[
@@ -103,7 +103,7 @@ TR = {
 },
 "AR":{
     "pill":"🇸🇦  بيانات رسمية · وزارة الاقتصاد والتخطيط",
-    "hero_title":"ذكاء السياحة <span style='color:#17B19B;'>السعودية</span>",
+    "hero_title":"<span style='color:#17B19B;'>ذكاء السياحة السعودية</span>",
     "hs":"تحليلات مدعومة بالذكاء الاصطناعي بناءً على 10 سنوات من البيانات الرسمية.\nالتوقعات · التقسيم · الاستدامة — كل شيء في منصة واحدة.",
     "cta":"←  استكشف لوحة التحكم",
     "stats":[
