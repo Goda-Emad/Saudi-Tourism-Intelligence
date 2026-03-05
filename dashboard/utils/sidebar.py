@@ -1,8 +1,6 @@
 # ═══════════════════════════════════════════════════════════════════
 #  utils/sidebar.py — Shared Sidebar for ALL pages
 #  Author : Eng. Goda Emad
-#  FIX 4  : Navigation uses absolute path resolution so st.switch_page
-#            works correctly whether called from app.py OR any pages/*.py
 # ═══════════════════════════════════════════════════════════════════
 import streamlit as st
 import base64, os
@@ -10,14 +8,12 @@ import base64, os
 def render_sidebar():
     """Call this at the top of every page to get the shared sidebar."""
 
-    # ── Session state defaults ────────────────────────────────────
     if "theme" not in st.session_state: st.session_state.theme = "dark"
     if "lang"  not in st.session_state: st.session_state.lang  = "EN"
 
     THEME = st.session_state.theme
     LANG  = st.session_state.lang
 
-    # ── Colors ────────────────────────────────────────────────────
     TEAL   = "#17B19B"
     GOLD   = "#C9A84C"
     NAV_BG = "#031414" if THEME == "dark" else "#172025"
@@ -26,10 +22,8 @@ def render_sidebar():
     BORDER = "#2A3235" if THEME == "dark" else "#C8D8D5"
     FF     = "Tajawal" if LANG  == "AR"   else "IBM Plex Sans"
 
-    # ── Logo ──────────────────────────────────────────────────────
     def _logo():
         try:
-            # Always resolve logo relative to the project root (parent of utils/)
             base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             for p in ["assets/logo.jpg", "assets/logo.png"]:
                 fp = os.path.join(base, p)
@@ -45,10 +39,6 @@ def render_sidebar():
     logo_img = (f'<img src="{logo_src}" style="height:42px;border-radius:8px;"/>'
                 if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
 
-    # ── Nav items ─────────────────────────────────────────────────
-    # FIX 4: Paths are relative to the project root (where app.py lives).
-    #        st.switch_page always resolves from the project root, so
-    #        "pages/Overview.py" works from app.py AND from pages/*.py.
     NAV = [
         ("🏠  Overview",        "🏠  النظرة التنفيذية", "pages/Overview.py"),
         ("📈  Tourist Trends",   "📈  اتجاهات السياحة",  "pages/Tourist_Trends.py"),
@@ -60,7 +50,6 @@ def render_sidebar():
         ("🌱  Carbon Impact",    "🌱  الأثر الكربوني",   "pages/Carbon_Impact.py"),
     ]
 
-    # ── CSS ───────────────────────────────────────────────────────
     st.markdown(
         "<style>"
         f"@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=Tajawal:wght@400;700;800&display=swap');"
@@ -68,7 +57,6 @@ def render_sidebar():
         f"[data-testid='stSidebarNav']{{display:none!important;}}"
         f"[data-testid='stSidebar'] div,[data-testid='stSidebar'] span,"
         f"[data-testid='stSidebar'] p,[data-testid='stSidebar'] label{{color:{WHITE}!important;font-family:'{FF}',sans-serif!important;}}"
-        # All nav buttons
         "[data-testid='stSidebar'] .stButton>button{"
         f"background:transparent!important;border:1px solid transparent!important;"
         f"color:{GREY}!important;border-radius:8px!important;"
@@ -76,7 +64,6 @@ def render_sidebar():
         "padding:9px 12px!important;margin-bottom:2px!important;transition:all .18s!important;}"
         "[data-testid='stSidebar'] .stButton>button:hover{"
         f"background:{TEAL}22!important;color:{TEAL}!important;border-color:{TEAL}44!important;}}"
-        # Theme + Lang buttons (first two) always dark filled
         "[data-testid='stSidebar'] div:nth-child(3) .stButton>button,"
         "[data-testid='stSidebar'] div:nth-child(4) .stButton>button{"
         "background:#2A3235!important;border:1px solid #3A4C50!important;"
@@ -87,7 +74,6 @@ def render_sidebar():
         "</style>",
         unsafe_allow_html=True)
 
-    # ── Render ────────────────────────────────────────────────────
     with st.sidebar:
         # Brand
         name = "Saudi Tourism Intelligence" if LANG == "EN" else "ذكاء السياحة السعودية"
@@ -116,13 +102,30 @@ def render_sidebar():
             st.session_state.lang = "AR" if LANG == "EN" else "EN"
             st.rerun()
 
-        st.markdown(f'<div style="height:1px;background:{BORDER};margin:10px 0 6px;"></div>',
+        st.markdown(f'<div style="height:1px;background:{BORDER};margin:10px 0 4px;"></div>',
                     unsafe_allow_html=True)
 
-        # FIX 4: Page navigation — paths include "pages/" prefix, resolved from project root
+        # ✅ Home button — teal colored, returns to app.py from any page
+        home_lbl = "🏡  الرئيسية" if LANG == "AR" else "🏡  Home"
+        st.markdown(
+            f'<style>.home-wrap .stButton>button{{'
+            f'background:{TEAL}20!important;border:1px solid {TEAL}66!important;'
+            f'color:{TEAL}!important;font-weight:700!important;margin-bottom:6px!important;}}'
+            f'.home-wrap .stButton>button:hover{{'
+            f'background:{TEAL}40!important;border-color:{TEAL}!important;}}'
+            f'</style>',
+            unsafe_allow_html=True)
+        st.markdown('<div class="home-wrap">', unsafe_allow_html=True)
+        if st.button(home_lbl, key="sb_nav_home", use_container_width=True):
+            st.switch_page("app.py")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown(f'<div style="height:1px;background:{BORDER};margin:4px 0 6px;"></div>',
+                    unsafe_allow_html=True)
+
+        # Page navigation
         for en_lbl, ar_lbl, fpath in NAV:
             label = ar_lbl if LANG == "AR" else en_lbl
-            # key uses just the filename part to stay unique
             key = "sb_nav_" + os.path.basename(fpath)
             if st.button(label, key=key, use_container_width=True):
                 st.switch_page(fpath)
@@ -142,5 +145,4 @@ def render_sidebar():
             f'</div>',
             unsafe_allow_html=True)
 
-    # Return current theme/lang for use in the calling page
     return st.session_state.theme, st.session_state.lang
