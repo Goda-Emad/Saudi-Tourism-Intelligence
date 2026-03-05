@@ -5,8 +5,6 @@
 # ═══════════════════════════════════════════════════════════════════
 import streamlit as st
 import plotly.graph_objects as go
-import plotly.express as px
-import pandas as pd
 import base64, os, sys
 
 # ── Path setup ───────────────────────────────────────────────────
@@ -41,12 +39,18 @@ C = {
     "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
     "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
     "white":"#F4F9F8","grey":"#9DBFBA","foot_txt":"#9DBFBA",
-    "border":"#2A3235","orange":"#E8A020","gold":"#C9A84C",
+    "border":"#CBD5E0","orange":"#E8A020","gold":"#C9A84C",
     "blue":"#1565C0","green":"#16A34A","red":"#DC2626","purple":"#6A1B9A",
 }
 def clr(k): return C.get(k, C["teal"])
-ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
-dir_val = "rtl"     if LANG=="AR" else "ltr"
+ff       = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
+dir_val  = "rtl"     if LANG=="AR" else "ltr"
+txt_dark = "#F4F9F8" if THEME=="dark" else "#0D1A1E"
+
+def rgba(hex_color, alpha=0.15):
+    h = hex_color.lstrip('#')
+    r, g, b = int(h[0:2],16), int(h[2:4],16), int(h[4:6],16)
+    return f"rgba({r},{g},{b},{alpha})"
 
 # ── Logo ─────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
@@ -66,13 +70,10 @@ TR = {
 "EN":{
     "title":"🔮 Demand Forecasting 2025–2026",
     "sub_pg":"Prophet ML Model · Monthly Predictions · Confidence Intervals · Vision 2030",
-    "s_filter":"Forecast Year",
-    "both":"2025 & 2026",
-    # KPIs
+    "s_filter":"Forecast Year","both":"2025 & 2026",
     "kpi_peak25":"Peak Month 2025","kpi_peak26":"Peak Month 2026",
     "kpi_tot25":"Total Forecast 2025","kpi_tot26":"Total Forecast 2026",
     "kpi_yoy":"YoY Growth 2026","kpi_acc":"Model Accuracy R²",
-    # Section titles
     "s1":"FORECAST","s1h":"Monthly Forecast 2025–2026 with 95% Confidence Intervals",
     "s2":"HISTORICAL VS FORECAST","s2h":"Actual Tourists 2015–2024 + Prophet Projections",
     "s3":"VISION 2030","s3h":"Progress Tracker — Road to 150M Tourists",
@@ -80,7 +81,6 @@ TR = {
     "s5":"SCENARIO ANALYSIS","s5h":"Optimistic / Base / Pessimistic Scenarios 2025–2030",
     "s6":"MONTHLY TABLE","s6h":"Full Forecast Breakdown by Month",
     "s7":"KEY INSIGHTS","s7h":"Forecasting Intelligence",
-    # Labels
     "hist":"Historical","fcast":"Forecast","upper":"Upper 95%","lower":"Lower 95%",
     "total":"Total","inbound":"Inbound","domestic":"Domestic",
     "target":"Target","actual":"Actual","progress":"Progress to Target",
@@ -100,8 +100,7 @@ TR = {
 "AR":{
     "title":"🔮 توقعات الطلب 2025–2026",
     "sub_pg":"نموذج Prophet · توقعات شهرية · فترات الثقة · رؤية 2030",
-    "s_filter":"سنة التوقع",
-    "both":"2025 و 2026",
+    "s_filter":"سنة التوقع","both":"2025 و 2026",
     "kpi_peak25":"ذروة 2025","kpi_peak26":"ذروة 2026",
     "kpi_tot25":"إجمالي توقعات 2025","kpi_tot26":"إجمالي توقعات 2026",
     "kpi_yoy":"نمو سنوي 2026","kpi_acc":"دقة النموذج R²",
@@ -138,22 +137,20 @@ MONTHS    = MONTHS_AR if LANG=="AR" else MONTHS_EN
 
 F25 = [12307,10628,10812,10074,8964,11238,11832,11124,9846,9561,11710,10798]
 F26 = [13680,11797,11963,11180,9927,12458,13063,12290,10831,10550,12905,11897]
-L25 = [10664,9022,9146,8509,7237,9536,10251,9507,8016,7914,10088,9203]
+L25 = [10664,9022, 9146, 8509, 7237,9536, 10251,9507, 8016, 7914, 10088,9203]
 U25 = [13969,12301,12422,11662,10622,12807,13522,12770,11391,11131,13380,12477]
-L26 = [11938,10188,10328,9532,8349,10700,11361,10799,9094,8863,11223,10321]
+L26 = [11938,10188,10328,9532, 8349, 10700,11361,10799,9094, 8863, 11223,10321]
 U26 = [15330,13355,13516,12805,11695,14131,14719,13899,12415,12190,14546,13537]
 
 HIST_YRS = list(range(2015,2025))
 HIST_TOT = [64.4,63.1,59.9,58.6,65.3,46.2,67.3,94.5,109.1,115.9]
 
-TOT25 = sum(F25)/1000  # 125.9M
-TOT26 = sum(F26)/1000  # 139.9M
+TOT25 = sum(F25)/1000
+TOT26 = sum(F26)/1000
 YOY   = round((TOT26-TOT25)/TOT25*100,1)
 
-# Seasonal index (avg monthly share across 2015-2024, excl 2020)
-SEASONAL = [9.8,8.4,8.6,7.9,7.1,9.2,11.4,11.0,8.6,8.2,9.6,9.5]  # % of annual
+SEASONAL = [9.8,8.4,8.6,7.9,7.1,9.2,11.4,11.0,8.6,8.2,9.6,9.5]
 
-# Scenario data 2024–2030
 SC_YEARS = [2024,2025,2026,2027,2028,2029,2030]
 SC_BASE  = [115.9, TOT25, TOT26, 155.3, 172.4, 191.4, 212.5]
 SC_OPT   = [115.9, 133.3, 153.3, 176.3, 202.8, 233.2, 268.2]
@@ -178,12 +175,17 @@ st.markdown(
     ".ds-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}"
     f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
     f"{{background:{C['bg']}!important;direction:{dir_val};"
-    f"font-family:'{ff}',sans-serif;color:{C['white']}!important;}}"
+    f"font-family:'{ff}',sans-serif;color:{txt_dark}!important;}}"
+    # Widget labels fix
+    f"[data-testid='stMain'] label,[data-testid='stMain'] p,"
+    f"[data-testid='stMain'] span,[data-testid='stWidgetLabel'] p,"
+    f".stRadio label div p{{color:{txt_dark}!important;}}"
+    # Table styles
     f".ftable{{width:100%;border-collapse:collapse;font-size:.82rem;}}"
     f".ftable th{{background:{C['sec_bg']};color:{C['grey']};padding:9px 12px;text-align:center;"
     f"font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid {C['border']};}}"
     f".ftable td{{padding:8px 12px;text-align:center;border-bottom:1px solid {C['border']};"
-    f"font-family:IBM Plex Mono,monospace;font-size:.8rem;color:{C['white']};}}"
+    f"font-family:IBM Plex Mono,monospace;font-size:.8rem;color:{txt_dark};}}"
     f".ftable tr:last-child td{{border-bottom:none;}}"
     f".ftable tr:hover td{{background:{C['sec_bg']};}}"
     "</style>",
@@ -199,7 +201,7 @@ def sec_head(badge, h2):
         f'border:1px solid {C["teal"]}44;color:{C["teal"]};'
         f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
         f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
-        f'<div style="font-size:1.25rem;font-weight:700;color:{C["white"]};">{h2}</div>'
+        f'<div style="font-size:1.25rem;font-weight:700;color:{txt_dark};">{h2}</div>'
         f'</div>')
 
 def kpi_card(ico, lbl, val, sub, ck):
@@ -219,9 +221,12 @@ def apply_layout(fig, height=360):
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color=C["grey"], family=ff),
         height=height, margin=dict(l=10,r=10,t=36,b=10),
-        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11)),
-        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235", tickfont=dict(size=10)),
-        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235", tickfont=dict(size=10)),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11),
+                    orientation="h", y=-0.14),
+        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
+                   tickfont=dict(size=10), showgrid=False),
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
+                   tickfont=dict(size=10)),
     )
     return fig
 
@@ -245,19 +250,16 @@ st.markdown(
     unsafe_allow_html=True)
 
 # Model badges
+badge_s = (f'background:{C["sec_bg"]};border:1px solid {C["border"]};'
+           f'border-radius:20px;padding:5px 14px;font-size:.75rem;font-weight:600;')
 st.markdown(
     f'<div style="padding:16px 40px 0;display:flex;gap:8px;flex-wrap:wrap;">'
-    +f'<span style="background:{C["sec_bg"]};border:1px solid {C["border"]};color:{C["purple"]};'
-    f'border-radius:20px;padding:5px 14px;font-size:.75rem;font-weight:600;">🔮 Facebook Prophet</span>'
-    +f'<span style="background:{C["sec_bg"]};border:1px solid {C["border"]};color:{C["green"]};'
-    f'border-radius:20px;padding:5px 14px;font-size:.75rem;font-weight:600;">✅ R² = 98.6%</span>'
-    +f'<span style="background:{C["sec_bg"]};border:1px solid {C["border"]};color:{C["teal"]};'
-    f'border-radius:20px;padding:5px 14px;font-size:.75rem;font-weight:600;">📊 MAE = 284K tourists</span>'
-    +f'<span style="background:{C["sec_bg"]};border:1px solid {C["border"]};color:{C["gold"]};'
-    f'border-radius:20px;padding:5px 14px;font-size:.75rem;font-weight:600;">📅 120 months training</span>'
-    +f'<span style="background:{C["sec_bg"]};border:1px solid {C["border"]};color:{C["blue"]};'
-    f'border-radius:20px;padding:5px 14px;font-size:.75rem;font-weight:600;">🔄 Multiplicative seasonality</span>'
-    +f'</div>',
+    f'<span style="{badge_s}color:{C["purple"]};">🔮 Facebook Prophet</span>'
+    f'<span style="{badge_s}color:{C["green"]};">✅ R² = 98.6%</span>'
+    f'<span style="{badge_s}color:{C["teal"]};">📊 MAE = 284K tourists</span>'
+    f'<span style="{badge_s}color:{C["gold"]};">📅 120 months training</span>'
+    f'<span style="{badge_s}color:{C["blue"]};">🔄 Multiplicative seasonality</span>'
+    f'</div>',
     unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
@@ -270,7 +272,7 @@ st.markdown(
     +kpi_card("📅",t["kpi_peak26"],"Jan 2026","13,680K tourists","purple")
     +kpi_card("🌍",t["kpi_tot25"],f"{TOT25:.1f}M","+8.5% vs 2024","teal")
     +kpi_card("🌍",t["kpi_tot26"],f"{TOT26:.1f}M",f"+{YOY}% vs 2025","gold")
-    +kpi_card("📉",t["kpi_yoy"],f"+{YOY}%","2026 vs 2025","green")
+    +kpi_card("📈",t["kpi_yoy"],f"+{YOY}%","2026 vs 2025","green")
     +kpi_card("🤖",t["kpi_acc"],"98.6%","R² holdout 2024","purple")
     +'</div></div>',
     unsafe_allow_html=True)
@@ -281,9 +283,10 @@ st.markdown(f'<div style="height:1px;background:{C["border"]};margin:24px 40px 0
 # ════════════════════════════════════════════════════════════════════
 # FILTER
 # ════════════════════════════════════════════════════════════════════
-st.markdown(f'<div style="padding:20px 40px 0;">', unsafe_allow_html=True)
-filter_opts = [t["both"], "2025", "2026"]
-year_filter = st.radio(t["s_filter"], filter_opts, horizontal=True, key="yr_filter")
+st.markdown('<div style="padding:20px 40px 0;">', unsafe_allow_html=True)
+year_filter = st.radio(t["s_filter"],
+                       [t["both"], "2025", "2026"],
+                       horizontal=True, key="yr_filter")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
@@ -292,51 +295,45 @@ st.markdown('</div>', unsafe_allow_html=True)
 st.markdown(f'<div style="padding:20px 40px 0;">{sec_head(t["s1"],t["s1h"])}</div>',
             unsafe_allow_html=True)
 
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
 fig1 = go.Figure()
 
 if year_filter in [t["both"], "2025"]:
-    # CI band 2025
     fig1.add_trace(go.Scatter(
         x=M25+M25[::-1], y=U25+L25[::-1],
-        fill='toself', fillcolor="rgba(58,134,255,0.15)",
+        fill='toself', fillcolor=rgba(C["blue"],0.15),
         line=dict(color='rgba(0,0,0,0)'),
         showlegend=True, name="95% CI 2025", hoverinfo='skip'))
     fig1.add_trace(go.Scatter(
         x=M25, y=F25, name="2025",
         line=dict(color=C["blue"], width=2.5, dash='dot'),
-        marker=dict(size=7, color=C["blue"], line=dict(color=C["navbar"],width=2)),
+        marker=dict(size=7, color=C["blue"], line=dict(color=C["bg"],width=2)),
         hovertemplate="<b>%{x}</b><br>Forecast: <b>%{y:,.0f}K</b><extra></extra>"))
 
 if year_filter in [t["both"], "2026"]:
-    # CI band 2026
     fig1.add_trace(go.Scatter(
         x=M26+M26[::-1], y=U26+L26[::-1],
-        fill='toself', fillcolor="rgba(187,134,252,0.15)",
+        fill='toself', fillcolor=rgba(C["purple"],0.15),
         line=dict(color='rgba(0,0,0,0)'),
         showlegend=True, name="95% CI 2026", hoverinfo='skip'))
     fig1.add_trace(go.Scatter(
         x=M26, y=F26, name="2026",
         line=dict(color=C["purple"], width=2.5),
-        marker=dict(size=7, color=C["purple"], line=dict(color=C["navbar"],width=2)),
+        marker=dict(size=7, color=C["purple"], line=dict(color=C["bg"],width=2)),
         hovertemplate="<b>%{x}</b><br>Forecast: <b>%{y:,.0f}K</b><extra></extra>"))
 
-# Annotations
-fig1.add_annotation(x="2026-01", y=13680, text="🏆 Peak: 13,680K",
-    showarrow=True, arrowhead=2, font=dict(size=10,color=C["gold"]),
-    arrowcolor=C["gold"], ay=-40, bgcolor=C["card_bg"], bordercolor=C["gold"],
-    borderwidth=1, borderpad=4)
-fig1.add_annotation(x="2025-05", y=8964, text="⬇ Low: 8,964K",
-    showarrow=True, arrowhead=2, font=dict(size=10,color=C["red"]),
-    arrowcolor=C["red"], ay=45, bgcolor=C["card_bg"], bordercolor=C["red"],
-    borderwidth=1, borderpad=4)
+fig1.add_annotation(x="2026-01", y=13680,
+    text="🏆 Peak: 13,680K", showarrow=True, arrowhead=2,
+    font=dict(size=10,color=C["gold"]), arrowcolor=C["gold"], ay=-40,
+    bgcolor=C["card_bg"], bordercolor=C["gold"], borderwidth=1, borderpad=4)
+fig1.add_annotation(x="2025-05", y=8964,
+    text="⬇ Low: 8,964K", showarrow=True, arrowhead=2,
+    font=dict(size=10,color=C["red"]), arrowcolor=C["red"], ay=45,
+    bgcolor=C["card_bg"], bordercolor=C["red"], borderwidth=1, borderpad=4)
 
 apply_layout(fig1, height=400)
-fig1.update_layout(
-    legend=dict(orientation="h", y=-0.12, font=dict(size=11)),
-    xaxis=dict(showgrid=False, tickangle=45, tickfont=dict(size=9)),
-)
+fig1.update_layout(xaxis=dict(showgrid=False, tickangle=45, tickfont=dict(size=9)))
 fig1.update_yaxes(title_text=t["tourists_k"])
-st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
 chart(fig1)
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -344,47 +341,40 @@ st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;
             unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# CHARTS 2+3 — Historical vs Forecast | Vision 2030 Progress
+# CHARTS 2+3 — Historical vs Forecast | Vision 2030
 # ════════════════════════════════════════════════════════════════════
 st.markdown(f'<div style="padding:28px 40px 0;">{sec_head(t["s2"],t["s2h"])}</div>',
             unsafe_allow_html=True)
 
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
 c1, c2 = st.columns([3,2], gap="large")
 
 with c1:
     fig2 = go.Figure()
     fig2.add_trace(go.Scatter(
-        x=HIST_YRS, y=HIST_TOT,
-        name=t["hist"],
-        fill="tozeroy", fillcolor="rgba(23,177,155,0.12)",
+        x=HIST_YRS, y=HIST_TOT, name=t["hist"],
+        fill="tozeroy", fillcolor=rgba(C["teal"],0.12),
         line=dict(color=C["teal"], width=2.5),
-        marker=dict(size=7, color=C["teal"], line=dict(color=C["navbar"],width=1.5)),
+        marker=dict(size=7, color=C["teal"], line=dict(color=C["bg"],width=1.5)),
         hovertemplate="%{x}: <b>%{y}M</b><extra></extra>"))
     fig2.add_trace(go.Scatter(
-        x=[2024, 2025, 2026],
-        y=[115.9, TOT25, TOT26],
-        name=t["fcast"],
+        x=[2024,2025,2026], y=[115.9, TOT25, TOT26], name=t["fcast"],
         line=dict(color=C["purple"], width=2.5, dash='dash'),
         marker=dict(size=9, symbol='diamond', color=C["purple"],
-                    line=dict(color=C["navbar"],width=2)),
+                    line=dict(color=C["bg"],width=2)),
         hovertemplate="%{x}: <b>%{y:.1f}M</b><extra></extra>"))
-    # COVID annotation
     fig2.add_vrect(x0=2019.5, x1=2021.5,
-        fillcolor="rgba(239,68,68,0.08)", line_width=0,
+        fillcolor=rgba(C["red"],0.08), line_width=0,
         annotation_text="COVID", annotation_font=dict(color=C["red"],size=10))
-    # Forecast zone
     fig2.add_vrect(x0=2024.5, x1=2026.5,
-        fillcolor="rgba(187,134,252,0.06)", line_width=0,
+        fillcolor=rgba(C["purple"],0.06), line_width=0,
         annotation_text="Forecast Zone",
         annotation_font=dict(color=C["purple"],size=10))
-    # Target line
     fig2.add_hline(y=150, line_dash="dash", line_color=C["gold"],
                    annotation_text="2030 Target: 150M",
                    annotation_font=dict(color=C["gold"],size=10))
     apply_layout(fig2, height=340)
-    fig2.update_layout(
-        legend=dict(orientation="h", y=-0.14, font=dict(size=11)),
-        xaxis=dict(showgrid=False, tickfont=dict(size=10)))
+    fig2.update_layout(xaxis=dict(showgrid=False, tickfont=dict(size=10)))
     fig2.update_yaxes(title_text=t["tourists_m"])
     chart(fig2)
 
@@ -401,7 +391,7 @@ with c2:
         st.markdown(
             f'<div style="margin-bottom:16px;">'
             f'<div style="display:flex;justify-content:space-between;margin-bottom:5px;">'
-            f'<span style="font-size:.82rem;font-weight:600;color:#F4F9F8;">{lbl}</span>'
+            f'<span style="font-size:.82rem;font-weight:600;color:{txt_dark};">{lbl}</span>'
             f'<span style="font-size:.82rem;font-weight:700;color:{col};'
             f'font-family:IBM Plex Mono,monospace;">{val:.1f}M / 150M</span>'
             f'</div>'
@@ -423,11 +413,12 @@ with c2:
         f'</div>',
         unsafe_allow_html=True)
 
+st.markdown('</div>', unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:16px 40px 0;"></div>',
             unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# CHARTS 4+5 — Seasonal Pattern | Scenario Analysis
+# CHARTS 4+5 — Seasonal | Scenarios
 # ════════════════════════════════════════════════════════════════════
 st.markdown(f'<div style="padding:28px 40px 0;">', unsafe_allow_html=True)
 c3, c4 = st.columns([1,1], gap="large")
@@ -459,13 +450,13 @@ with c4:
     fig4.add_trace(go.Scatter(
         x=SC_YEARS, y=SC_OPT, name=t["optimistic"],
         line=dict(color=C["green"], width=2, dash='dot'),
-        fill='tonexty', fillcolor="rgba(34,197,94,0.06)",
+        fill='tonexty', fillcolor=rgba(C["green"],0.06),
         marker=dict(size=6, color=C["green"]),
         hovertemplate="%{x}: <b>%{y:.1f}M</b><extra></extra>"))
     fig4.add_trace(go.Scatter(
         x=SC_YEARS, y=SC_BASE, name=t["base"],
         line=dict(color=C["teal"], width=3),
-        marker=dict(size=7, color=C["teal"], line=dict(color=C["navbar"],width=1.5)),
+        marker=dict(size=7, color=C["teal"], line=dict(color=C["bg"],width=1.5)),
         hovertemplate="%{x}: <b>%{y:.1f}M</b><extra></extra>"))
     fig4.add_trace(go.Scatter(
         x=SC_YEARS, y=SC_PES, name=t["pessimistic"],
@@ -476,14 +467,12 @@ with c4:
         x=SC_YEARS, y=SC_TARG, name="2030 Target",
         mode="markers",
         marker=dict(size=14, symbol='star', color=C["gold"],
-                    line=dict(color=C["navbar"],width=2)),
+                    line=dict(color=C["bg"],width=2)),
         hovertemplate="<b>2030 Target: 150M</b><extra></extra>"))
     fig4.add_hline(y=150, line_dash="dash", line_color=C["gold"],
                    annotation_text="150M Target",
                    annotation_font=dict(color=C["gold"],size=9))
     apply_layout(fig4, height=320)
-    fig4.update_layout(
-        legend=dict(orientation="h", y=-0.14, font=dict(size=10)))
     fig4.update_yaxes(title_text=t["tourists_m"])
     chart(fig4)
 
@@ -510,26 +499,26 @@ tbl = (f'<div style="padding:0 40px 24px;overflow-x:auto;">'
        f'</tr></thead><tbody>')
 
 for i, m in enumerate(MONTHS):
-    yoy   = round((F26[i]-F25[i])/F25[i]*100,1)
-    ycol  = C["green"] if yoy>0 else C["red"]
-    p25   = F25[i]==max(F25)
-    p26   = F26[i]==max(F26)
-    rbg   = f'style="background:{C["sec_bg"]};"' if (p25 or p26) else ""
-    tbl  += (f'<tr {rbg}>'
-             f'<td style="font-weight:600;color:#F4F9F8;">{m}</td>'
-             f'<td style="color:{C["blue"]};font-weight:{"800" if p25 else "400"};">{F25[i]:,}</td>'
-             f'<td style="color:{C["grey"]};">{L25[i]:,}</td>'
-             f'<td style="color:{C["grey"]};">{U25[i]:,}</td>'
-             f'<td style="color:{C["purple"]};font-weight:{"800" if p26 else "400"};">{F26[i]:,}</td>'
-             f'<td style="color:{C["grey"]};">{L26[i]:,}</td>'
-             f'<td style="color:{C["grey"]};">{U26[i]:,}</td>'
-             f'<td style="color:{ycol};font-weight:700;">+{yoy}%</td>'
-             f'</tr>')
+    yoy  = round((F26[i]-F25[i])/F25[i]*100, 1)
+    ycol = C["green"] if yoy > 0 else C["red"]
+    p25  = F25[i] == max(F25)
+    p26  = F26[i] == max(F26)
+    rbg  = f'style="background:{C["sec_bg"]};"' if (p25 or p26) else ""
+    tbl += (f'<tr {rbg}>'
+            f'<td style="font-weight:600;color:{txt_dark};">{m}</td>'
+            f'<td style="color:{C["blue"]};font-weight:{"800" if p25 else "400"};">{F25[i]:,}</td>'
+            f'<td style="color:{C["grey"]};">{L25[i]:,}</td>'
+            f'<td style="color:{C["grey"]};">{U25[i]:,}</td>'
+            f'<td style="color:{C["purple"]};font-weight:{"800" if p26 else "400"};">{F26[i]:,}</td>'
+            f'<td style="color:{C["grey"]};">{L26[i]:,}</td>'
+            f'<td style="color:{C["grey"]};">{U26[i]:,}</td>'
+            f'<td style="color:{ycol};font-weight:700;">+{yoy}%</td>'
+            f'</tr>')
 
 t25  = sum(F25); t26 = sum(F26)
-tyoy = round((t26-t25)/t25*100,1)
+tyoy = round((t26-t25)/t25*100, 1)
 tbl += (f'<tr style="background:{C["sec_bg"]};border-top:2px solid {C["purple"]};">'
-        f'<td style="font-weight:800;color:#F4F9F8;">TOTAL</td>'
+        f'<td style="font-weight:800;color:{txt_dark};">TOTAL</td>'
         f'<td style="color:{C["blue"]};font-weight:800;">{t25:,}</td>'
         f'<td style="color:{C["grey"]};">—</td><td style="color:{C["grey"]};">—</td>'
         f'<td style="color:{C["purple"]};font-weight:800;">{t26:,}</td>'
@@ -552,7 +541,7 @@ for ico, txt, ck in t["ins"]:
         f'border-left:3px solid {clr(ck)};border-radius:10px;'
         f'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
         f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
-        f'<div style="font-size:.83rem;color:{C["white"]};line-height:1.65;">{txt}</div>'
+        f'<div style="font-size:.83rem;color:{txt_dark};line-height:1.65;">{txt}</div>'
         f'</div>')
 ins_html += '</div></div>'
 st.markdown(ins_html, unsafe_allow_html=True)
