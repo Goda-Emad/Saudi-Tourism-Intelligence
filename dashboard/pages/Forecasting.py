@@ -298,9 +298,9 @@ if year_filter in [t["both"], "2025"]:
     # CI band 2025
     fig1.add_trace(go.Scatter(
         x=M25+M25[::-1], y=U25+L25[::-1],
-        fill='toself', fillcolor=f"{C['blue']}25",
+        fill='toself', fillcolor="rgba(58,134,255,0.15)",
         line=dict(color='rgba(0,0,0,0)'),
-        showlegend=True, name=f"95% CI 2025", hoverinfo='skip'))
+        showlegend=True, name="95% CI 2025", hoverinfo='skip'))
     fig1.add_trace(go.Scatter(
         x=M25, y=F25, name="2025",
         line=dict(color=C["blue"], width=2.5, dash='dot'),
@@ -311,9 +311,9 @@ if year_filter in [t["both"], "2026"]:
     # CI band 2026
     fig1.add_trace(go.Scatter(
         x=M26+M26[::-1], y=U26+L26[::-1],
-        fill='toself', fillcolor=f"{C['purple']}25",
+        fill='toself', fillcolor="rgba(187,134,252,0.15)",
         line=dict(color='rgba(0,0,0,0)'),
-        showlegend=True, name=f"95% CI 2026", hoverinfo='skip'))
+        showlegend=True, name="95% CI 2026", hoverinfo='skip'))
     fig1.add_trace(go.Scatter(
         x=M26, y=F26, name="2026",
         line=dict(color=C["purple"], width=2.5),
@@ -374,7 +374,7 @@ with c1:
         annotation_text="COVID", annotation_font=dict(color=C["red"],size=10))
     # Forecast zone
     fig2.add_vrect(x0=2024.5, x1=2026.5,
-        fillcolor=f"{C['purple']}10", line_width=0,
+        fillcolor="rgba(187,134,252,0.06)", line_width=0,
         annotation_text="Forecast Zone",
         annotation_font=dict(color=C["purple"],size=10))
     # Target line
@@ -459,7 +459,7 @@ with c4:
     fig4.add_trace(go.Scatter(
         x=SC_YEARS, y=SC_OPT, name=t["optimistic"],
         line=dict(color=C["green"], width=2, dash='dot'),
-        fill='tonexty', fillcolor=f"{C['green']}08",
+        fill='tonexty', fillcolor="rgba(34,197,94,0.06)",
         marker=dict(size=6, color=C["green"]),
         hovertemplate="%{x}: <b>%{y:.1f}M</b><extra></extra>"))
     fig4.add_trace(go.Scatter(
