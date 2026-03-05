@@ -209,7 +209,7 @@ def sec_head(badge, h2):
         f'border:1px solid {C["teal"]}44;color:{C["teal"]};'
         f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
         f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
-        f'<div style="font-size:1.25rem;font-weight:700;color:{C["white"]};">{h2}</div>'
+        f'<div style="font-size:1.25rem;font-weight:700;color:{"#F4F9F8" if THEME=="dark" else "#0D1A1E"};">{h2}</div>'
         f'</div>')
 
 def kpi_card(ico, lbl, val, sub, ck):
@@ -548,7 +548,7 @@ for ico, txt, ck in insights:
         f'border-left:3px solid {clr(ck)};border-radius:12px;'
         f'padding:14px 16px;display:flex;align-items:flex-start;gap:10px;">'
         f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
-        f'<div style="font-size:.83rem;color:{C["white"]};line-height:1.65;">{txt}</div>'
+        f'<div style="font-size:.83rem;color:{C["white"] if THEME=="dark" else "#1A2B2E"};line-height:1.65;">{txt}</div>'
         f'</div>')
 ins_html += '</div></div>'
 st.markdown(ins_html, unsafe_allow_html=True)
