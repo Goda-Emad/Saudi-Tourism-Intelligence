@@ -338,66 +338,45 @@ with c2:
         cb_bgcolor   = "#FFFFFF"
         cb_border    = "#CBD5E0"
 
-    # Every cell gets a label — format as integer (K tourists)
-    text_matrix = [[str(v) for v in row] for row in HEAT_DATA]
-
-    # Years displayed top→bottom (2015 at top, 2024 at bottom)
-    y_labels = HEAT_YEARS_STR[::-1]          # reversed list for display
-    heat_z   = list(reversed(HEAT_DATA))     # match reversed order
-
-    # Re-build text matrix to match reversed order
-    text_rev = list(reversed(text_matrix))
-
-    # Mark COVID rows (2020=idx4, 2021=idx3 after reverse)
-    covid_marker = ["⚠️" if y in ("2020","2021") else "" for y in y_labels]
-
+    # ── Build proper Heatmap — all 10 years × 12 months ─────────
     fig2 = go.Figure(go.Heatmap(
-        z=heat_z,
+        z=HEAT_DATA,                        # 10 rows (years) × 12 cols (months)
         x=MONTHS,
-        y=y_labels,
+        y=HEAT_YEARS_STR,                   # ["2015","2016",...,"2024"]
         zmin=0, zmax=2600,
         colorscale=heatmap_cs,
         showscale=True,
-        text=text_rev,
+        text=[[str(v) for v in row] for row in HEAT_DATA],
         texttemplate="%{text}",
         textfont=dict(size=10, color=cell_txt_clr, family=ff),
         xgap=4, ygap=4,
         hovertemplate="<b>%{y} · %{x}</b><br>%{z:,}K tourists<extra></extra>",
         colorbar=dict(
-            thickness=14,
-            len=0.95,
-            bgcolor=cb_bgcolor,
-            bordercolor=cb_border,
-            borderwidth=1,
-            outlinewidth=0,
+            thickness=14, len=0.95,
+            bgcolor=cb_bgcolor, bordercolor=cb_border,
+            borderwidth=1, outlinewidth=0,
             tickfont=dict(size=9, color=C["grey"], family=ff),
-            title=dict(
-                text="K tourists",
-                font=dict(color=C["grey"], size=10, family=ff),
-                side="top"),
+            title=dict(text="K tourists",
+                       font=dict(color=C["grey"], size=10, family=ff),
+                       side="top"),
             tickvals=[100, 500, 1000, 1500, 2000, 2500],
             ticktext=["100","500","1K","1.5K","2K","2.5K"],
         )
     ))
 
-    # COVID annotation on the 2020 row
     fig2.add_annotation(
         x=MONTHS[5], y="2020",
-        text="⚠️ COVID-19",
-        showarrow=False,
+        text="⚠️ COVID-19", showarrow=False,
         font=dict(size=10, color=C["red"], family=ff),
         bgcolor="rgba(239,68,68,0.22)",
-        bordercolor=C["red"], borderwidth=1, borderpad=4,
-    )
-    # Peak Year annotation on 2024 row
+        bordercolor=C["red"], borderwidth=1, borderpad=4)
+
     fig2.add_annotation(
         x=MONTHS[2], y="2024",
-        text="📈 Peak Year",
-        showarrow=False,
+        text="📈 Peak Year", showarrow=False,
         font=dict(size=9, color=C["gold"], family=ff),
         bgcolor="rgba(201,168,76,0.22)",
-        bordercolor=C["gold"], borderwidth=1, borderpad=3,
-    )
+        bordercolor=C["gold"], borderwidth=1, borderpad=3)
 
     fig2.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
@@ -406,16 +385,16 @@ with c2:
         height=420,
         margin=dict(l=10, r=10, t=10, b=40),
         yaxis=dict(
-            type="category",
+            # ✅ KEY FIX: categoryorder forces ALL years to render
+            categoryorder="array",
+            categoryarray=HEAT_YEARS_STR,
+            autorange="reversed",           # 2015 top, 2024 bottom
             tickfont=dict(size=11, color=txt_dark),
-            showgrid=False,
-            linecolor=C["border"],
+            showgrid=False, linecolor=C["border"],
         ),
         xaxis=dict(
             tickfont=dict(size=10, color=txt_dark),
-            side="bottom",
-            showgrid=False,
-            linecolor=C["border"],
+            side="bottom", showgrid=False, linecolor=C["border"],
         ),
     )
     chart(fig2)
