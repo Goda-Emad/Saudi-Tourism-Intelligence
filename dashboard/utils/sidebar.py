@@ -1,8 +1,8 @@
 # ═══════════════════════════════════════════════════════════════════
 #  utils/sidebar.py — Shared Sidebar for ALL pages
 #  Author : Eng. Goda Emad
-#  Usage  : from utils.sidebar import render_sidebar
-#            render_sidebar()
+#  FIX 4  : Navigation uses absolute path resolution so st.switch_page
+#            works correctly whether called from app.py OR any pages/*.py
 # ═══════════════════════════════════════════════════════════════════
 import streamlit as st
 import base64, os
@@ -29,6 +29,7 @@ def render_sidebar():
     # ── Logo ──────────────────────────────────────────────────────
     def _logo():
         try:
+            # Always resolve logo relative to the project root (parent of utils/)
             base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             for p in ["assets/logo.jpg", "assets/logo.png"]:
                 fp = os.path.join(base, p)
@@ -45,15 +46,18 @@ def render_sidebar():
                 if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
 
     # ── Nav items ─────────────────────────────────────────────────
+    # FIX 4: Paths are relative to the project root (where app.py lives).
+    #        st.switch_page always resolves from the project root, so
+    #        "pages/Overview.py" works from app.py AND from pages/*.py.
     NAV = [
-        ("🏠  Overview",        "🏠  النظرة التنفيذية", "Overview.py"),
-        ("📈  Tourist Trends",   "📈  اتجاهات السياحة",  "Tourist_Trends.py"),
-        ("📅  Seasonality",      "📅  الموسمية",         "Seasonality.py"),
-        ("💰  Spending",         "💰  الإنفاق",          "Spending.py"),
-        ("🏨  Overnight Stays",  "🏨  ليالي الإقامة",    "Overnight_Stays.py"),
-        ("🔮  Forecasting",      "🔮  التوقعات",         "Forecasting.py"),
-        ("🎯  Segmentation",     "🎯  التقسيم",          "Segmentation.py"),
-        ("🌱  Carbon Impact",    "🌱  الأثر الكربوني",   "Carbon_Impact.py"),
+        ("🏠  Overview",        "🏠  النظرة التنفيذية", "pages/Overview.py"),
+        ("📈  Tourist Trends",   "📈  اتجاهات السياحة",  "pages/Tourist_Trends.py"),
+        ("📅  Seasonality",      "📅  الموسمية",         "pages/Seasonality.py"),
+        ("💰  Spending",         "💰  الإنفاق",          "pages/Spending.py"),
+        ("🏨  Overnight Stays",  "🏨  ليالي الإقامة",    "pages/Overnight_Stays.py"),
+        ("🔮  Forecasting",      "🔮  التوقعات",         "pages/Forecasting.py"),
+        ("🎯  Segmentation",     "🎯  التقسيم",          "pages/Segmentation.py"),
+        ("🌱  Carbon Impact",    "🌱  الأثر الكربوني",   "pages/Carbon_Impact.py"),
     ]
 
     # ── CSS ───────────────────────────────────────────────────────
@@ -115,11 +119,13 @@ def render_sidebar():
         st.markdown(f'<div style="height:1px;background:{BORDER};margin:10px 0 6px;"></div>',
                     unsafe_allow_html=True)
 
-        # Page navigation
-        for en_lbl, ar_lbl, fname in NAV:
+        # FIX 4: Page navigation — paths include "pages/" prefix, resolved from project root
+        for en_lbl, ar_lbl, fpath in NAV:
             label = ar_lbl if LANG == "AR" else en_lbl
-            if st.button(label, key="sb_nav_" + fname, use_container_width=True):
-                st.switch_page("pages/" + fname)
+            # key uses just the filename part to stay unique
+            key = "sb_nav_" + os.path.basename(fpath)
+            if st.button(label, key=key, use_container_width=True):
+                st.switch_page(fpath)
 
         st.markdown(f'<div style="height:1px;background:{BORDER};margin:10px 0 8px;"></div>',
                     unsafe_allow_html=True)
