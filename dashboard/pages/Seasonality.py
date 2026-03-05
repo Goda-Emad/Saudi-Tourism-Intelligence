@@ -38,12 +38,13 @@ C = {
     "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
     "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
     "white":"#F4F9F8","grey":"#9DBFBA","foot_txt":"#9DBFBA",
-    "border":"#2A3235","orange":"#E8A020","gold":"#C9A84C",
+    "border":"#CBD5E0","orange":"#E8A020","gold":"#C9A84C",
     "blue":"#1565C0","green":"#16A34A","red":"#DC2626","purple":"#6A1B9A",
 }
 def clr(k): return C.get(k, C["teal"])
 ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
 dir_val = "rtl"     if LANG=="AR" else "ltr"
+txt_dark = "#F4F9F8" if THEME=="dark" else "#0D1A1E"
 
 # ── Logo ─────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
@@ -156,7 +157,10 @@ st.markdown(
     "box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}"
     f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
     f"{{background:{C['bg']}!important;direction:{dir_val};"
-    f"font-family:'{ff}',sans-serif;color:{C['white']}!important;}}"
+    f"font-family:'{ff}',sans-serif;color:{txt_dark}!important;}}"
+    f"[data-testid='stMain'] label,[data-testid='stMain'] p,"
+    f"[data-testid='stMain'] span,[data-testid='stWidgetLabel'] p,"
+    f".stRadio label div p{{color:{txt_dark}!important;}}"
     "</style>",
     unsafe_allow_html=True)
 
@@ -170,7 +174,7 @@ def sec_head(badge, h2):
         f'border:1px solid {C["teal"]}44;color:{C["teal"]};'
         f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
         f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
-        f'<div style="font-size:1.25rem;font-weight:700;color:{C["white"]};">{h2}</div>'
+        f'<div style="font-size:1.25rem;font-weight:700;color:{txt_dark};">{h2}</div>'
         f'</div>')
 
 def kpi_card(ico, lbl, val, sub, ck):
@@ -192,9 +196,9 @@ def apply_layout(fig, height=340):
         height=height, margin=dict(l=10,r=10,t=36,b=10),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11),
                     orientation="h", y=-0.14),
-        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235",
+        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
                    tickfont=dict(size=10), showgrid=False),
-        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235",
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
                    tickfont=dict(size=10)),
     )
     return fig
@@ -245,7 +249,6 @@ tourist_filter = st.radio(
     horizontal=True, key="tf")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# pick data based on filter
 if tourist_filter == t["inbound"]:
     y_data    = [v/1000 for v in INB_MON]
     bar_color = C["blue"]
@@ -306,30 +309,115 @@ c2, c3 = st.columns([3,2], gap="large")
 
 with c2:
     st.markdown(sec_head(t["s2"], t["s2h"]), unsafe_allow_html=True)
+
+    # ── Theme-aware colorscale ────────────────────────────────────
+    if THEME == "dark":
+        heatmap_cs = [
+            [0.00, "#0A1628"],
+            [0.06, "#0D2744"],
+            [0.18, "#0D3B6E"],
+            [0.35, "#1565C0"],
+            [0.55, "#1976D2"],
+            [0.72, "#17B19B"],
+            [0.88, "#C9A84C"],
+            [1.00, "#F4D044"],
+        ]
+        cb_bgcolor   = "#1E2528"
+        cb_border    = "#2A3235"
+        cell_txt_clr = "#F4F9F8"
+    else:
+        heatmap_cs = [
+            [0.00, "#EFF8F6"],
+            [0.10, "#B2DFDB"],
+            [0.28, "#4DB6AC"],
+            [0.48, "#1976D2"],
+            [0.68, "#17B19B"],
+            [0.84, "#C9A84C"],
+            [1.00, "#E65100"],
+        ]
+        cb_bgcolor   = "#FFFFFF"
+        cb_border    = "#CBD5E0"
+        cell_txt_clr = "#0D1A1E"
+
+    # Value labels inside cells (only rows with decent data)
+    text_matrix = [
+        [str(v) if v >= 80 else "" for v in row]
+        for row in HEAT_DATA
+    ]
+
     fig2 = go.Figure(go.Heatmap(
         z=HEAT_DATA,
         x=MONTHS,
         y=[str(y) for y in HEAT_YEARS],
-        colorscale=[
-            [0.0,  C["sec_bg"]],
-            [0.15, C["blue"]],
-            [0.5,  C["teal"]],
-            [1.0,  C["gold"]],
-        ],
+        colorscale=heatmap_cs,
         showscale=True,
-        hovertemplate="<b>%{y} %{x}</b><br>%{z:.0f}K tourists<extra></extra>",
+        text=text_matrix,
+        texttemplate="%{text}",
+        textfont=dict(size=8, color=cell_txt_clr, family=ff),
+        xgap=3, ygap=3,
+        hovertemplate="<b>%{y} · %{x}</b><br>%{z:,}K tourists<extra></extra>",
         colorbar=dict(
-            tickfont=dict(size=9, color=C["grey"]),
-            title=dict(text="K", font=dict(color=C["grey"], size=10)))))
+            thickness=16,
+            len=0.90,
+            bgcolor=cb_bgcolor,
+            bordercolor=cb_border,
+            borderwidth=1,
+            outlinewidth=0,
+            tickfont=dict(size=9, color=C["grey"], family=ff),
+            title=dict(
+                text="K tourists",
+                font=dict(color=C["grey"], size=10, family=ff),
+                side="top"),
+            tickvals=[100, 500, 1000, 1500, 2000, 2500],
+            ticktext=["100","500","1K","1.5K","2K","2.5K"],
+        )
+    ))
+
+    # COVID band
+    fig2.add_hrect(
+        y0=4.5, y1=5.5,          # rows are 0-indexed reversed; 2020=index 5
+        fillcolor="rgba(239,68,68,0.08)",
+        line_color=C["red"], line_width=1,
+        layer="below"
+    )
     fig2.add_annotation(
-        x="Jun" if LANG=="EN" else "يونيو", y="2020",
-        text="COVID-19", showarrow=False,
-        font=dict(size=10, color=C["red"]),
-        bgcolor="rgba(239,68,68,0.2)", borderpad=3)
-    apply_layout(fig2, height=320)
+        x=MONTHS[5] if LANG=="EN" else "يونيو",
+        y="2020",
+        text="⚠️ COVID-19",
+        showarrow=False,
+        font=dict(size=10, color=C["red"], family=ff),
+        bgcolor="rgba(239,68,68,0.20)",
+        bordercolor=C["red"], borderwidth=1, borderpad=4,
+    )
+
+    # 2024 Peak label
+    fig2.add_annotation(
+        x=MONTHS[2] if LANG=="EN" else "مارس",
+        y="2024",
+        text="📈 Peak Year",
+        showarrow=False,
+        font=dict(size=9, color=C["gold"], family=ff),
+        bgcolor="rgba(201,168,76,0.20)",
+        bordercolor=C["gold"], borderwidth=1, borderpad=3,
+    )
+
+    apply_layout(fig2, height=380)
     fig2.update_layout(
-        yaxis=dict(tickfont=dict(size=10), autorange="reversed"),
-        margin=dict(l=10,r=10,t=10,b=10))
+        yaxis=dict(
+            tickfont=dict(size=11, color=C["grey"]),
+            autorange="reversed",
+            showgrid=False,
+            linecolor=C["border"],
+            ticklabelposition="outside",
+        ),
+        xaxis=dict(
+            tickfont=dict(size=10, color=C["grey"]),
+            side="bottom",
+            showgrid=False,
+            linecolor=C["border"],
+        ),
+        margin=dict(l=10, r=10, t=10, b=10),
+    )
     chart(fig2)
 
 with c3:
@@ -349,7 +437,6 @@ with c3:
         fill='tozeroy', fillcolor="rgba(23,177,155,0.12)",
         marker=dict(size=7),
         hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
-    # Peak annotations
     dec = "Dec" if LANG=="EN" else "ديسمبر"
     jul = "Jul" if LANG=="EN" else "يوليو"
     fig3.add_annotation(x=dec, y=max([v/1000 for v in INB_MON]),
@@ -370,7 +457,7 @@ with c3:
     st.markdown(
         f'<div style="background:{C["sec_bg"]};border:1px solid {C["border"]};'
         f'border-radius:8px;padding:12px 14px;font-size:.8rem;'
-        f'color:{C["grey"]};line-height:1.7;">'
+        f'color:{txt_dark};line-height:1.7;">'
         f'🌙 {t["ramadan_note"]}<br><br>☀️ {t["summer_note"]}'
         f'</div>',
         unsafe_allow_html=True)
@@ -447,7 +534,7 @@ for ico, txt, ck in t["ins"]:
         f'border-left:3px solid {clr(ck)};border-radius:10px;'
         f'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
         f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
-        f'<div style="font-size:.83rem;color:{C["white"]};line-height:1.65;">{txt}</div>'
+        f'<div style="font-size:.83rem;color:{txt_dark};line-height:1.65;">{txt}</div>'
         f'</div>')
 ins_html += '</div></div>'
 st.markdown(ins_html, unsafe_allow_html=True)
