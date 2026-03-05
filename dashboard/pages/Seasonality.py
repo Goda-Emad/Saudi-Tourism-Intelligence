@@ -349,6 +349,7 @@ with c2:
         z=HEAT_DATA,
         x=MONTHS,
         y=[str(y) for y in HEAT_YEARS],
+        zmin=0, zmax=2600,
         colorscale=heatmap_cs,
         showscale=True,
         text=text_matrix,
@@ -375,7 +376,7 @@ with c2:
 
     # COVID band
     fig2.add_hrect(
-        y0=4.5, y1=5.5,          # rows are 0-indexed reversed; 2020=index 5
+        y0="2019", y1="2021",
         fillcolor="rgba(239,68,68,0.08)",
         line_color=C["red"], line_width=1,
         layer="below"
@@ -404,6 +405,7 @@ with c2:
     apply_layout(fig2, height=380)
     fig2.update_layout(
         yaxis=dict(
+            type="category",
             tickfont=dict(size=11, color=C["grey"]),
             autorange="reversed",
             showgrid=False,
