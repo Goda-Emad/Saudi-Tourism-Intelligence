@@ -1,348 +1,511 @@
 # ═══════════════════════════════════════════════════════════════════
-#  Saudi Tourism Intelligence — Home (app.py)
-#  Author  : Eng. Goda Emad  |  Design : DataSaudi
+#  Saudi Tourism Intelligence — Home Page  (FINAL v9)
+#  Author : Eng. Goda Emad
 # ═══════════════════════════════════════════════════════════════════
 import streamlit as st
-import base64, os, sys
-
-_HERE = os.path.dirname(os.path.abspath(__file__))
-if _HERE not in sys.path: sys.path.insert(0, _HERE)
-
-from utils.sidebar import render_sidebar
-from utils.kpis    import progress_bar_html
+import base64, os
 
 st.set_page_config(
     page_title="Saudi Tourism Intelligence",
-    page_icon="🇸🇦", layout="wide",
+    page_icon="🇸🇦",
+    layout="wide",
     initial_sidebar_state="expanded",
 )
-for k, v in [("lang","EN"),("theme","dark")]:
-    if k not in st.session_state: st.session_state[k] = v
 
-THEME, LANG = render_sidebar()
+for k, v in [("lang","EN"),("theme","dark")]:
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+LANG  = st.session_state.lang
+THEME = st.session_state.theme
+
+ML_R2       = 0.986
+ML_ACCURACY = f"{ML_R2*100:.1f}%"
 
 DARK = {
-    "teal":"#17B19B","teal_act":"#149581","bg":"#1A1E1F","sec_bg":"#161B1C",
-    "card_bg":"#1E2528","navbar":"#031414","white":"#F4F9F8","grey":"#A1A6B7",
-    "foot_txt":"#B5B8B7","border":"#2A3235","orange":"#F4D044","gold":"#C9A84C",
-    "blue":"#365C8D","green":"#22C55E","red":"#EF4444",
+    "teal":"#17B19B","teal_act":"#149581","teal_sec":"#8BAFAA",
+    "bg":"#1A1E1F","sec_bg":"#161B1C","card_bg":"#1E2528",
+    "navbar":"#031414","white":"#F4F9F8","grey":"#A1A6B7",
+    "foot_txt":"#B5B8B7","border":"#2A3235",
+    "orange":"#F4D044","gold":"#C9A84C","blue":"#365C8D",
 }
 LIGHT = {
-    "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4","sec_bg":"#E4EDEB",
-    "card_bg":"#FFFFFF","navbar":"#172025","white":"#0D1A1E","grey":"#374151",
-    "foot_txt":"#6B7280","border":"#C8D8D5","orange":"#B45309","gold":"#92650A",
-    "blue":"#1D4ED8","green":"#16A34A","red":"#DC2626",
+    "teal":"#17B19B","teal_act":"#149581","teal_sec":"#4A8A82",
+    "bg":"#F0F5F4","sec_bg":"#E4EDEB","card_bg":"#FFFFFF",
+    "navbar":"#172025","white":"#0D1A1E","grey":"#374151",
+    "foot_txt":"#6B7280","border":"#C8D8D5",
+    "orange":"#B45309","gold":"#92650A","blue":"#1D4ED8",
 }
-C  = DARK if THEME=="dark" else LIGHT
-ff = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
-dr = "rtl"    if LANG=="AR" else "ltr"
+C = DARK if THEME=="dark" else LIGHT
 def clr(k): return C.get(k, C["teal"])
 
+# ════════════════════════════════════════════════════════════════════
+# ✅ FIX: مسار الصفحات الصح على Streamlit Cloud
+# traceback بيقول: /mount/src/saudi-tourism-intelligence/dashboard/app.py
+# يعني st.switch_page محتاج: dashboard/pages/filename.py
+# ════════════════════════════════════════════════════════════════════
+def _page_path(fname):
+    """
+    Streamlit Cloud يشغّل من root الـ repo.
+    app.py موجود في dashboard/ فالمسار الصح هو: dashboard/pages/<fname>
+    على local (لو pages/ جنب app.py مباشرة) بيرجع: pages/<fname>
+    """
+    base = os.path.dirname(os.path.abspath(__file__))
+
+    # ── local dev: pages/ جنب app.py مباشرة ──
+    local_pages = os.path.join(base, "pages")
+    if os.path.isdir(local_pages):
+        # حدد المسار النسبي من cwd
+        cwd = os.getcwd()
+        try:
+            rel = os.path.relpath(os.path.join(local_pages, fname), cwd)
+            return rel.replace("\\", "/")
+        except Exception:
+            pass
+
+    # ── Streamlit Cloud: app.py داخل subfolder (مثلاً dashboard/) ──
+    # نحسب اسم الـ subfolder ونضيفه
+    folder_name = os.path.basename(base)   # "dashboard"
+    return f"{folder_name}/pages/{fname}"
+
+
+# ── Cached helpers ────────────────────────────────────────────────
+@st.cache_data(show_spinner=False)
+def _read(p):
+    base = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(base, p), "rb") as f:
+        return f.read()
+
+@st.cache_data(show_spinner=False)
 def _b64(p):
-    try:
-        with open(os.path.join(_HERE, p),"rb") as f:
-            return base64.b64encode(f.read()).decode()
+    try:    return base64.b64encode(_read(p)).decode()
     except: return ""
 
-logo_b64 = _b64("assets/logo.jpg") or _b64("assets/logo.png")
-hero_b64 = _b64("assets/hero.jpg") or _b64("assets/hero.png")
-logo_src = f"data:image/jpeg;base64,{logo_b64}" if logo_b64 else ""
-hero_src = f"data:image/jpeg;base64,{hero_b64}" if hero_b64 else ""
-logo_img = (f'<img src="{logo_src}" style="height:44px;border-radius:8px;"/>'
-            if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
+@st.cache_data(show_spinner=False)
+def _load_css():
+    try:    return "<style>" + _read("assets/style.css").decode() + "</style>"
+    except: return ""
 
+# ── Translations ──────────────────────────────────────────────────
 TR = {
 "EN":{
+    "name":"Saudi Tourism Intelligence","sub":"AI ANALYTICS PLATFORM",
     "pill":"🇸🇦  OFFICIAL DATA · MINISTRY OF ECONOMY & PLANNING",
     "h1":"Saudi Tourism","h2":"Intelligence",
-    "hs":"AI-powered analytics built on 10 years of official government data.\nForecasting · Segmentation · Sustainability — all in one platform.",
+    "hs":"AI-powered analytics built on 10 years of official government data. Forecasting · Segmentation · Sustainability — all in one platform.",
+    "hb":"Explore Dashboard →",
     "stats":[
-        ("115.8M","TOURISTS 2024",   "teal",  "▲ +23%","up"),
-        ("1.10B", "OVERNIGHT STAYS", "teal",  "▲ +41%","up"),
-        ("5,622", "AVG SPEND (SAR)", "orange","▲ +8%", "up"),
-        ("98.6%", "ML ACCURACY R²",  "gold",  "",      ""),
+        ("115.8M","Tourists 2024",      "teal",  "+23%","up"),
+        ("1.10B", "Overnight Stays",    "teal",  "+41%","up"),
+        ("5,622", "Avg Spend (SAR)",    "orange","+8%", "up"),
+        (ML_ACCURACY,"ML Accuracy R²",  "orange","",""),
     ],
     "pt":"PLATFORM","ph":"8 Interactive Pages",
     "ps":"Comprehensive analysis covering every dimension of Saudi tourism",
     "pages":[
-        ("🏠","Executive Overview",  "KPIs, trends & insights"),
-        ("📈","Tourist Trends",       "Annual & monthly 2015–2024"),
-        ("📅","Seasonality",          "Ramadan & summer peaks"),
-        ("💰","Spending Analysis",    "Per trip, per night, by purpose"),
-        ("🏨","Overnight Stays",      "Length of stay & COVID recovery"),
-        ("🔮","Demand Forecasting",   "Prophet ML · 2025–2026"),
-        ("🎯","Segmentation",         "K-Means · High / Mid / Budget"),
-        ("🌱","Carbon Impact",        "CO₂ index & ESG sustainability"),
+        ("🏠","Executive Overview","KPIs, trends & insights"),
+        ("📈","Tourist Trends","Annual & monthly 2015–2024"),
+        ("📅","Seasonality","Ramadan & summer peaks"),
+        ("💰","Spending Analysis","Per trip, per night, by purpose"),
+        ("🏨","Overnight Stays","Length of stay & COVID recovery"),
+        ("🔮","Demand Forecasting","Prophet ML · 2025–2026"),
+        ("🎯","Segmentation","K-Means · High / Mid / Budget"),
+        ("🌱","Carbon Impact","CO₂ index & ESG sustainability"),
     ],
-    "mt":"KEY METRICS","mh":"Platform Performance",
-    "ms":"Model accuracy and data quality indicators",
-    "metrics":[
-        ("98.6%","Prophet ML R²",      "gold", "Forecasting accuracy"),
-        ("0.630","Silhouette Score",    "blue", "K-Means clustering quality"),
-        ("10 yrs","Historical Data",   "teal", "2015–2024 official records"),
-        ("6",    "Datasets Integrated","green","CSV files from gov. sources"),
+    "mt":"MACHINE LEARNING","mh":"3 Production ML Models",
+    "ms":"Trained on 10 years of official Saudi government data",
+    "ml":[
+        ("🔮","Prophet","Demand Forecasting",
+         "Predicts future tourist numbers using 10 years of seasonal patterns.",
+         "24-month forecast · confidence bounds","teal"),
+        ("🎯","K-Means","Tourist Segmentation",
+         "Groups tourists into High / Mid / Budget value segments for targeted strategy.",
+         "3 segments · Silhouette 0.630","orange"),
+        ("💰","Gradient Boosting","Spending Prediction",
+         "Predicts per-trip spending based on nationality, purpose & season.",
+         "Full spend analysis · MAE SAR 184","blue"),
     ],
-    "it":"KEY INSIGHTS","ih":"Intelligence Summary",
+    "it":"KEY DISCOVERIES","ih":"Data Insights",
     "ins":[
-        ("🚀","2024 record: 115.9M tourists — exceeded Vision 2030 interim target of 100M","teal"),
-        ("🏖️","Leisure overtook Religious as #1 visit purpose for the first time in 2024","orange"),
-        ("📈","Inbound avg stay doubled: 8.6 → 19.2 nights (2021–2024) · +123%","blue"),
-        ("💰","Inbound spend = 4× domestic · SAR 5,622 vs 1,336 per trip","gold"),
-        ("🤖","Prophet model achieved 98.6% R² accuracy on 2024 holdout validation","green"),
-        ("🌱","Carbon intensity fell 8% from 2022–2024 despite +42% volume surge","teal"),
+        ("🏖️","Leisure overtook Religious as #1 purpose in 2024 — Vision 2030 ✅","teal"),
+        ("⏰","Inbound avg stay: 8.6 → 19.2 nights (2021→2024) · +123%","orange"),
+        ("💰","Inbound tourists spend 4× more than Domestic (SAR 5,622 vs 1,336)","blue"),
+        ("🚀","2024 record: 115.9M tourists · +150% recovery from COVID low","teal_act"),
     ],
-    "v30_title":"VISION 2030","v30_h":"Progress Toward Vision 2030 Targets",
     "v30":[
-        ("Inbound Tourists",   30.1,150.0,"30.1M of 150M target · 20%",          "teal"),
-        ("Tourism GDP %",      11.5, 10.0,"11.5% — target exceeded ✅",            "green"),
-        ("Hotel Capacity (k)", 550.0,650.0,"550k of 650k rooms · 85%",            "gold"),
-        ("Carbon Reduction %", 18.0, 30.0,"18% of 30% target · in progress",     "orange"),
+        ("🎯 Tourist Arrivals Target",    115.9,150.0,"M tourists by 2030",    "teal"),
+        ("💰 Tourism GDP Contribution",   10.0, 10.0, "% of GDP (achieved ✅)", "gold"),
+        ("🌱 Carbon Intensity Reduction", 18.0, 30.0, "% reduction by 2030",   "orange"),
+        ("🏨 Hotel Capacity Expansion",   72.0,100.0, "% of 500K rooms target", "blue"),
     ],
-    "name":"Saudi Tourism Intelligence","sub":"AI ANALYTICS PLATFORM",
+    "data":"DataSaudi · Ministry of Economy & Planning · 2015–2024",
     "copy":"© 2025 Saudi Tourism Intelligence · Eng. Goda Emad",
+    "thm":"☀️  Light" if THEME=="dark" else "🌙  Dark",
+    "lng":"🌐  العربية",
+    "v30_title":"VISION 2030","v30_h":"Progress Toward Vision 2030 Targets",
 },
 "AR":{
+    "name":"ذكاء السياحة السعودية","sub":"منصة تحليلات الذكاء الاصطناعي",
     "pill":"🇸🇦  بيانات رسمية · وزارة الاقتصاد والتخطيط",
     "h1":"ذكاء السياحة","h2":"السعودية",
-    "hs":"تحليلات مدعومة بالذكاء الاصطناعي بناءً على 10 سنوات من البيانات الرسمية.\nالتوقعات · التقسيم · الاستدامة — كل شيء في منصة واحدة.",
+    "hs":"تحليلات مدعومة بالذكاء الاصطناعي على 10 سنوات من البيانات الرسمية. توقعات · تقسيم · استدامة — كل شيء في منصة واحدة.",
+    "hb":"← استكشف لوحة التحكم",
     "stats":[
-        ("115.8M","السياح 2024",         "teal",  "▲ +23%","up"),
-        ("1.10B", "ليالي الإقامة",       "teal",  "▲ +41%","up"),
-        ("5,622", "متوسط الإنفاق (ريال)","orange","▲ +8%", "up"),
-        ("98.6%", "دقة النموذج R²",      "gold",  "",      ""),
+        ("115.8M","سائح 2024",      "teal",  "+23%","up"),
+        ("1.10B", "ليالي الإقامة",  "teal",  "+41%","up"),
+        ("5,622", "متوسط الإنفاق",  "orange","+8%", "up"),
+        (ML_ACCURACY,"دقة النموذج R²","orange","",""),
     ],
     "pt":"المنصة","ph":"8 صفحات تفاعلية",
-    "ps":"تحليل شامل يغطي كل أبعاد السياحة السعودية",
+    "ps":"تحليل شامل لكل أبعاد السياحة السعودية",
     "pages":[
-        ("🏠","النظرة التنفيذية", "مؤشرات الأداء والاتجاهات"),
-        ("📈","اتجاهات السياحة",  "سنوية وشهرية 2015–2024"),
-        ("📅","الموسمية",          "رمضان وذروة الصيف"),
-        ("💰","تحليل الإنفاق",    "لكل رحلة وليلة وغرض"),
-        ("🏨","ليالي الإقامة",    "مدة الإقامة وتعافي كوفيد"),
-        ("🔮","التوقعات",          "Prophet ML · 2025–2026"),
-        ("🎯","التقسيم",           "K-Means · عالي/متوسط/اقتصادي"),
-        ("🌱","الأثر الكربوني",   "مؤشر CO₂ وتقارير ESG"),
+        ("🏠","النظرة التنفيذية","مؤشرات الأداء والاتجاهات"),
+        ("📈","اتجاهات السياحة","الأنماط السنوية والشهرية"),
+        ("📅","الموسمية","ذروة الأشهر وتأثير رمضان"),
+        ("💰","تحليل الإنفاق","لكل رحلة، لكل ليلة، حسب الغرض"),
+        ("🏨","ليالي الإقامة","مدة الإقامة وتعافي كوفيد"),
+        ("🔮","توقعات الطلب","Prophet ML · 2025–2026"),
+        ("🎯","تقسيم السياح","K-Means · عالي/متوسط/اقتصادي"),
+        ("🌱","الأثر الكربوني","مؤشر CO₂ واستدامة ESG"),
     ],
-    "mt":"المؤشرات الرئيسية","mh":"أداء المنصة",
-    "ms":"دقة النماذج وجودة البيانات",
-    "metrics":[
-        ("98.6%","دقة Prophet ML",   "gold", "دقة التوقعات"),
-        ("0.630","معامل Silhouette",  "blue", "جودة تجميع K-Means"),
-        ("10 سنوات","بيانات تاريخية","teal", "سجلات رسمية 2015–2024"),
-        ("6",    "مجموعات بيانات",   "green","ملفات CSV من مصادر حكومية"),
+    "mt":"التعلم الآلي","mh":"3 نماذج ML جاهزة للإنتاج",
+    "ms":"مدرّبة على 10 سنوات من البيانات السعودية الرسمية",
+    "ml":[
+        ("🔮","Prophet","توقع الطلب",
+         "يتوقع أعداد السياح المستقبليين بناءً على أنماط موسمية لـ 10 سنوات.",
+         "توقعات 24 شهرًا · فترات الثقة","teal"),
+        ("🎯","K-Means","تقسيم السياح",
+         "يصنف السياح إلى شرائح عالية / متوسطة / اقتصادية لاستراتيجية مستهدفة.",
+         "3 شرائح · Silhouette 0.630","orange"),
+        ("💰","Gradient Boosting","توقع الإنفاق",
+         "يتوقع الإنفاق لكل رحلة بناءً على الجنسية والغرض والموسم.",
+         "تحليل الإنفاق التنبؤي · MAE 184 ريال","blue"),
     ],
-    "it":"الاستنتاجات الرئيسية","ih":"ملخص الذكاء",
+    "it":"الاكتشافات الرئيسية","ih":"رؤى البيانات",
     "ins":[
-        ("🚀","رقم قياسي 2024: 115.9M سائح — تجاوز الهدف المرحلي لرؤية 2030 (100M)","teal"),
-        ("🏖️","الترفيه تجاوز الديني كأول غرض للزيارة لأول مرة في 2024","orange"),
-        ("📈","مدة الإقامة تضاعفت: 8.6 → 19.2 ليلة (2021–2024) · +123%","blue"),
-        ("💰","إنفاق الوافدين = 4× المحليين · 5,622 مقابل 1,336 ريال/رحلة","gold"),
-        ("🤖","نموذج Prophet حقق دقة 98.6% R² على بيانات التحقق لعام 2024","green"),
-        ("🌱","انخفضت كثافة الكربون 8% من 2022–2024 رغم ارتفاع الأحجام بـ 42%","teal"),
+        ("🏖️","الترفيه تجاوز الديني كأول غرض في 2024 — إنجاز رؤية 2030 ✅","teal"),
+        ("⏰","متوسط إقامة الوافد: 8.6 → 19.2 ليلة (2021→2024) · +123%","orange"),
+        ("💰","الوافدون ينفقون 4 أضعاف المحليين (5,622 مقابل 1,336 ريال)","blue"),
+        ("🚀","رقم قياسي 2024: 115.9M سائح · تعافي +150% من أدنى كوفيد","teal_act"),
     ],
-    "v30_title":"رؤية 2030","v30_h":"التقدم نحو أهداف رؤية 2030",
     "v30":[
-        ("السياح الوافدون",    30.1,150.0,"30.1M من هدف 150M · 20%",         "teal"),
-        ("نسبة السياحة من GDP",11.5, 10.0,"11.5% — تجاوز الهدف ✅",           "green"),
-        ("طاقة الفنادق (ألف)", 550.0,650.0,"550k من 650k غرفة · 85%",         "gold"),
-        ("تخفيض الكربون %",    18.0, 30.0,"18% من هدف 30% · قيد التنفيذ",    "orange"),
+        ("🎯 مستهدف الوصول السياحي",    115.9,150.0,"مليون سائح بحلول 2030",        "teal"),
+        ("💰 مساهمة السياحة في الناتج", 10.0, 10.0, "% من الناتج (تحقق ✅)",         "gold"),
+        ("🌱 تخفيض الكثافة الكربونية",  18.0, 30.0, "% تخفيض بحلول 2030",            "orange"),
+        ("🏨 توسعة الطاقة الفندقية",    72.0,100.0, "% من مستهدف 500 ألف غرفة",      "blue"),
     ],
-    "name":"ذكاء السياحة السعودية","sub":"AI ANALYTICS PLATFORM",
+    "data":"داتا السعودية · وزارة الاقتصاد والتخطيط · 2015–2024",
     "copy":"© 2025 ذكاء السياحة السعودية · م. جودة عماد",
+    "thm":"☀️  فاتح" if THEME=="dark" else "🌙  داكن",
+    "lng":"🌐  English",
+    "v30_title":"رؤية 2030","v30_h":"التقدم نحو مستهدفات رؤية 2030",
 },
 }
-t = TR[LANG]
 
-hero_bg = (f'url("data:image/jpeg;base64,{hero_b64}")' if hero_b64
-           else f"linear-gradient(135deg,{C['navbar']},{C['bg']})")
+t        = TR[LANG]
+logo_b64 = _b64("assets/logo.jpg")
+hero_b64 = _b64("assets/hero.jpg")
+logo_src = "data:image/jpeg;base64," + logo_b64 if logo_b64 else ""
+hero_src = "data:image/jpeg;base64," + hero_b64 if hero_b64 else ""
+logo_img = (f'<img src="{logo_src}" style="height:42px;border-radius:8px;"/>'
+            if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
+dir_val  = "rtl" if LANG=="AR" else "ltr"
+ff       = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
 
-st.markdown(f"""
+# ════════════════════════════════════════════════════════════════════
+# GLOBAL CSS
+# ════════════════════════════════════════════════════════════════════
+st.markdown(_load_css(), unsafe_allow_html=True)
+st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&family=Tajawal:wght@400;700;800&display=swap');
+
 [data-testid="stHeader"],[data-testid="stToolbar"],
-[data-testid="stSidebarNav"],footer,#MainMenu{{display:none!important;}}
-.block-container{{padding:0!important;max-width:100%!important;}}
-section[data-testid="stMain"]>div:first-child{{padding-top:0!important;}}
-html,body,[data-testid="stAppViewContainer"],[data-testid="stMain"]{{
-  background:{C['bg']}!important;direction:{dr};
-  font-family:'{ff}',sans-serif;color:{C['white']}!important;}}
-.ds-hero{{position:relative;width:100%;height:520px;
-  background-image:{hero_bg};background-size:cover;
-  background-position:center top;overflow:hidden;}}
-.ds-card{{transition:transform .22s,box-shadow .22s,border-color .22s;}}
-.ds-card:hover{{transform:translateY(-3px);
-  box-shadow:0 10px 28px rgba(23,177,155,.18)!important;
-  border-color:{C['teal']}88!important;}}
-@keyframes ds-pulse{{
-  0%,100%{{box-shadow:0 0 0 0 rgba(23,177,155,.55);}}
-  50%{{box-shadow:0 0 0 12px rgba(23,177,155,0);}}}}
-.ds-cta{{animation:ds-pulse 2.6s ease-in-out infinite;}}
-.ds-cta:hover{{animation:none;transform:translateX(4px);}}
-.ds-arrow-icon{{transition:transform .2s;display:inline-block;}}
-.ds-cta:hover .ds-arrow-icon{{transform:translateX(5px);}}
-</style>""", unsafe_allow_html=True)
+[data-testid="stSidebarNav"],footer,#MainMenu{display:none!important;}
+.block-container{padding:0!important;max-width:100%!important;}
+section[data-testid="stMain"]>div:first-child{padding-top:0!important;}
 
-def sec_head(badge, h2, sub=""):
-    return (
-        f'<div style="margin-bottom:22px;">'
-        f'<div style="display:inline-block;background:{C["teal"]}15;'
-        f'border:1px solid {C["teal"]}44;color:{C["teal"]};font-size:.57rem;'
-        f'font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
-        f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
-        f'<div style="font-size:1.5rem;font-weight:700;color:{C["white"]};'
-        f'margin-bottom:{"6px" if sub else "0"};">{h2}</div>'
-        +(f'<div style="font-size:.82rem;color:{C["grey"]};">{sub}</div>' if sub else "")
-        +'</div>')
+.ds-hero{position:relative!important;width:100%!important;height:520px!important;
+  overflow:hidden!important;background-size:cover!important;
+  background-position:center center!important;}
 
-# ══ HERO ════════════════════════════════════════════════════════════
-cta_arrow = (f"Explore Dashboard <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
-             else f"<span class='ds-arrow-icon'>←</span> استكشف لوحة التحكم")
+.ds-card{transition:transform .22s ease,border-color .22s,box-shadow .22s!important;cursor:pointer;}
+.ds-card:hover{transform:translateY(-4px)!important;
+  box-shadow:0 12px 32px rgba(23,177,155,.2)!important;}
+
+.ds-tooltip{position:relative;display:inline-block;}
+.ds-tooltip .ds-tip{
+  visibility:hidden;opacity:0;
+  position:absolute;bottom:calc(100% + 8px);left:50%;
+  transform:translateX(-50%);
+  background:#0D1A1E;border:1px solid #17B19B44;
+  color:#F4F9F8;font-size:.72rem;line-height:1.5;
+  padding:8px 12px;border-radius:6px;width:220px;text-align:center;
+  transition:opacity .2s;z-index:99;pointer-events:none;}
+.ds-tooltip:hover .ds-tip{visibility:visible;opacity:1;}
+
+.ds-prog-bg{background:#2A3235;border-radius:8px;height:10px;overflow:hidden;}
+.ds-prog-fill{height:100%;border-radius:8px;transition:width .8s ease;
+  position:relative;box-shadow:4px 0 12px currentColor;}
+.ds-prog-fill::after{content:'';position:absolute;right:-1px;top:50%;
+  transform:translateY(-50%);width:10px;height:10px;border-radius:50%;
+  background:inherit;box-shadow:0 0 8px 3px currentColor;opacity:.7;}
+
+.ds-spark{opacity:.35;}
+
+@keyframes ds-pulse{
+  0%,100%{box-shadow:0 6px 28px rgba(23,177,155,.55);}
+  50%{box-shadow:0 6px 40px rgba(23,177,155,.9),0 0 0 8px rgba(23,177,155,.12);}
+}
+</style>
+""" +
+"<style>"
+f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']{{background:{C['bg']}!important;direction:{dir_val};font-family:'{ff}',sans-serif;}}"
+f"[data-testid='stSidebar']{{background:{C['navbar']}!important;border-right:1px solid {C['border']}!important;}}"
+f"[data-testid='stSidebar'] label,[data-testid='stSidebar'] span,[data-testid='stSidebar'] p,[data-testid='stSidebar'] div{{color:{C['white']}!important;}}"
+f"[data-testid='stSidebar'] .stButton>button{{background:transparent!important;border:1px solid transparent!important;color:{C['grey']}!important;border-radius:8px!important;width:100%!important;font-size:.84rem!important;font-weight:500!important;padding:9px 12px!important;margin-bottom:2px!important;transition:all .15s!important;}}"
+f"[data-testid='stSidebar'] .stButton>button:hover{{background:{C['teal']}22!important;border-color:{C['teal']}44!important;color:{C['teal']}!important;}}"
+f"[data-testid='stSidebar'] div:nth-child(3) .stButton>button,[data-testid='stSidebar'] div:nth-child(4) .stButton>button{{background:#2A3235!important;border:1px solid #3A4C50!important;color:#F4F9F8!important;font-weight:600!important;margin-bottom:5px!important;}}"
+f"[data-testid='stSidebar'] div:nth-child(3) .stButton>button:hover,[data-testid='stSidebar'] div:nth-child(4) .stButton>button:hover{{border-color:{C['gold']}!important;color:{C['gold']}!important;background:#2A3235!important;}}"
+f"[data-baseweb='slider']>div>div:nth-child(2){{background:{C['gold']}!important;}}"
+f"[data-baseweb='slider'] [role='slider']{{background:{C['gold']}!important;border-color:{C['gold']}!important;box-shadow:0 0 0 4px {C['gold']}22!important;}}"
+"</style>",
+unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# SIDEBAR
+# ════════════════════════════════════════════════════════════════════
+with st.sidebar:
+    st.markdown(
+        f'<div style="display:flex;align-items:center;gap:10px;padding:16px 4px 14px;">'
+        f'{logo_img}'
+        f'<div>'
+        f'<div style="font-size:.88rem;font-weight:700;color:{C["white"]};">{t["name"]}</div>'
+        f'<div style="font-size:.58rem;color:{C["teal"]};font-weight:600;letter-spacing:1.2px;text-transform:uppercase;">{t["sub"]}</div>'
+        f'</div></div>',
+        unsafe_allow_html=True)
+    st.markdown(f'<div style="height:1px;background:{C["border"]};margin-bottom:10px;"></div>', unsafe_allow_html=True)
+
+    if st.button(t["thm"], key="k_thm", use_container_width=True):
+        st.session_state.theme = "light" if THEME=="dark" else "dark"; st.rerun()
+    if st.button(t["lng"], key="k_lng", use_container_width=True):
+        st.session_state.lang = "AR" if LANG=="EN" else "EN"; st.rerun()
+
+    st.markdown(f'<div style="height:1px;background:{C["border"]};margin:10px 0 6px;"></div>', unsafe_allow_html=True)
+
+    NAV_EN = [
+        ("🏠  Overview",       "01_Overview.py"),
+        ("📈  Tourist Trends",  "02_Tourist_Trends.py"),
+        ("📅  Seasonality",     "03_Seasonality.py"),
+        ("💰  Spending",        "04_Spending.py"),
+        ("🏨  Overnight Stays", "05_Overnight_Stays.py"),
+        ("🔮  Forecasting",     "06_Forecasting.py"),
+        ("🎯  Segmentation",    "07_Segmentation.py"),
+        ("🌱  Carbon Impact",   "08_Carbon_Impact.py"),
+    ]
+    NAV_AR = [
+        ("🏠  النظرة التنفيذية", "01_Overview.py"),
+        ("📈  اتجاهات السياحة",  "02_Tourist_Trends.py"),
+        ("📅  الموسمية",         "03_Seasonality.py"),
+        ("💰  الإنفاق",          "04_Spending.py"),
+        ("🏨  ليالي الإقامة",    "05_Overnight_Stays.py"),
+        ("🔮  التوقعات",         "06_Forecasting.py"),
+        ("🎯  التقسيم",          "07_Segmentation.py"),
+        ("🌱  الأثر الكربوني",   "08_Carbon_Impact.py"),
+    ]
+    _nav = NAV_AR if LANG=="AR" else NAV_EN
+
+    for label, fname in _nav:
+        if st.button(label, key="nav_" + fname, use_container_width=True):
+            st.switch_page(_page_path(fname))
+
+    st.markdown(f'<div style="height:1px;background:{C["border"]};margin:10px 0;"></div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div style="font-size:.67rem;color:{C["grey"]};padding:0 2px;line-height:1.9;">'
+        f'📦 DataSaudi · 2015–2024<br>'
+        f'🐙 <a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" style="color:{C["teal"]};text-decoration:none;">GitHub</a>'
+        f'  ·  '
+        f'💼 <a href="https://www.linkedin.com/in/goda-emad/" target="_blank" style="color:{C["teal"]};text-decoration:none;">LinkedIn</a>'
+        f'</div>', unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# HERO
+# ════════════════════════════════════════════════════════════════════
+hero_bg_val = (f'url("{hero_src}")' if hero_src
+               else f"linear-gradient(135deg,{C['navbar']},{C['bg']})")
+st.markdown(f"<style>.ds-hero{{background-image:{hero_bg_val}!important;}}</style>", unsafe_allow_html=True)
+
 st.markdown(
     f'<div class="ds-hero">'
-    f'<div style="position:absolute;inset:0;background:linear-gradient('
-    f'100deg,{C["navbar"]}EE 0%,{C["navbar"]}99 38%,{C["bg"]}22 70%,transparent 100%);"></div>'
+    f'<div style="position:absolute;inset:0;background:linear-gradient(100deg,{C["navbar"]}EE 0%,{C["navbar"]}99 38%,{C["bg"]}22 70%,transparent 100%);"></div>'
     f'<div style="position:relative;z-index:2;padding:80px 52px;max-width:600px;">'
-    f'<div style="display:inline-flex;align-items:center;background:{C["teal"]}15;'
-    f'border:1px solid {C["teal"]}55;color:{C["teal"]};font-size:.58rem;font-weight:700;'
-    f'letter-spacing:2.5px;text-transform:uppercase;padding:5px 14px;border-radius:4px;'
-    f'margin-bottom:22px;">{t["pill"]}</div>'
-    f'<div style="font-size:3.4rem;font-weight:800;color:{C["white"]};'
-    f'line-height:1.0;letter-spacing:-1.5px;margin-bottom:4px;">{t["h1"]}</div>'
-    f'<div style="font-size:3.4rem;font-weight:800;color:{C["teal"]};'
-    f'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">{t["h2"]}</div>'
-    f'<p style="font-size:.95rem;color:{C["grey"]};line-height:1.8;'
-    f'margin-bottom:32px;max-width:460px;">{t["hs"]}</p>'
-    f'<a class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
-    f'background:{C["teal"]};color:#FFFFFF!important;font-size:.9rem;font-weight:700;'
-    f'padding:13px 30px;border-radius:7px;text-decoration:none!important;'
-    f'letter-spacing:.3px;cursor:default;">{cta_arrow}</a>'
+
+    # pill
+    f'<div style="display:inline-flex;align-items:center;background:{C["teal"]}15;border:1px solid {C["teal"]}55;color:{C["teal"]};font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:5px 14px;border-radius:4px;margin-bottom:22px;">{t["pill"]}</div>'
+
+    # ✅ عنوان موحد — نفس السطر — كله تيركوز
+    f'<div style="font-size:3.4rem;font-weight:800;color:{C["teal"]};line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">{t["h1"]} {t["h2"]}</div>'
+
+    # subtitle
+    f'<p style="font-size:.95rem;color:{C["grey"]};line-height:1.8;margin-bottom:30px;max-width:460px;">{t["hs"]}</p>'
+
+    # ✅ CTA زرار HTML جوّا الـ hero
+    f'<a style="display:inline-block;background:#17B19B;color:#FFFFFF!important;'
+    f'font-size:.92rem;font-weight:700;padding:13px 28px;border-radius:7px;'
+    f'border:none;letter-spacing:.3px;text-decoration:none!important;'
+    f'box-shadow:0 6px 28px rgba(23,177,155,.55);'
+    f'animation:ds-pulse 2.6s ease-in-out infinite;cursor:pointer;"'
+    f' onmouseover="this.style.background=\'#149581\';this.style.animation=\'none\';this.style.transform=\'translateX(4px)\'"'
+    f' onmouseout="this.style.background=\'#17B19B\';this.style.animation=\'ds-pulse 2.6s ease-in-out infinite\';this.style.transform=\'none\'"'
+    f' onclick="window.parent.document.querySelector(\'[data-testid=stBaseButton-secondary][kind=secondary]\').click();return false;"'
+    f'>{t["hb"]}</a>'
+
     f'</div></div>',
     unsafe_allow_html=True)
 
-# Hero CTA real button
-st.markdown(f"""<style>
-div[data-testid="stMain"]>div>div:nth-child(3){{
-  margin-top:-68px!important;padding-left:92px!important;
-  position:relative!important;z-index:20!important;width:fit-content!important;}}
-div[data-testid="stMain"]>div>div:nth-child(3) button{{
-  background:{C["teal"]}!important;color:#FFFFFF!important;
-  font-size:.92rem!important;font-weight:700!important;
-  padding:13px 28px!important;border-radius:7px!important;
-  border:none!important;letter-spacing:.3px!important;
-  box-shadow:0 6px 28px rgba(23,177,155,.55)!important;
-  animation:ds-pulse 2.6s ease-in-out infinite!important;}}
-div[data-testid="stMain"]>div>div:nth-child(3) button:hover{{
-  background:{C["teal_act"]}!important;animation:none!important;
-  transform:translateX(4px)!important;}}
+# ✅ زرار Streamlit حقيقي مخفي بالكامل — الـ onclick أعلاه بيضغطه
+st.markdown("""
+<style>
+div[data-testid="stMain"] > div > div:nth-child(3) {
+  position:absolute!important; opacity:0!important;
+  pointer-events:none!important; height:0!important; overflow:hidden!important;
+}
 </style>""", unsafe_allow_html=True)
 
-_cta = "Explore Dashboard  →" if LANG=="EN" else "←  استكشف لوحة التحكم"
-if st.button(_cta, key="hero_cta"):
-    st.switch_page("pages/Overview.py")
+if st.button(t["hb"], key="hero_cta", type="secondary"):
+    st.switch_page(_page_path("01_Overview.py"))
 
-# ══ STATS STRIP ═════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
+# STATS STRIP
+# ════════════════════════════════════════════════════════════════════
 cells = ""
-for i,(val,lbl,ck,delta,ddir) in enumerate(t["stats"]):
-    br = f"border-right:1px solid {C['border']};" if i<3 else ""
-    a  = ""
+for i, (val, lbl, ck, delta, ddir) in enumerate(t["stats"]):
+    br = f"border-right:1px solid {C['border']};" if i < 3 else ""
+    arrow = ""
     if delta:
-        ac = C["teal"] if ddir=="up" else C["red"]
-        ai = "▲" if ddir=="up" else "▼"
-        a  = (f'<span style="font-size:.72rem;color:{ac};font-weight:700;'
-              f'margin-left:6px;font-family:IBM Plex Mono,monospace;">{ai} {delta}</span>')
+        a_color = "#17B19B" if ddir == "up" else "#C50A5D"
+        a_icon  = "▲" if ddir == "up" else "▼"
+        arrow = f'<span style="font-size:.72rem;color:{a_color};font-weight:700;margin-left:6px;font-family:IBM Plex Mono,monospace;">{a_icon} {delta}</span>'
     cells += (
         f'<div style="padding:28px 24px;{br}">'
         f'<div style="display:flex;align-items:baseline;">'
-        f'<div style="font-size:2rem;font-weight:700;color:{clr(ck)};'
-        f'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;">{val}</div>{a}</div>'
-        f'<div style="font-size:.64rem;color:{C["grey"]};text-transform:uppercase;'
-        f'letter-spacing:1.2px;font-weight:600;margin-top:6px;opacity:.9;">{lbl}</div>'
+        f'<div style="font-size:2rem;font-weight:700;color:{clr(ck)};font-family:IBM Plex Mono,monospace;letter-spacing:-1px;">{val}</div>'
+        f'{arrow}</div>'
+        f'<div style="font-size:.64rem;color:{C["grey"]};text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:6px;opacity:.9;">{lbl}</div>'
         f'</div>')
 st.markdown(
-    f'<div style="background:{C["sec_bg"]};border-top:1px solid {C["border"]};'
-    f'border-bottom:1px solid {C["border"]};'
-    f'display:grid;grid-template-columns:repeat(4,1fr);">{cells}</div>',
+    f'<div style="background:{C["sec_bg"]};border-top:1px solid {C["border"]};border-bottom:1px solid {C["border"]};display:grid;grid-template-columns:repeat(4,1fr);">{cells}</div>',
     unsafe_allow_html=True)
 
-# ══ PAGE CARDS ══════════════════════════════════════════════════════
+# ── Section header helper ─────────────────────────────────────────
+def sec_head(badge, h2, sub=""):
+    o = (f'<div style="margin-bottom:28px;">'
+         f'<div style="display:inline-block;background:{C["teal"]}15;border:1px solid {C["teal"]}44;color:{C["teal"]};font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:12px;">{badge}</div>'
+         f'<div style="font-size:1.5rem;font-weight:700;color:{C["white"]};margin-bottom:6px;">{h2}</div>')
+    if sub: o += f'<div style="font-size:.82rem;color:{C["grey"]};">{sub}</div>'
+    return o + '</div>'
+
+# ════════════════════════════════════════════════════════════════════
+# PAGES CARDS
+# ════════════════════════════════════════════════════════════════════
 page_cards = ""
-for ico,title,desc in t["pages"]:
+for ico, title, desc in t["pages"]:
     page_cards += (
-        f'<div class="ds-card" style="background:{C["card_bg"]};'
-        f'border:1px solid {C["border"]};border-radius:10px;padding:20px 18px;">'
+        f'<div class="ds-card" style="background:{C["card_bg"]};border:1px solid {C["border"]};border-radius:10px;padding:20px 18px;">'
         f'<div style="font-size:1.6rem;margin-bottom:10px;line-height:1;">{ico}</div>'
         f'<div style="font-size:.87rem;font-weight:600;color:{C["white"]};margin-bottom:5px;">{title}</div>'
         f'<div style="font-size:.73rem;color:{C["grey"]};line-height:1.5;">{desc}</div>'
         f'</div>')
 st.markdown(
     f'<div style="padding:52px 40px;">{sec_head(t["pt"],t["ph"],t["ps"])}'
-    f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'
-    +page_cards+'</div></div>',unsafe_allow_html=True)
-st.markdown(f'<div style="height:1px;background:{C["border"]};margin:0 40px;"></div>',
-            unsafe_allow_html=True)
+    f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">{page_cards}</div></div>',
+    unsafe_allow_html=True)
+st.markdown(f'<div style="height:1px;background:{C["border"]};margin:0 40px;"></div>', unsafe_allow_html=True)
 
-# ══ PLATFORM METRICS ════════════════════════════════════════════════
-m_cards = ""
-for val,lbl,ck,note in t["metrics"]:
-    m_cards += (
-        f'<div class="ds-card" style="background:{C["card_bg"]};'
-        f'border:1px solid {C["border"]};border-left:3px solid {clr(ck)};'
-        f'border-radius:10px;padding:22px 20px;">'
-        f'<div style="font-size:2rem;font-weight:700;color:{clr(ck)};'
-        f'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;">{val}</div>'
-        f'<div style="font-size:.84rem;font-weight:600;color:{C["white"]};margin:6px 0 4px;">{lbl}</div>'
-        f'<div style="font-size:.72rem;color:{C["grey"]};">{note}</div>'
+# ════════════════════════════════════════════════════════════════════
+# ML MODELS
+# ════════════════════════════════════════════════════════════════════
+def sparkline(color):
+    pts = "0,28 8,22 16,25 24,18 32,20 40,12 48,15 56,8 64,10 72,4"
+    return (f'<svg class="ds-spark" width="80" height="32" style="position:absolute;bottom:16px;right:14px;">'
+            f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'</svg>')
+
+ml_cards = ""
+for ico, name, mtype, tooltip, desc, ck in t["ml"]:
+    ml_cards += (
+        f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};border-radius:10px;padding:26px 22px;position:relative;overflow:hidden;">'
+        f'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:{clr(ck)};"></div>'
+        f'{sparkline(clr(ck))}'
+        f'<div style="font-size:1.5rem;margin-bottom:14px;">{ico}</div>'
+        f'<div class="ds-tooltip">'
+        f'<div style="font-size:1rem;font-weight:700;color:{C["white"]};font-family:IBM Plex Mono,monospace;margin-bottom:4px;border-bottom:1px dashed {clr(ck)}55;padding-bottom:3px;display:inline-block;">{name}</div>'
+        f'<div class="ds-tip">{tooltip}</div>'
+        f'</div>'
+        f'<div style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:{clr(ck)};margin:8px 0 12px;">{mtype}</div>'
+        f'<div style="font-size:.8rem;color:{C["grey"]};line-height:1.6;">{desc}</div>'
         f'</div>')
 st.markdown(
-    f'<div style="padding:52px 40px 40px;">{sec_head(t["mt"],t["mh"],t["ms"])}'
-    f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'
-    +m_cards+'</div></div>',unsafe_allow_html=True)
-st.markdown(f'<div style="height:1px;background:{C["border"]};margin:0 40px;"></div>',
-            unsafe_allow_html=True)
+    f'<div style="padding:52px 40px;background:{C["sec_bg"]};border-top:1px solid {C["border"]};border-bottom:1px solid {C["border"]};">'
+    f'{sec_head(t["mt"],t["mh"],t["ms"])}'
+    f'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">{ml_cards}</div></div>',
+    unsafe_allow_html=True)
 
-# ══ KEY INSIGHTS ════════════════════════════════════════════════════
-ins_html = (f'<div style="padding:52px 40px 0;">{sec_head(t["it"],t["ih"])}'
-            f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">')
-for ico,txt,ck in t["ins"]:
-    ins_html += (
-        f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};'
-        f'border-left:3px solid {clr(ck)};border-radius:10px;'
-        f'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
+# ════════════════════════════════════════════════════════════════════
+# INSIGHTS
+# ════════════════════════════════════════════════════════════════════
+ins_cards = ""
+for ico, txt, ck in t["ins"]:
+    ins_cards += (
+        f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};border-left:3px solid {clr(ck)};border-radius:10px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
         f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
         f'<div style="font-size:.83rem;color:{C["white"]};line-height:1.65;">{txt}</div>'
         f'</div>')
-ins_html += '</div></div>'
-st.markdown(ins_html, unsafe_allow_html=True)
-st.markdown(f'<div style="height:1px;background:{C["border"]};margin:40px 40px 0;"></div>',
-            unsafe_allow_html=True)
-
-# ══ VISION 2030 ═════════════════════════════════════════════════════
-v30_html = (f'<div style="padding:52px 40px;">{sec_head(t["v30_title"],t["v30_h"])}'
-            f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">')
-for label,current,target,note,ck in t["v30"]:
-    v30_html += progress_bar_html(
-        label, current, target, note, clr(ck),
-        C["card_bg"], C["border"], C["white"], C["grey"])
-v30_html += '</div></div>'
-st.markdown(v30_html, unsafe_allow_html=True)
-st.markdown(f'<div style="height:1px;background:{C["border"]};margin:0 40px;"></div>',
-            unsafe_allow_html=True)
-
-# ══ FOOTER ══════════════════════════════════════════════════════════
 st.markdown(
-    f'<div style="background:{C["navbar"]};border-top:2px solid {C["teal"]};'
-    f'padding:28px 40px;display:flex;justify-content:space-between;'
-    f'align-items:center;flex-wrap:wrap;gap:16px;">'
+    f'<div style="padding:52px 40px;">{sec_head(t["it"],t["ih"])}'
+    f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">{ins_cards}</div></div>',
+    unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# VISION 2030
+# ════════════════════════════════════════════════════════════════════
+prog_bars = ""
+for label, current, target, note, ck in t["v30"]:
+    pct  = min(round(current / target * 100), 100)
+    col  = clr(ck)
+    done = pct >= 100
+    badge = (f' <span style="color:{col};font-size:.8rem;">✅</span>' if done else "")
+    glow  = f"filter:drop-shadow(0 0 5px {col});" if not done else ""
+    prog_bars += (
+        f'<div style="background:{C["card_bg"]};border:1px solid {("border-color:"+col+"88;") if done else C["border"]};border-radius:10px;padding:18px 20px;">'
+        f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+        f'<div style="font-size:.84rem;font-weight:600;color:{C["white"]};">{label}{badge}</div>'
+        f'<div style="font-size:.82rem;font-weight:700;color:{col};font-family:IBM Plex Mono,monospace;">{pct}%</div>'
+        f'</div>'
+        f'<div class="ds-prog-bg"><div class="ds-prog-fill" style="width:{pct}%;background:{col};{glow}"></div></div>'
+        f'<div style="font-size:.68rem;color:{C["grey"]};margin-top:7px;">{note}</div>'
+        f'</div>')
+
+st.markdown(
+    f'<div style="padding:52px 40px;background:{C["sec_bg"]};border-top:1px solid {C["border"]};border-bottom:1px solid {C["border"]};">'
+    f'{sec_head(t["v30_title"],t["v30_h"])}'
+    f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">{prog_bars}</div></div>',
+    unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# FOOTER
+# ════════════════════════════════════════════════════════════════════
+st.markdown(
+    f'<div style="background:{C["navbar"]};border-top:2px solid {C["teal"]};padding:28px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">'
     f'<div style="display:flex;align-items:center;gap:14px;">{logo_img}'
-    f'<div><div style="font-size:.92rem;font-weight:700;color:{C["teal"]};">{t["name"]}</div>'
+    f'<div>'
+    f'<div style="font-size:.9rem;font-weight:700;color:{C["teal"]};">{t["name"]}</div>'
     f'<div style="font-size:.68rem;color:{C["foot_txt"]};margin-top:3px;">{t["copy"]}</div>'
+    f'<div style="font-size:.64rem;color:{C["grey"]};margin-top:3px;">📦 {t["data"]}</div>'
     f'</div></div>'
-    f'<div style="display:flex;gap:20px;align-items:center;">'
-    f'<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
-    f'style="font-size:.78rem;color:{C["foot_txt"]};text-decoration:none;">🐙 GitHub</a>'
-    f'<a href="https://www.linkedin.com/in/goda-emad/" target="_blank" '
-    f'style="font-size:.78rem;color:{C["foot_txt"]};text-decoration:none;">💼 LinkedIn</a>'
-    f'<a href="https://datasaudi.sa" target="_blank" '
-    f'style="font-size:.78rem;color:{C["teal"]};text-decoration:none;font-weight:600;">'
-    f'📊 DataSaudi</a></div></div>',
+    f'<div style="display:flex;gap:24px;align-items:center;">'
+    f'<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" style="font-size:.78rem;color:{C["foot_txt"]};text-decoration:none;font-weight:500;">🐙 GitHub</a>'
+    f'<a href="https://www.linkedin.com/in/goda-emad/" target="_blank" style="font-size:.78rem;color:{C["foot_txt"]};text-decoration:none;font-weight:500;">💼 LinkedIn</a>'
+    f'<a href="https://datasaudi.sa" target="_blank" style="font-size:.78rem;color:{C["teal"]};text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
+    f'</div></div>',
     unsafe_allow_html=True)
