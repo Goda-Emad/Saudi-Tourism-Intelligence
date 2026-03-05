@@ -38,12 +38,18 @@ C = {
     "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
     "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
     "white":"#F4F9F8","grey":"#9DBFBA","foot_txt":"#9DBFBA",
-    "border":"#2A3235","orange":"#E8A020","gold":"#C9A84C",
-    "blue":"#5B8DC8","green":"#16A34A","red":"#DC2626","purple":"#7C3AED",
+    "border":"#CBD5E0","orange":"#E8A020","gold":"#C9A84C",
+    "blue":"#1565C0","green":"#16A34A","red":"#DC2626","purple":"#7C3AED",
 }
 def clr(k): return C.get(k, C["teal"])
-ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
-dir_val = "rtl"     if LANG=="AR" else "ltr"
+ff       = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
+dir_val  = "rtl"     if LANG=="AR" else "ltr"
+txt_dark = "#F4F9F8" if THEME=="dark" else "#0D1A1E"
+
+def rgba(hex_color, alpha=0.15):
+    h = hex_color.lstrip('#')
+    r, g, b = int(h[0:2],16), int(h[2:4],16), int(h[4:6],16)
+    return f"rgba({r},{g},{b},{alpha})"
 
 # ── Logo ─────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
@@ -144,10 +150,16 @@ st.markdown(
     ".ds-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}"
     f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
     f"{{background:{C['bg']}!important;direction:{dir_val};"
-    f"font-family:'{ff}',sans-serif;color:{C['white']}!important;}}"
+    f"font-family:'{ff}',sans-serif;color:{txt_dark}!important;}}"
+    # Widget labels fix for light mode
+    f"[data-testid='stMain'] label,[data-testid='stMain'] p,"
+    f"[data-testid='stMain'] span,[data-testid='stWidgetLabel'] p,"
+    f"[data-testid='stSlider'] span,[data-testid='stSlider'] p,"
+    f".stRadio label div p{{color:{txt_dark}!important;}}"
+    # Slider accent
     f"[data-baseweb='slider']>div>div:nth-child(2){{background:{C['gold']}!important;}}"
     f"[data-baseweb='slider'] [role='slider']{{background:{C['gold']}!important;"
-    f"border-color:{C['gold']}!important;box-shadow:0 0 0 4px {C['gold']}22!important;}}"
+    f"border-color:{C['gold']}!important;box-shadow:0 0 0 4px {rgba(C['gold'],0.13)}!important;}}"
     "</style>",
     unsafe_allow_html=True)
 
@@ -161,7 +173,7 @@ def sec_head(badge, h2):
         f'border:1px solid {C["teal"]}44;color:{C["teal"]};'
         f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
         f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
-        f'<div style="font-size:1.3rem;font-weight:700;color:{C["white"]};">{h2}</div>'
+        f'<div style="font-size:1.3rem;font-weight:700;color:{txt_dark};">{h2}</div>'
         f'</div>')
 
 def kpi(label, val, unit, delta, dc):
@@ -184,17 +196,31 @@ def apply_layout(fig, height=360):
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color=C["grey"], family=ff),
         height=height, margin=dict(l=10,r=10,t=36,b=10),
-        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11)),
-        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235", tickfont=dict(size=10)),
-        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235", tickfont=dict(size=10)),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11),
+                    orientation="h", y=-0.14),
+        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
+                   tickfont=dict(size=10), showgrid=False),
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
+                   tickfont=dict(size=10)),
     )
     return fig
 
 def chart(fig):
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
 
+def sim_card(ico, lbl, val, col):
+    return (
+        f'<div style="background:{C["sec_bg"]};border:1px solid {C["border"]};'
+        f'border-left:3px solid {col};border-radius:8px;'
+        f'padding:14px 16px;margin-bottom:10px;">'
+        f'<div style="font-size:.62rem;color:{C["grey"]};text-transform:uppercase;'
+        f'letter-spacing:1px;margin-bottom:5px;">{ico}  {lbl}</div>'
+        f'<div style="font-size:1.4rem;font-weight:700;color:{col};'
+        f'font-family:IBM Plex Mono,monospace;">{val}</div>'
+        f'</div>')
+
 # ════════════════════════════════════════════════════════════════════
-# PAGE HEADER — always light text on dark navbar
+# PAGE HEADER
 # ════════════════════════════════════════════════════════════════════
 st.markdown(
     f'<div style="background:{C["navbar"]};border-bottom:1px solid {C["border"]};'
@@ -222,18 +248,23 @@ st.markdown(
     +'</div></div>',
     unsafe_allow_html=True)
 
+st.markdown(f'<div style="height:1px;background:{C["border"]};margin:20px 40px 0;"></div>',
+            unsafe_allow_html=True)
+
 # ════════════════════════════════════════════════════════════════════
 # ROW 1 — Emissions Trend + Donut
 # ════════════════════════════════════════════════════════════════════
 st.markdown(f'<div style="padding:28px 40px 0;">{sec_head(t["s1"],t["s1h"])}</div>',
             unsafe_allow_html=True)
 
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
 c1, c2 = st.columns([3,2], gap="large")
+
 with c1:
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(
         x=YEARS, y=TOT_CO2, name=t["total"],
-        fill="tozeroy", fillcolor="rgba(23,177,155,0.12)",
+        fill="tozeroy", fillcolor=rgba(C["teal"],0.12),
         line=dict(color=C["teal"],width=2.5),
         mode="lines+markers",
         marker=dict(size=7,color=C["teal"],line=dict(width=1.5,color=C["navbar"])),
@@ -248,31 +279,34 @@ with c1:
         line=dict(color=C["blue"],width=2,dash="dot"),
         mode="lines+markers", marker=dict(size=6,color=C["blue"]),
         hovertemplate="%{x}: <b>%{y}M t</b><extra></extra>"))
-    fig1.add_vrect(x0=2019.5,x1=2020.5,fillcolor="rgba(239,68,68,0.12)",
-                   line_width=0,annotation_text="COVID-19",
-                   annotation_font=dict(color=C["red"],size=10))
+    fig1.add_vrect(x0=2019.5,x1=2020.5,
+        fillcolor=rgba(C["red"],0.12), line_width=0,
+        annotation_text="COVID-19",
+        annotation_font=dict(color=C["red"],size=10))
     apply_layout(fig1)
     fig1.update_yaxes(title_text="Million Tonnes CO₂")
     chart(fig1)
 
 with c2:
-    st.markdown(f'<div style="padding-top:0;">{sec_head(t["s2"],t["s2h"])}</div>',
-                unsafe_allow_html=True)
+    st.markdown(sec_head(t["s2"],t["s2h"]), unsafe_allow_html=True)
     fig2 = go.Figure(go.Pie(
         labels=[t["inbound"],t["domestic"]],
         values=[IB_CO2[-1],DOM_CO2[-1]],
         hole=.55,
-        marker=dict(colors=[C["orange"],C["blue"]],line=dict(color=C["navbar"],width=2)),
-        textfont=dict(size=12,color="#F4F9F8"),
+        marker=dict(colors=[C["orange"],C["blue"]],
+                    line=dict(color=C["bg"],width=2)),
+        textfont=dict(size=12, color="#F4F9F8"),
         hovertemplate="<b>%{label}</b><br>%{value}M t (%{percent})<extra></extra>"))
     fig2.add_annotation(text="2024",x=.5,y=.56,showarrow=False,
                         font=dict(size=11,color=C["grey"]))
     fig2.add_annotation(text=f"{TOT_CO2[-1]}M t",x=.5,y=.42,showarrow=False,
-                        font=dict(size=17,color="#F4F9F8",family="IBM Plex Mono"))
+                        font=dict(size=17,color=txt_dark,family="IBM Plex Mono"))
     apply_layout(fig2,height=320)
-    fig2.update_layout(showlegend=True,legend=dict(orientation="h",x=.15,y=-.06))
+    fig2.update_layout(showlegend=True,
+                       legend=dict(orientation="h",x=.15,y=-.06))
     chart(fig2)
 
+st.markdown('</div>', unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
             unsafe_allow_html=True)
 
@@ -282,20 +316,24 @@ st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;
 st.markdown(f'<div style="padding:28px 40px 0;">{sec_head(t["s3"],t["s3h"])}</div>',
             unsafe_allow_html=True)
 
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
 c3, c4 = st.columns([1,1], gap="large")
+
 with c3:
     fig3 = go.Figure()
     fig3.add_trace(go.Bar(
         x=YEARS, y=IB_PER, name=t["inbound"],
-        marker=dict(color=[C["orange"] if y!=2020 else C["red"] for y in YEARS],
-                    line=dict(width=0),opacity=.85),
+        marker=dict(
+            color=[C["red"] if y==2020 else C["orange"] for y in YEARS],
+            line=dict(width=0), opacity=.85),
         hovertemplate="%{x}: <b>%{y} t</b><extra></extra>"))
     fig3.add_trace(go.Bar(
         x=YEARS, y=DOM_PER, name=t["domestic"],
-        marker=dict(color=[C["blue"] if y!=2020 else C["purple"] for y in YEARS],
-                    line=dict(width=0),opacity=.85),
+        marker=dict(
+            color=[C["purple"] if y==2020 else C["blue"] for y in YEARS],
+            line=dict(width=0), opacity=.85),
         hovertemplate="%{x}: <b>%{y} t</b><extra></extra>"))
-    fig3.add_hline(y=0.65,line_dash="dash",line_color=C["teal"],
+    fig3.add_hline(y=0.65, line_dash="dash", line_color=C["teal"],
                    annotation_text=t["v30_line"],
                    annotation_font=dict(color=C["teal"],size=10))
     apply_layout(fig3)
@@ -305,29 +343,19 @@ with c3:
 
 with c4:
     st.markdown(sec_head(t["s4"],t["s4h"]), unsafe_allow_html=True)
-    pct = st.slider(t["sim_lbl"],5,50,10,key="sim",format="%d%%")
+    pct = st.slider(t["sim_lbl"], 5, 50, 10, key="sim", format="%d%%")
     saved_mt = round(TOT_CO2[-1]*pct/100, 2)
-    saved_t  = saved_mt*1_000_000
-    trees    = int(saved_t/21.77)
-    cars     = int(saved_t/4_600)
-
-    def sim_card(ico, lbl, val, col):
-        return (
-            f'<div style="background:{C["sec_bg"]};border:1px solid {C["border"]};'
-            f'border-left:3px solid {col};border-radius:8px;'
-            f'padding:14px 16px;margin-bottom:10px;">'
-            f'<div style="font-size:.62rem;color:{C["grey"]};text-transform:uppercase;'
-            f'letter-spacing:1px;margin-bottom:5px;">{ico}  {lbl}</div>'
-            f'<div style="font-size:1.4rem;font-weight:700;color:{col};'
-            f'font-family:IBM Plex Mono,monospace;">{val}</div>'
-            f'</div>')
+    saved_t  = saved_mt * 1_000_000
+    trees    = int(saved_t / 21.77)
+    cars     = int(saved_t / 4_600)
 
     st.markdown(
-        sim_card("💨",t["sim_saved"],f"{saved_mt}M tonnes",C["teal"])
-       +sim_card("🌳",t["sim_trees"],f"{trees:,}",C["green"])
-       +sim_card("🚗",t["sim_cars"], f"{cars:,}",C["orange"]),
+        sim_card("💨", t["sim_saved"], f"{saved_mt}M tonnes", C["teal"])
+       +sim_card("🌳", t["sim_trees"], f"{trees:,}",           C["green"])
+       +sim_card("🚗", t["sim_cars"],  f"{cars:,}",            C["orange"]),
         unsafe_allow_html=True)
 
+st.markdown('</div>', unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
             unsafe_allow_html=True)
 
@@ -337,21 +365,24 @@ st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;
 st.markdown(f'<div style="padding:28px 40px 0;">{sec_head(t["s5"],t["s5h"])}</div>',
             unsafe_allow_html=True)
 
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
 c5, c6 = st.columns([1,1], gap="large")
+
 with c5:
     lbls = BM_AR if LANG=="AR" else BM_EN
     fig4 = go.Figure(go.Bar(
         x=BM_VALS, y=lbls, orientation="h",
-        marker=dict(color=BM_COLS,line=dict(width=0),opacity=.88),
+        marker=dict(color=BM_COLS, line=dict(width=0), opacity=.88),
         text=[f"{v} t" for v in BM_VALS],
         textposition="outside",
-        textfont=dict(size=11,color=C["grey"]),
+        textfont=dict(size=11, color=txt_dark),
         hovertemplate="<b>%{y}</b>: %{x} t/tourist<extra></extra>"))
-    fig4.add_vline(x=0.65,line_dash="dash",line_color=C["teal"],
+    fig4.add_vline(x=0.65, line_dash="dash", line_color=C["teal"],
                    annotation_text="2030 Target",
                    annotation_font=dict(color=C["teal"],size=10))
     apply_layout(fig4)
     fig4.update_xaxes(title_text="Tonnes CO₂ / Tourist")
+    fig4.update_yaxes(tickfont=dict(size=11, color=C["grey"]))
     chart(fig4)
 
 with c6:
@@ -361,19 +392,24 @@ with c6:
         r=ESG_SCORES+[ESG_SCORES[0]],
         theta=cats+[cats[0]],
         fill="toself",
-        fillcolor="rgba(23,177,155,0.2)",
+        fillcolor=rgba(C["teal"],0.18),
         line=dict(color=C["teal"],width=2),
-        marker=dict(size=7,color=ESG_COLORS),
+        marker=dict(size=7, color=ESG_COLORS),
         hovertemplate="<b>%{theta}</b>: %{r}/100<extra></extra>"))
-    apply_layout(fig5,height=340)
+    apply_layout(fig5, height=340)
     fig5.update_layout(
         polar=dict(
             bgcolor="rgba(0,0,0,0)",
-            radialaxis=dict(visible=True,range=[0,100],
-                            gridcolor="rgba(42,50,53,0.5)",tickfont=dict(size=9)),
-            angularaxis=dict(gridcolor="rgba(42,50,53,0.5)",tickfont=dict(size=10))))
+            radialaxis=dict(
+                visible=True, range=[0,100],
+                gridcolor="rgba(42,50,53,0.5)",
+                tickfont=dict(size=9, color=C["grey"])),
+            angularaxis=dict(
+                gridcolor="rgba(42,50,53,0.5)",
+                tickfont=dict(size=10, color=C["grey"]))))
     chart(fig5)
 
+st.markdown('</div>', unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
             unsafe_allow_html=True)
 
@@ -388,7 +424,7 @@ for ico, txt, ck in t["ins"]:
         f'border-left:3px solid {clr(ck)};border-radius:10px;'
         f'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;min-height:70px;">'
         f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
-        f'<div style="font-size:.83rem;color:{C["white"]};line-height:1.65;">{txt}</div>'
+        f'<div style="font-size:.83rem;color:{txt_dark};line-height:1.65;">{txt}</div>'
         f'</div>')
 ins_html += '</div></div>'
 st.markdown(ins_html, unsafe_allow_html=True)
