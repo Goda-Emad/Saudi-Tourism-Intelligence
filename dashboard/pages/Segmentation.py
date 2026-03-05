@@ -384,6 +384,11 @@ with radar_col:
     budget_vals = [100,              23,   43, 100*5.4/17.1, 23]
 
     fig_radar = go.Figure()
+    def hex_to_rgba(hex_color, alpha=0.15):
+        h = hex_color.lstrip('#')
+        r, g, b = int(h[0:2],16), int(h[2:4],16), int(h[4:6],16)
+        return f"rgba({r},{g},{b},{alpha})"
+
     for name, vals, color in [
         (t["seg_high"],   high_vals,   accent_gold),
         (t["seg_mid"],    mid_vals,    accent_blue),
@@ -392,7 +397,7 @@ with radar_col:
         fig_radar.add_trace(go.Scatterpolar(
             r=vals + [vals[0]], theta=categories + [categories[0]],
             fill='toself', name=name,
-            line_color=color, fillcolor=f"{color}25"
+            line_color=color, fillcolor=hex_to_rgba(color)
         ))
     fig_radar.update_layout(
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
