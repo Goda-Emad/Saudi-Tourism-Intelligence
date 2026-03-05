@@ -171,6 +171,10 @@ st.markdown(
     f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
     f"{{background:{C['bg']}!important;direction:{dir_val};"
     f"font-family:'{ff}',sans-serif;color:{txt_dark}!important;}}"
+    f"[data-testid='stMain'] label,[data-testid='stMain'] p,"
+    f"[data-testid='stMain'] span,[data-testid='stWidgetLabel'] p,"
+    f"[data-testid='stSlider'] span,[data-testid='stSlider'] p,"
+    f".stRadio label div p{{color:{txt_dark}!important;}}"
     "</style>",
     unsafe_allow_html=True)
 
