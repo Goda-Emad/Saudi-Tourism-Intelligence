@@ -1,4 +1,3 @@
-
 # ═══════════════════════════════════════════════════════════════════
 #  Saudi Tourism Intelligence — Home (app.py)
 #  Author  : Eng. Goda Emad  |  Design : DataSaudi
@@ -101,6 +100,8 @@ TR = {
     ],
     "name":"Saudi Tourism Intelligence","sub":"AI ANALYTICS PLATFORM",
     "copy":"© 2025 Saudi Tourism Intelligence · Eng. Goda Emad",
+    # FIX 1: Updated CTA button text
+    "cta_btn": "Overview  →",
 },
 "AR":{
     "pill":"🇸🇦  بيانات رسمية · وزارة الاقتصاد والتخطيط",
@@ -150,6 +151,8 @@ TR = {
     ],
     "name":"ذكاء السياحة السعودية","sub":"AI ANALYTICS PLATFORM",
     "copy":"© 2025 ذكاء السياحة السعودية · م. جودة عماد",
+    # FIX 1: Updated CTA button text (Arabic)
+    "cta_btn": "←  النظرة التنفيذية",
 },
 }
 t = TR[LANG]
@@ -196,8 +199,9 @@ def sec_head(badge, h2, sub=""):
         +'</div>')
 
 # ══ HERO ════════════════════════════════════════════════════════════
-cta_arrow = (f"Explore Dashboard <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
-             else f"<span class='ds-arrow-icon'>←</span> استكشف لوحة التحكم")
+# FIX 3: Hero CTA inside image is purely decorative — no interaction, no onclick
+cta_arrow = (f"Overview <span class='ds-arrow-icon'>→</span>" if LANG=="EN"
+             else f"<span class='ds-arrow-icon'>←</span> النظرة التنفيذية")
 st.markdown(
     f'<div class="ds-hero">'
     f'<div style="position:absolute;inset:0;background:linear-gradient('
@@ -213,14 +217,15 @@ st.markdown(
     f'line-height:1.0;letter-spacing:-1.5px;margin-bottom:22px;">{t["h2"]}</div>'
     f'<p style="font-size:.95rem;color:{C["grey"]};line-height:1.8;'
     f'margin-bottom:32px;max-width:460px;">{t["hs"]}</p>'
-    f'<a class="ds-cta" style="display:inline-flex;align-items:center;gap:10px;'
-    f'background:{C["teal"]};color:#FFFFFF!important;font-size:.9rem;font-weight:700;'
-    f'padding:13px 30px;border-radius:7px;text-decoration:none!important;'
-    f'letter-spacing:.3px;cursor:default;">{cta_arrow}</a>'
+    # FIX 3: pointer-events:none → purely visual, not clickable
+    f'<div style="display:inline-flex;align-items:center;gap:10px;'
+    f'background:{C["teal"]};color:#FFFFFF;font-size:.9rem;font-weight:700;'
+    f'padding:13px 30px;border-radius:7px;letter-spacing:.3px;'
+    f'pointer-events:none;user-select:none;">{cta_arrow}</div>'
     f'</div></div>',
     unsafe_allow_html=True)
 
-# Hero CTA real button
+# FIX 1 & 2: Only ONE real functional button with updated text — NO duplicate button below
 st.markdown(f"""<style>
 div[data-testid="stMain"]>div>div:nth-child(3){{
   margin-top:-68px!important;padding-left:92px!important;
@@ -237,8 +242,8 @@ div[data-testid="stMain"]>div>div:nth-child(3) button:hover{{
   transform:translateX(4px)!important;}}
 </style>""", unsafe_allow_html=True)
 
-_cta = "Explore Dashboard  →" if LANG=="EN" else "←  استكشف لوحة التحكم"
-if st.button(_cta, key="hero_cta"):
+# FIX 1: Updated button label
+if st.button(t["cta_btn"], key="hero_cta"):
     st.switch_page("pages/Overview.py")
 
 # ══ STATS STRIP ═════════════════════════════════════════════════════
