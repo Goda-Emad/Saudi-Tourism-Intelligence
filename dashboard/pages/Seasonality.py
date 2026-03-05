@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════
-#  Saudi Tourism Intelligence — Tourist Trends
+#  Saudi Tourism Intelligence — Seasonality
 #  Author : Eng. Goda Emad   |   Design : DataSaudi
 # ═══════════════════════════════════════════════════════════════════
 import streamlit as st
@@ -16,13 +16,12 @@ for _p in [_HERE, _ROOT]:
 from utils.sidebar import render_sidebar
 
 st.set_page_config(
-    page_title="Tourist Trends · Saudi Tourism Intelligence",
-    page_icon="📈",
-    layout="wide",
+    page_title="Seasonality · Saudi Tourism Intelligence",
+    page_icon="📅", layout="wide",
     initial_sidebar_state="expanded",
 )
 
-for k, v in [("lang", "EN"), ("theme", "dark")]:
+for k, v in [("lang","EN"),("theme","dark")]:
     if k not in st.session_state:
         st.session_state[k] = v
 
@@ -35,36 +34,20 @@ C = {
     "white":"#F4F9F8","grey":"#A1A6B7","foot_txt":"#B5B8B7",
     "border":"#2A3235","orange":"#F4D044","gold":"#C9A84C",
     "blue":"#3A86FF","green":"#22C55E","red":"#EF4444","purple":"#BB86FC",
-} if THEME == "dark" else {
+} if THEME=="dark" else {
     "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
     "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
     "white":"#F4F9F8","grey":"#9DBFBA","foot_txt":"#9DBFBA",
-    "border":"#2A3235","orange":"#E8A020","gold":"#C9A84C",
+    "border":"#CBD5E0","orange":"#E8A020","gold":"#C9A84C",
     "blue":"#1565C0","green":"#16A34A","red":"#DC2626","purple":"#6A1B9A",
 }
-
 def clr(k): return C.get(k, C["teal"])
-ff       = "Tajawal" if LANG == "AR" else "IBM Plex Sans"
-dir_val  = "rtl"     if LANG == "AR" else "ltr"
-txt_dark = "#F4F9F8" if THEME == "dark" else "#0D1A1E"
-
-# theme-aware header/footer colors
-header_txt  = "#F4F9F8"
-subhead_txt = "#A1A6B7" if THEME == "dark" else "#B5C9C5"
-footer_txt  = "#B5B8B7" if THEME == "dark" else "#9DBFBA"
-
-bg_card        = C["card_bg"]
-accent_teal    = C["teal"]
-accent_gold    = C["gold"]
-accent_blue    = C["blue"]
-accent_green   = C["green"]
-accent_red     = C["red"]
-accent_purple  = C["purple"]
-
-def rgba(hex_color, alpha=0.15):
-    h = hex_color.lstrip('#')
-    r, g, b = int(h[0:2],16), int(h[2:4],16), int(h[4:6],16)
-    return f"rgba({r},{g},{b},{alpha})"
+ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
+dir_val = "rtl"     if LANG=="AR" else "ltr"
+txt_dark     = "#F4F9F8" if THEME=="dark" else "#0D1A1E"
+header_txt   = "#F4F9F8"
+subhead_txt  = "#A1A6B7" if THEME=="dark" else "#B5C9C5"
+footer_txt   = "#B5B8B7" if THEME=="dark" else "#9DBFBA"
 
 # ── Logo ─────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
@@ -75,89 +58,92 @@ def _b64(p):
     except: return ""
 
 logo_b64 = _b64("assets/logo.jpg")
-logo_src = "data:image/jpeg;base64," + logo_b64 if logo_b64 else ""
+logo_src = "data:image/jpeg;base64,"+logo_b64 if logo_b64 else ""
 logo_img = (f'<img src="{logo_src}" style="height:42px;border-radius:8px;"/>'
             if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
 
 # ── Translations ─────────────────────────────────────────────────
 TR = {
-"EN": {
-    "page_title":"📈 Tourist Trends 2015–2024",
-    "subtitle":"Annual & Monthly Tourist Analysis · Inbound vs Domestic",
-    "total_2024":"Total Tourists 2024","inbound_2024":"Inbound 2024",
-    "domestic_2024":"Domestic 2024","yoy_growth":"YoY Growth 2024",
-    "covid_drop":"COVID Drop 2020","recovery":"Recovery ×",
-    "annual_trend":"Annual Tourist Trend 2015–2024",
-    "by_purpose":"Tourists by Purpose (Annual)",
-    "inbound_vs_dom":"Inbound vs Domestic Split",
-    "monthly_trend":"Monthly Tourist Distribution",
-    "purpose_heatmap":"Purpose Heatmap by Year",
-    "covid_analysis":"COVID-19 Impact Analysis",
-    "total":"Total","inbound":"Inbound","domestic":"Domestic",
-    "religious":"Religious","leisure":"Leisure","business":"Business",
-    "vfr":"VFR","other":"Other","year":"Year","tourists_m":"Tourists (Millions)",
-    "filter_type":"Tourist Type","filter_year":"Year Range","all_types":"All",
-    "insight_title":"Key Insights",
-    "i1":"2024 reached all-time high: 115.8M tourists — +72% vs 2021",
-    "i2":"Domestic tourism is 3× larger than Inbound (86M vs 30M)",
-    "i3":"Leisure surpassed Religious as #1 purpose in 2024",
-    "i4":"COVID caused -29.2% drop in 2020, full recovery by 2022",
-    "pre_covid":"Pre-COVID (2019)","during_covid":"COVID (2020)",
-    "post_covid":"Post-COVID (2024)","change":"Change",
+"EN":{
+    "title":"📅 Seasonality Analysis",
+    "sub_pg":"Peak & Low Seasons · Monthly Patterns · Ramadan vs Summer · Quarterly Breakdown",
+    "f_type":"Tourist Type","f_all":"All",
+    "kpi_peak":"Peak Month","kpi_low":"Low Month","kpi_diff":"Peak vs Low",
+    "kpi_inb_peak":"Inbound Peak","kpi_dom_peak":"Domestic Peak",
+    "s1":"MONTHLY AVERAGE","s1h":"Average Monthly Tourists (All Years)",
+    "s2":"HEATMAP","s2h":"Monthly Heatmap by Year (Inbound, Thousands)",
+    "s3":"SEASONAL COMPARE","s3h":"Inbound vs Domestic Monthly Pattern",
+    "s4":"QUARTERLY","s4h":"Quarterly Tourist Distribution",
+    "s5":"RADAR","s5h":"Seasonal Radar Chart — Normalized",
+    "s6":"KEY INSIGHTS","s6h":"Seasonality Intelligence",
+    "inbound":"Inbound","domestic":"Domestic","total":"Total",
+    "tourists_m":"Tourists (Millions)",
+    "q1":"Q1 · Jan–Mar","q2":"Q2 · Apr–Jun",
+    "q3":"Q3 · Jul–Sep","q4":"Q4 · Oct–Dec",
+    "ramadan_note":"Ramadan Effect: Inbound ↑ (Religious tourism), Domestic ↓ (travel slows)",
+    "summer_note":"Summer Effect: Domestic ↑ (school holidays), Inbound ↓ (heat deterrent)",
+    "ins":[
+        ("🏆","January is the overall peak month at 73,127K tourists — 41% above the Low Season","gold"),
+        ("✈️","Inbound peaks in December (winter tourism) — Domestic peaks in July (school holidays)","blue"),
+        ("📊","Q1 (Jan–Mar) and Q3 (Jul–Sep) are nearly equal — both are high seasons","teal"),
+        ("🌙","May is the lowest month — Ramadan + summer heat causes -29% below annual average","red"),
+    ],
 },
-"AR": {
-    "page_title":"📈 اتجاهات السياحة 2015–2024",
-    "subtitle":"تحليل سنوي وشهري · الوافدون مقابل المحليون",
-    "total_2024":"إجمالي السياح 2024","inbound_2024":"الوافدون 2024",
-    "domestic_2024":"المحليون 2024","yoy_growth":"نمو سنوي 2024",
-    "covid_drop":"انخفاض كوفيد 2020","recovery":"معدل التعافي ×",
-    "annual_trend":"الاتجاه السنوي للسياحة 2015–2024",
-    "by_purpose":"السياح حسب الغرض (سنوي)",
-    "inbound_vs_dom":"الوافدون مقابل المحليون",
-    "monthly_trend":"التوزيع الشهري للسياح",
-    "purpose_heatmap":"خريطة الغرض السياحي حسب السنة",
-    "covid_analysis":"تحليل تأثير كوفيد-19",
-    "total":"الإجمالي","inbound":"وافد","domestic":"محلي",
-    "religious":"ديني","leisure":"ترفيه","business":"أعمال",
-    "vfr":"زيارة أهل","other":"أخرى","year":"السنة",
+"AR":{
+    "title":"📅 تحليل الموسمية",
+    "sub_pg":"ذروة ومواسم الانخفاض · الأنماط الشهرية · رمضان مقابل الصيف · التحليل الربعي",
+    "f_type":"نوع السائح","f_all":"الكل",
+    "kpi_peak":"شهر الذروة","kpi_low":"أدنى شهر","kpi_diff":"الذروة مقابل الأدنى",
+    "kpi_inb_peak":"ذروة الوافدين","kpi_dom_peak":"ذروة المحليين",
+    "s1":"المتوسط الشهري","s1h":"متوسط السياح الشهري (كل السنوات)",
+    "s2":"الخريطة الحرارية","s2h":"خريطة حرارية شهرية حسب السنة (وافد، ألف)",
+    "s3":"المقارنة الموسمية","s3h":"النمط الشهري: وافد مقابل محلي",
+    "s4":"التحليل الربعي","s4h":"توزيع السياح ربعياً",
+    "s5":"رادار الموسمية","s5h":"مخطط رادار الموسمية — قيم معيارية",
+    "s6":"الاستنتاجات الرئيسية","s6h":"ذكاء الموسمية",
+    "inbound":"وافد","domestic":"محلي","total":"إجمالي",
     "tourists_m":"السياح (مليون)",
-    "filter_type":"نوع السائح","filter_year":"نطاق السنوات","all_types":"الكل",
-    "insight_title":"أبرز الاستنتاجات",
-    "i1":"2024 سجّل أعلى رقم تاريخي: 115.8M سائح — +72% مقارنة بـ 2021",
-    "i2":"السياحة المحلية أكبر 3 مرات من الوافدة (86M مقابل 30M)",
-    "i3":"الترفيه تجاوز الديني كأول غرض سياحي في 2024",
-    "i4":"كوفيد تسبب في انخفاض -29.2% عام 2020، تعافٍ كامل بحلول 2022",
-    "pre_covid":"ما قبل كوفيد (2019)","during_covid":"كوفيد (2020)",
-    "post_covid":"ما بعد كوفيد (2024)","change":"التغيير",
+    "q1":"ر1 · يناير–مارس","q2":"ر2 · أبريل–يونيو",
+    "q3":"ر3 · يوليو–سبتمبر","q4":"ر4 · أكتوبر–ديسمبر",
+    "ramadan_note":"تأثير رمضان: الوافدون ↑ (السياحة الدينية)، المحليون ↓ (تباطؤ السفر)",
+    "summer_note":"تأثير الصيف: المحليون ↑ (إجازات المدارس)، الوافدون ↓ (الحر الشديد)",
+    "ins":[
+        ("🏆","يناير هو شهر الذروة الكلية بـ 73,127 ألف سائح — أعلى بـ 41% من موسم الانخفاض","gold"),
+        ("✈️","الوافدون يبلغون ذروتهم في ديسمبر (سياحة الشتاء) — المحليون في يوليو (إجازة الصيف)","blue"),
+        ("📊","الربع الأول (يناير–مارس) والثالث (يوليو–سبتمبر) متقاربان — كلاهما موسم مرتفع","teal"),
+        ("🌙","مايو هو الأدنى — رمضان + الحر يسببان -29% دون المتوسط السنوي","red"),
+    ],
 },
 }
 t = TR[LANG]
 
 # ── Data ─────────────────────────────────────────────────────────
-years          = list(range(2015, 2025))
-inbound_annual = [17.99,18.04,16.11,15.33,17.53,4.14,3.48,16.64,27.18,29.73]
-domestic_annual= [46.45,45.04,43.82,43.26,47.81,42.11,63.83,77.84,81.92,86.16]
-total_annual   = [a+b for a,b in zip(inbound_annual, domestic_annual)]
-
-purpose_data = {
-    "Religious": [8.00,7.50,7.00,6.80,9.80,0.80,0.60,5.50,9.50,12.30],
-    "Leisure":   [3.00,3.20,2.80,2.60,3.50,0.90,1.00,4.80,6.20, 7.50],
-    "Business":  [2.40,2.60,2.20,2.10,2.50,0.60,0.50,1.80,2.50, 2.00],
-    "VFR":       [3.10,3.20,2.80,2.60,3.30,1.20,1.00,3.20,5.00, 5.95],
-    "Other":     [1.49,1.54,1.31,1.23,1.43,0.64,0.38,1.34,3.98, 2.00],
-}
-purpose_colors = {
-    "Religious": accent_gold,  "Leisure": accent_teal,
-    "Business":  accent_blue,  "VFR":     accent_purple,
-    "Other":     C["grey"],
-}
-
 MONTHS_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"]
-months    = MONTHS_AR if LANG == "AR" else MONTHS_EN
+MONTHS    = MONTHS_AR if LANG=="AR" else MONTHS_EN
 
-monthly_inbound  = [2.47,2.13,2.80,2.32,1.89,2.12,2.22,2.16,1.93,1.88,2.22,2.59]
-monthly_domestic = [6.96,5.32,5.71,5.33,4.78,7.85,9.61,7.98,5.79,5.37,7.35,8.11]
+TOT_MON = [73127,61529,62585,56938,51868,62935,67220,65582,58646,55202,66627,62376]
+INB_MON = [2470, 2130, 2800, 2320, 1890, 2120, 2220, 2160, 1930, 1880, 2220, 2590]
+DOM_MON = [6960, 5320, 5710, 5330, 4780, 7850, 9610, 7980, 5790, 5370, 7350, 8110]
+
+# ✅ FIX: years as strings so category axis works correctly
+HEAT_YEARS_STR = [str(y) for y in range(2015, 2025)]
+HEAT_DATA = [
+    [1189,1103, 978, 912, 589, 703, 701, 570, 589, 490, 487, 427],
+    [1100,1050, 920, 870, 560, 670, 660, 540, 560, 460, 460, 410],
+    [1000, 950, 850, 800, 500, 600, 600, 480, 500, 410, 410, 360],
+    [ 980, 930, 830, 780, 490, 590, 580, 460, 480, 400, 395, 350],
+    [1100,1050, 960, 900, 560, 670, 660, 540, 560, 460, 460, 410],
+    [ 180, 160, 140, 130,  80, 100, 100,  80,  90,  70,  70,  60],
+    [ 120, 110,  90,  85,  60,  80,  80,  60,  70,  55,  55,  50],
+    [ 900, 850, 780, 720, 440, 530, 520, 420, 450, 360, 355, 315],
+    [1800,1700,1560,1440, 900,1060,1050, 840, 900, 720, 720, 640],
+    [2470,2130,2800,2320,1890,2120,2220,2160,1930,1880,2220,2590],
+]
+
+QUARTERS = [t["q1"],t["q2"],t["q3"],t["q4"]]
+INB_Q    = [7400,  6330,  6310,  7250]
+DOM_Q    = [17990, 17960, 23380, 22830]
 
 # ════════════════════════════════════════════════════════════════════
 # GLOBAL CSS
@@ -170,7 +156,7 @@ st.markdown(
     "[data-testid='stSidebarNav'],footer,#MainMenu{display:none!important;}"
     ".block-container{padding:0!important;max-width:100%!important;}"
     "section[data-testid='stMain']>div:first-child{padding-top:0!important;}"
-    ".ds-card{transition:transform .22s,box-shadow .22s;}"
+    ".ds-card{transition:transform .22s,box-shadow .22s,border-color .22s;}"
     ".ds-card:hover{transform:translateY(-3px);"
     "box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}"
     f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
@@ -178,31 +164,24 @@ st.markdown(
     f"font-family:'{ff}',sans-serif;color:{txt_dark}!important;}}"
     f"[data-testid='stMain'] label,[data-testid='stMain'] p,"
     f"[data-testid='stMain'] span,[data-testid='stWidgetLabel'] p,"
-    f"[data-testid='stSlider'] span,[data-testid='stSlider'] p,"
     f".stRadio label div p{{color:{txt_dark}!important;}}"
-    ".covid-table{width:100%;border-collapse:collapse;font-size:.85rem;}"
-    f".covid-table th{{background:{C['sec_bg']};color:{C['grey']};padding:10px 14px;"
-    f"text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;"
-    f"border-bottom:1px solid {C['border']};}}"
-    f".covid-table td{{padding:10px 14px;color:{txt_dark};"
-    f"border-bottom:1px solid {C['border']};"
-    f"font-family:'IBM Plex Mono',monospace;font-size:.82rem;}}"
-    ".covid-table tr:last-child td{border-bottom:none;}"
     "</style>",
     unsafe_allow_html=True)
 
-# ── Helpers ──────────────────────────────────────────────────────
+# ════════════════════════════════════════════════════════════════════
+# HELPERS
+# ════════════════════════════════════════════════════════════════════
 def sec_head(badge, h2):
     return (
         f'<div style="margin-bottom:18px;">'
-        f'<div style="display:inline-block;background:{C["blue"]}15;'
-        f'border:1px solid {C["blue"]}44;color:{C["blue"]};'
+        f'<div style="display:inline-block;background:{C["teal"]}15;'
+        f'border:1px solid {C["teal"]}44;color:{C["teal"]};'
         f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
         f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
         f'<div style="font-size:1.25rem;font-weight:700;color:{txt_dark};">{h2}</div>'
         f'</div>')
 
-def kpi_card(ico, lbl, val, delta, ck, dc):
+def kpi_card(ico, lbl, val, sub, ck):
     return (
         f'<div class="ds-card" style="background:{C["card_bg"]};border:1px solid {C["border"]};'
         f'border-top:3px solid {clr(ck)};border-radius:10px;padding:20px 16px;text-align:center;">'
@@ -211,7 +190,7 @@ def kpi_card(ico, lbl, val, delta, ck, dc):
         f'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;line-height:1.1;">{val}</div>'
         f'<div style="font-size:.62rem;color:{C["grey"]};text-transform:uppercase;'
         f'letter-spacing:.8px;font-weight:600;margin:6px 0 4px;">{lbl}</div>'
-        f'<div style="font-size:.75rem;font-weight:700;color:{clr(dc)};">{delta}</div>'
+        f'<div style="font-size:.72rem;color:{txt_dark};font-family:IBM Plex Mono,monospace;">{sub}</div>'
         f'</div>')
 
 def apply_layout(fig, height=340):
@@ -221,15 +200,15 @@ def apply_layout(fig, height=340):
         height=height, margin=dict(l=10,r=10,t=36,b=10),
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11),
                     orientation="h", y=-0.14),
-        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235",
+        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
                    tickfont=dict(size=10), showgrid=False),
-        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor="#2A3235",
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
                    tickfont=dict(size=10)),
     )
     return fig
 
 def chart(fig):
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
 
 # ════════════════════════════════════════════════════════════════════
 # PAGE HEADER
@@ -237,13 +216,13 @@ def chart(fig):
 st.markdown(
     f'<div style="background:{C["navbar"]};border-bottom:1px solid {C["border"]};'
     f'padding:24px 40px 20px;">'
-    f'<div style="display:inline-block;background:{C["blue"]}22;border:1px solid {C["blue"]}55;'
-    f'color:{C["blue"]};font-size:.57rem;font-weight:700;letter-spacing:2.5px;'
+    f'<div style="display:inline-block;background:{C["gold"]}22;border:1px solid {C["gold"]}55;'
+    f'color:{C["gold"]};font-size:.57rem;font-weight:700;letter-spacing:2.5px;'
     f'text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:10px;">'
-    f'TOURIST TRENDS · 2015–2024</div>'
+    f'SEASONALITY · MONTHLY PATTERNS</div>'
     f'<div style="font-size:1.85rem;font-weight:800;color:{header_txt};'
-    f'letter-spacing:-.5px;margin-bottom:5px;">{t["page_title"]}</div>'
-    f'<div style="font-size:.82rem;color:{subhead_txt};">{t["subtitle"]}</div>'
+    f'letter-spacing:-.5px;margin-bottom:5px;">{t["title"]}</div>'
+    f'<div style="font-size:.82rem;color:{subhead_txt};">{t["sub_pg"]}</div>'
     f'</div>',
     unsafe_allow_html=True)
 
@@ -251,289 +230,309 @@ st.markdown(
 # KPI STRIP
 # ════════════════════════════════════════════════════════════════════
 st.markdown(
-    f'<div style="padding:20px 40px 0;">'
+    f'<div style="padding:24px 40px 0;">'
     f'<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">'
-    + kpi_card("🌍", t["total_2024"],    "115.8M", "+8.1%",   "teal",   "green")
-    + kpi_card("✈️", t["inbound_2024"],  "29.7M",  "+8.4%",   "blue",   "green")
-    + kpi_card("🏠", t["domestic_2024"], "86.2M",  "+5.2%",   "gold",   "green")
-    + kpi_card("😷", t["covid_drop"],    "-29.2%", "2020",    "red",    "red")
-    + kpi_card("🚀", t["recovery"],      "1.72×",  "2021→24", "purple", "green")
-    + '</div></div>',
+    +kpi_card("🏆",t["kpi_peak"],"January","73,127K","gold")
+    +kpi_card("📉",t["kpi_low"],"May","51,868K","red")
+    +kpi_card("📊",t["kpi_diff"],"+41.0%","Peak vs Low","teal")
+    +kpi_card("✈️",t["kpi_inb_peak"],"December","17,890K","blue")
+    +kpi_card("🏠",t["kpi_dom_peak"],"July","58,076K","purple")
+    +'</div></div>',
     unsafe_allow_html=True)
 
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:20px 40px 0;"></div>',
             unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# FILTERS
+# FILTER
 # ════════════════════════════════════════════════════════════════════
 st.markdown('<div style="padding:16px 40px 0;">', unsafe_allow_html=True)
-fc, yc = st.columns([1, 2])
-with fc:
-    tourist_type = st.radio(
-        t["filter_type"],
-        [t["all_types"], t["inbound"], t["domestic"]],
-        horizontal=True, key="tt_tf")
-with yc:
-    year_range = st.slider(
-        t["filter_year"], min_value=2015, max_value=2024,
-        value=(2015, 2024), key="tt_yr")
+tourist_filter = st.radio(
+    t["f_type"],
+    [t["f_all"], t["inbound"], t["domestic"]],
+    horizontal=True, key="tf")
 st.markdown('</div>', unsafe_allow_html=True)
 
-y_start, y_end = year_range
-idx_s      = years.index(y_start)
-idx_e      = years.index(y_end) + 1
-f_years    = years[idx_s:idx_e]
-f_inbound  = inbound_annual[idx_s:idx_e]
-f_domestic = domestic_annual[idx_s:idx_e]
-f_total    = total_annual[idx_s:idx_e]
+if tourist_filter == t["inbound"]:
+    y_data    = [v/1000 for v in INB_MON]
+    bar_color = C["blue"]
+elif tourist_filter == t["domestic"]:
+    y_data    = [v/1000 for v in DOM_MON]
+    bar_color = C["teal"]
+else:
+    y_data    = [v/1000 for v in TOT_MON]
+    bar_color = C["gold"]
 
 # ════════════════════════════════════════════════════════════════════
-# CHART 1 — Annual Trend
+# CHART 1 — Monthly Average Bar
 # ════════════════════════════════════════════════════════════════════
-st.markdown(f'<div style="padding:24px 40px 0;">{sec_head("ANNUAL", t["annual_trend"])}</div>',
+st.markdown(f'<div style="padding:20px 40px 0;">{sec_head(t["s1"],t["s1h"])}</div>',
             unsafe_allow_html=True)
+
+avg_val    = sum(y_data)/len(y_data)
+bar_colors = [C["red"] if v==min(y_data)
+              else C["green"] if v==max(y_data)
+              else bar_color for v in y_data]
+
+fig1 = go.Figure()
+fig1.add_trace(go.Bar(
+    x=MONTHS, y=y_data,
+    marker_color=bar_colors,
+    text=[f"{v:.1f}M" for v in y_data],
+    textposition='outside',
+    textfont=dict(size=9, color=txt_dark),
+    hovertemplate="<b>%{x}</b>: %{y:.1f}M<extra></extra>"))
+fig1.add_hline(y=avg_val, line_dash="dash", line_color=C["grey"], line_width=1.5,
+               annotation_text=f"Avg: {avg_val:.1f}M",
+               annotation_font=dict(color=C["grey"], size=10))
+fig1.add_vrect(x0=-0.5, x1=2.5,
+    fillcolor="rgba(201,168,76,0.08)", line_width=0,
+    annotation_text="🌙 Ramadan", annotation_position="top left",
+    annotation=dict(font_color=C["gold"], font_size=10))
+fig1.add_vrect(x0=5.5, x1=8.5,
+    fillcolor="rgba(58,134,255,0.08)", line_width=0,
+    annotation_text="☀️ Summer", annotation_position="top left",
+    annotation=dict(font_color=C["blue"], font_size=10))
+
+apply_layout(fig1, height=360)
+fig1.update_layout(showlegend=False)
+fig1.update_yaxes(title_text=t["tourists_m"])
 
 st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
-fig_annual = go.Figure()
-
-if tourist_type in [t["all_types"], t["inbound"]]:
-    fig_annual.add_trace(go.Bar(
-        x=f_years, y=f_inbound, name=t["inbound"],
-        marker_color=accent_blue, opacity=0.85,
-        hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
-if tourist_type in [t["all_types"], t["domestic"]]:
-    fig_annual.add_trace(go.Bar(
-        x=f_years, y=f_domestic, name=t["domestic"],
-        marker_color=accent_teal, opacity=0.85,
-        hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
-if tourist_type == t["all_types"]:
-    fig_annual.add_trace(go.Scatter(
-        x=f_years, y=f_total, name=t["total"],
-        line=dict(color=accent_gold, width=2.5, dash='dot'),
-        marker=dict(size=7, color=accent_gold),
-        yaxis='y2',
-        hovertemplate="<b>%{x}</b> Total: %{y:.2f}M<extra></extra>"))
-
-fig_annual.add_vrect(x0=2019.5, x1=2021.5,
-    fillcolor=rgba(accent_red, 0.07), line_width=0,
-    annotation_text="COVID-19",
-    annotation=dict(font_color=accent_red, font_size=11))
-
-apply_layout(fig_annual, height=380)
-fig_annual.update_layout(
-    barmode='group', bargap=0.25,
-    yaxis=dict(title=t["tourists_m"], showgrid=True,
-               gridcolor="rgba(42,50,53,0.4)", tickfont=dict(size=10)),
-    yaxis2=dict(overlaying='y', side='right', showgrid=False,
-                title=f"{t['total']} (M)", tickfont=dict(size=10)),
-)
-chart(fig_annual)
+chart(fig1)
 st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
             unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# CHARTS 2+3 — Purpose | Split
+# CHARTS 2+3 — Heatmap | Seasonal Compare
 # ════════════════════════════════════════════════════════════════════
-st.markdown(f'<div style="padding:24px 40px 0;">', unsafe_allow_html=True)
-col_l, col_r = st.columns([3, 2], gap="large")
+st.markdown(f'<div style="padding:28px 40px 0;">', unsafe_allow_html=True)
+c2, c3 = st.columns([3,2], gap="large")
 
-with col_l:
-    st.markdown(sec_head("PURPOSE", t["by_purpose"]), unsafe_allow_html=True)
-    fig_purpose = go.Figure()
-    for purpose, values in purpose_data.items():
-        fig_purpose.add_trace(go.Bar(
-            x=f_years, y=values[idx_s:idx_e],
-            name=t[purpose.lower()],
-            marker_color=purpose_colors[purpose], opacity=0.88,
-            hovertemplate=f"<b>{purpose}</b> %{{x}}: %{{y:.2f}}M<extra></extra>"))
-    apply_layout(fig_purpose, height=320)
-    fig_purpose.update_layout(barmode='stack', bargap=0.2)
-    chart(fig_purpose)
+with c2:
+    st.markdown(sec_head(t["s2"], t["s2h"]), unsafe_allow_html=True)
 
-with col_r:
-    st.markdown(sec_head("SPLIT", t["inbound_vs_dom"]), unsafe_allow_html=True)
-    total_f = [a+b for a,b in zip(f_inbound, f_domestic)]
-    inb_pct = [round(a/c*100, 1) for a,c in zip(f_inbound, total_f)]
-    dom_pct = [round(b/c*100, 1) for b,c in zip(f_domestic, total_f)]
-
-    fig_split = go.Figure()
-    fig_split.add_trace(go.Bar(
-        x=f_years, y=inb_pct, name=t["inbound"],
-        marker_color=accent_blue, opacity=0.88,
-        hovertemplate="<b>%{x}</b> Inbound: %{y:.1f}%<extra></extra>"))
-    fig_split.add_trace(go.Bar(
-        x=f_years, y=dom_pct, name=t["domestic"],
-        marker_color=accent_teal, opacity=0.88,
-        hovertemplate="<b>%{x}</b> Domestic: %{y:.1f}%<extra></extra>"))
-    apply_layout(fig_split, height=320)
-    fig_split.update_layout(barmode='stack', bargap=0.2)
-    fig_split.update_yaxes(ticksuffix="%")
-    chart(fig_split)
-
-st.markdown('</div>', unsafe_allow_html=True)
-st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
-            unsafe_allow_html=True)
-
-# ════════════════════════════════════════════════════════════════════
-# CHART 4 — Monthly Distribution
-# ════════════════════════════════════════════════════════════════════
-st.markdown(f'<div style="padding:24px 40px 0;">{sec_head("MONTHLY", t["monthly_trend"])}</div>',
-            unsafe_allow_html=True)
-
-st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
-fig_monthly = go.Figure()
-fig_monthly.add_trace(go.Scatter(
-    x=months, y=monthly_inbound, name=t["inbound"],
-    line=dict(color=accent_blue, width=2.5),
-    fill='tozeroy', fillcolor=rgba(accent_blue, 0.12),
-    marker=dict(size=8, color=accent_blue, line=dict(color=bg_card, width=2)),
-    hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
-fig_monthly.add_trace(go.Scatter(
-    x=months, y=monthly_domestic, name=t["domestic"],
-    line=dict(color=accent_teal, width=2.5),
-    fill='tozeroy', fillcolor=rgba(accent_teal, 0.12),
-    marker=dict(size=8, color=accent_teal, line=dict(color=bg_card, width=2)),
-    hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
-
-mar = "Mar" if LANG == "EN" else "مارس"
-jul = "Jul" if LANG == "EN" else "يوليو"
-fig_monthly.add_annotation(x=mar, y=2.80,
-    text="Inbound Peak\nRamadan/Umrah" if LANG=="EN" else "ذروة الوافدين\nرمضان/عمرة",
-    showarrow=True, arrowhead=2,
-    font=dict(size=10, color=accent_blue), arrowcolor=accent_blue, ay=-40)
-fig_monthly.add_annotation(x=jul, y=9.61,
-    text="Domestic Peak\nSummer" if LANG=="EN" else "ذروة المحليين\nالصيف",
-    showarrow=True, arrowhead=2,
-    font=dict(size=10, color=accent_teal), arrowcolor=accent_teal, ay=-40)
-
-apply_layout(fig_monthly, height=320)
-fig_monthly.update_yaxes(title_text=t["tourists_m"])
-chart(fig_monthly)
-st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
-            unsafe_allow_html=True)
-
-# ════════════════════════════════════════════════════════════════════
-# CHART 5 — Purpose Heatmap (IMPROVED — like reference image)
-# ════════════════════════════════════════════════════════════════════
-st.markdown(f'<div style="padding:24px 40px 0;">', unsafe_allow_html=True)
-heatmap_col, covid_col = st.columns([3, 2], gap="large")
-
-with heatmap_col:
-    st.markdown(sec_head("HEATMAP", t["purpose_heatmap"]), unsafe_allow_html=True)
-
-    purposes_list  = ["Religious","Leisure","Business","VFR","Other"]
-    purposes_label = [t[p.lower()] for p in purposes_list]
-
-    # Build matrix: rows = purposes, cols = years (filtered)
-    heat_data   = [purpose_data[p][idx_s:idx_e] for p in purposes_list]
-    heat_years  = [str(y) for y in f_years]
-
-    # ── colorscale: dark navy → blue → teal → gold ──────────────
     if THEME == "dark":
         heatmap_cs = [
-            [0.00, "#0D2340"],
-            [0.25, "#1565C0"],
-            [0.55, "#17B19B"],
-            [0.80, "#C9A84C"],
+            [0.00, "#0A1628"],
+            [0.06, "#0D2744"],
+            [0.18, "#0D3B6E"],
+            [0.35, "#1565C0"],
+            [0.55, "#1976D2"],
+            [0.72, "#17B19B"],
+            [0.88, "#C9A84C"],
             [1.00, "#F4D044"],
         ]
-        cell_txt = "#FFFFFF"
-        cb_bg    = "#1E2528"
-        cb_bd    = "#2A3235"
+        cb_bgcolor   = "#1E2528"
+        cb_border    = "#2A3235"
+        cell_txt_clr = "#FFFFFF"
     else:
         heatmap_cs = [
-            [0.00, "#DBEAFE"],
-            [0.30, "#60A5FA"],
-            [0.60, "#17B19B"],
-            [0.85, "#C9A84C"],
-            [1.00, "#D97706"],
+            [0.00, "#EFF8F6"],
+            [0.10, "#B2DFDB"],
+            [0.28, "#4DB6AC"],
+            [0.48, "#1976D2"],
+            [0.68, "#17B19B"],
+            [0.84, "#C9A84C"],
+            [1.00, "#E65100"],
         ]
-        cell_txt = "#0D1A1E"
-        cb_bg    = "#FFFFFF"
-        cb_bd    = "#CBD5E0"
+        cb_bgcolor   = "#FFFFFF"
+        cb_border    = "#CBD5E0"
+        cell_txt_clr = "#0D1A1E"
 
-    # Label each cell with formatted value
-    text_matrix = [[f"{v:.1f}M" for v in row] for row in heat_data]
+    # ✅ FIX: show values only for cells with enough data to read
+    text_matrix = [
+        [str(v) if v >= 80 else "" for v in row]
+        for row in HEAT_DATA
+    ]
 
-    fig_heat = go.Figure(go.Heatmap(
-        z=heat_data,
-        x=heat_years,
-        y=purposes_label,
+    fig2 = go.Figure(go.Heatmap(
+        z=HEAT_DATA,
+        x=MONTHS,
+        # ✅ FIX: use string year list directly — no autorange issues
+        y=HEAT_YEARS_STR,
+        zmin=0, zmax=2600,
         colorscale=heatmap_cs,
         showscale=True,
         text=text_matrix,
         texttemplate="%{text}",
-        textfont=dict(size=11, color=cell_txt, family=ff),
-        xgap=4, ygap=4,
-        hovertemplate="<b>%{y}</b> — %{x}<br>%{z:.2f}M tourists<extra></extra>",
+        textfont=dict(size=8, color=cell_txt_clr, family=ff),
+        xgap=3, ygap=3,
+        hovertemplate="<b>%{y} · %{x}</b><br>%{z:,}K tourists<extra></extra>",
         colorbar=dict(
-            thickness=14,
-            len=0.95,
-            bgcolor=cb_bg,
-            bordercolor=cb_bd,
+            thickness=16,
+            len=0.90,
+            bgcolor=cb_bgcolor,
+            bordercolor=cb_border,
             borderwidth=1,
             outlinewidth=0,
             tickfont=dict(size=9, color=C["grey"], family=ff),
             title=dict(
-                text="M",
+                text="K tourists",
                 font=dict(color=C["grey"], size=10, family=ff),
                 side="top"),
+            tickvals=[100, 500, 1000, 1500, 2000, 2500],
+            ticktext=["100","500","1K","1.5K","2K","2.5K"],
         )
     ))
 
-    fig_heat.update_layout(
+    # ✅ FIX: COVID band uses integer index range, not year strings
+    # y0/y1 are category indices: 2020=idx5, 2021=idx6 → indices 4.5 to 6.5
+    fig2.add_shape(
+        type="rect",
+        xref="paper", yref="y",
+        x0=0, x1=1,
+        y0=4.5, y1=6.5,
+        fillcolor="rgba(239,68,68,0.10)",
+        line_color=C["red"], line_width=1,
+        layer="below"
+    )
+    fig2.add_annotation(
+        x=MONTHS[5],
+        y="2020",
+        text="⚠️ COVID-19",
+        showarrow=False,
+        font=dict(size=10, color=C["red"], family=ff),
+        bgcolor="rgba(239,68,68,0.22)",
+        bordercolor=C["red"], borderwidth=1, borderpad=4,
+    )
+    # ✅ 2024 Peak label
+    fig2.add_annotation(
+        x=MONTHS[2],
+        y="2024",
+        text="📈 Peak Year",
+        showarrow=False,
+        font=dict(size=9, color=C["gold"], family=ff),
+        bgcolor="rgba(201,168,76,0.22)",
+        bordercolor=C["gold"], borderwidth=1, borderpad=3,
+    )
+
+    fig2.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color=C["grey"], family=ff),
-        height=300,
+        height=420,
         margin=dict(l=10, r=10, t=10, b=10),
-        xaxis=dict(
+        # ✅ FIX: category axis, NOT reversed — data order matches display
+        yaxis=dict(
+            type="category",
+            categoryorder="array",
+            categoryarray=HEAT_YEARS_STR,   # 2015 top → 2024 bottom
+            autorange="reversed",            # flip so 2015 is at top
             tickfont=dict(size=11, color=txt_dark),
+            showgrid=False,
+            linecolor=C["border"],
+        ),
+        xaxis=dict(
+            tickfont=dict(size=10, color=txt_dark),
             side="bottom",
             showgrid=False,
             linecolor=C["border"],
         ),
-        yaxis=dict(
-            tickfont=dict(size=11, color=txt_dark),
-            showgrid=False,
-            linecolor=C["border"],
-            autorange="reversed",   # Religious at top, Other at bottom
-        ),
         legend=dict(bgcolor="rgba(0,0,0,0)"),
     )
-    chart(fig_heat)
+    chart(fig2)
 
-with covid_col:
-    st.markdown(sec_head("COVID", t["covid_analysis"]), unsafe_allow_html=True)
-    covid_rows = [
-        (t["inbound"],  "17.53M", "4.14M",  "29.73M", "-76.4%", "+618.6%"),
-        (t["domestic"], "47.81M", "42.11M", "86.16M", "-11.9%", "+104.6%"),
-        (t["total"],    "65.33M", "46.25M","115.89M", "-29.2%", "+150.6%"),
-    ]
-    table_html = (
-        f"<table class='covid-table'><thead><tr>"
-        f"<th>{t['filter_type']}</th>"
-        f"<th>{t['pre_covid']}</th>"
-        f"<th>{t['during_covid']}</th>"
-        f"<th>{t['post_covid']}</th>"
-        f"<th>2019→2020</th><th>2020→2024</th>"
-        f"</tr></thead><tbody>")
-    for row in covid_rows:
-        table_html += (
-            f"<tr>"
-            f"<td style='font-weight:700;color:{txt_dark};'>{row[0]}</td>"
-            f"<td>{row[1]}</td><td>{row[2]}</td>"
-            f"<td style='color:{accent_teal};font-weight:700;'>{row[3]}</td>"
-            f"<td style='color:{accent_red};font-weight:700;'>{row[4]}</td>"
-            f"<td style='color:{accent_green};font-weight:700;'>{row[5]}</td>"
-            f"</tr>")
-    table_html += "</tbody></table>"
-    st.markdown(table_html, unsafe_allow_html=True)
+with c3:
+    st.markdown(sec_head(t["s3"], t["s3h"]), unsafe_allow_html=True)
+    fig3 = go.Figure()
+    fig3.add_trace(go.Scatter(
+        x=MONTHS, y=[v/1000 for v in INB_MON],
+        name=t["inbound"],
+        line=dict(color=C["blue"], width=2.5),
+        fill='tozeroy', fillcolor="rgba(58,134,255,0.12)",
+        marker=dict(size=7),
+        hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
+    fig3.add_trace(go.Scatter(
+        x=MONTHS, y=[v/1000 for v in DOM_MON],
+        name=t["domestic"],
+        line=dict(color=C["teal"], width=2.5),
+        fill='tozeroy', fillcolor="rgba(23,177,155,0.12)",
+        marker=dict(size=7),
+        hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
+    dec = "Dec" if LANG=="EN" else "ديسمبر"
+    jul = "Jul" if LANG=="EN" else "يوليو"
+    fig3.add_annotation(x=dec, y=max([v/1000 for v in INB_MON]),
+        text="Dec Peak" if LANG=="EN" else "ذروة ديسمبر",
+        showarrow=True, arrowhead=2,
+        font=dict(size=9, color=C["blue"]),
+        arrowcolor=C["blue"], ay=-30)
+    fig3.add_annotation(x=jul, y=max([v/1000 for v in DOM_MON]),
+        text="Jul Peak" if LANG=="EN" else "ذروة يوليو",
+        showarrow=True, arrowhead=2,
+        font=dict(size=9, color=C["teal"]),
+        arrowcolor=C["teal"], ay=-30)
+    apply_layout(fig3, height=260)
+    fig3.update_layout(xaxis=dict(tickfont=dict(size=9), tickangle=45))
+    fig3.update_yaxes(title_text=t["tourists_m"])
+    chart(fig3)
+
+    st.markdown(
+        f'<div style="background:{C["sec_bg"]};border:1px solid {C["border"]};'
+        f'border-radius:8px;padding:12px 14px;font-size:.8rem;'
+        f'color:{txt_dark};line-height:1.7;">'
+        f'🌙 {t["ramadan_note"]}<br><br>☀️ {t["summer_note"]}'
+        f'</div>',
+        unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
+            unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════
+# CHARTS 4+5 — Quarterly | Radar
+# ════════════════════════════════════════════════════════════════════
+st.markdown(f'<div style="padding:28px 40px 0;">', unsafe_allow_html=True)
+c4, c5 = st.columns(2, gap="large")
+
+with c4:
+    st.markdown(sec_head(t["s4"], t["s4h"]), unsafe_allow_html=True)
+    fig4 = go.Figure()
+    fig4.add_trace(go.Bar(
+        x=QUARTERS, y=[v/1000 for v in INB_Q],
+        name=t["inbound"], marker_color=C["blue"], opacity=0.88,
+        hovertemplate="<b>%{x}</b>: %{y:.1f}M<extra></extra>"))
+    fig4.add_trace(go.Bar(
+        x=QUARTERS, y=[v/1000 for v in DOM_Q],
+        name=t["domestic"], marker_color=C["teal"], opacity=0.88,
+        hovertemplate="<b>%{x}</b>: %{y:.1f}M<extra></extra>"))
+    apply_layout(fig4, height=300)
+    fig4.update_layout(barmode='group', bargap=0.25)
+    fig4.update_yaxes(title_text=t["tourists_m"])
+    chart(fig4)
+
+with c5:
+    st.markdown(sec_head(t["s5"], t["s5h"]), unsafe_allow_html=True)
+    inb_norm = [v/max(INB_MON) for v in INB_MON]
+    dom_norm = [v/max(DOM_MON) for v in DOM_MON]
+    fig5 = go.Figure()
+    fig5.add_trace(go.Scatterpolar(
+        r=inb_norm+[inb_norm[0]],
+        theta=MONTHS+[MONTHS[0]],
+        fill='toself', name=t["inbound"],
+        line_color=C["blue"],
+        fillcolor="rgba(58,134,255,0.15)"))
+    fig5.add_trace(go.Scatterpolar(
+        r=dom_norm+[dom_norm[0]],
+        theta=MONTHS+[MONTHS[0]],
+        fill='toself', name=t["domestic"],
+        line_color=C["teal"],
+        fillcolor="rgba(23,177,155,0.15)"))
+    fig5.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=C["grey"], family=ff),
+        height=300, margin=dict(l=30,r=30,t=20,b=10),
+        polar=dict(
+            bgcolor="rgba(0,0,0,0)",
+            radialaxis=dict(showticklabels=False,
+                           gridcolor="rgba(42,50,53,0.5)"),
+            angularaxis=dict(tickfont=dict(size=10, color=txt_dark),
+                             gridcolor="rgba(42,50,53,0.5)")),
+        legend=dict(orientation="h", y=-0.1, font=dict(size=10),
+                    bgcolor="rgba(0,0,0,0)"))
+    chart(fig5)
 
 st.markdown('</div>', unsafe_allow_html=True)
 st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
@@ -542,21 +541,15 @@ st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;
 # ════════════════════════════════════════════════════════════════════
 # KEY INSIGHTS
 # ════════════════════════════════════════════════════════════════════
-insights = [
-    ("🏆", t["i1"], "teal"),
-    ("🏠", t["i2"], "gold"),
-    ("🏖️", t["i3"], "blue"),
-    ("😷", t["i4"], "red"),
-]
-ins_html = f'<div style="padding:24px 40px 40px;">{sec_head("INSIGHTS", t["insight_title"])}'
+ins_html = f'<div style="padding:28px 40px 40px;">{sec_head(t["s6"],t["s6h"])}'
 ins_html += f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">'
-for ico, txt_val, ck in insights:
+for ico, txt, ck in t["ins"]:
     ins_html += (
         f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};'
-        f'border-left:3px solid {clr(ck)};border-radius:12px;'
-        f'padding:14px 16px;display:flex;align-items:flex-start;gap:10px;">'
+        f'border-left:3px solid {clr(ck)};border-radius:10px;'
+        f'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
         f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
-        f'<div style="font-size:.83rem;color:{txt_dark};line-height:1.65;">{txt_val}</div>'
+        f'<div style="font-size:.83rem;color:{txt_dark};line-height:1.65;">{txt}</div>'
         f'</div>')
 ins_html += '</div></div>'
 st.markdown(ins_html, unsafe_allow_html=True)
@@ -571,7 +564,7 @@ st.markdown(
     f'<div style="display:flex;align-items:center;gap:14px;">{logo_img}'
     f'<div>'
     f'<div style="font-size:.88rem;font-weight:700;color:{C["teal"]};">Saudi Tourism Intelligence</div>'
-    f'<div style="font-size:.66rem;color:{footer_txt};margin-top:2px;">📈 Tourist Trends · Eng. Goda Emad</div>'
+    f'<div style="font-size:.66rem;color:{footer_txt};margin-top:2px;">📅 Seasonality · Eng. Goda Emad</div>'
     f'</div></div>'
     f'<div style="display:flex;gap:20px;">'
     f'<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
