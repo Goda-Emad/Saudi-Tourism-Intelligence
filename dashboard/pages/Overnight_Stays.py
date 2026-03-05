@@ -45,6 +45,12 @@ def clr(k): return C.get(k, C["teal"])
 ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
 dir_val = "rtl"     if LANG=="AR" else "ltr"
 
+# ✅ FIX: theme-aware text colors
+txt_dark     = "#F4F9F8" if THEME == "dark" else "#0D1A1E"
+header_txt   = "#F4F9F8"          # always light — sits on dark navbar
+subhead_txt  = "#A1A6B7" if THEME == "dark" else "#B5C9C5"
+footer_txt   = "#B5B8B7" if THEME == "dark" else "#9DBFBA"
+
 # ── Logo ─────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
 def _b64(p):
@@ -143,7 +149,12 @@ st.markdown(
     "box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}"
     f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
     f"{{background:{C['bg']}!important;direction:{dir_val};"
-    f"font-family:'{ff}',sans-serif;color:{C['white']}!important;}}"
+    # ✅ FIX: was hard-coded C["white"] — now uses txt_dark (theme-aware)
+    f"font-family:'{ff}',sans-serif;color:{txt_dark}!important;}}"
+    f"[data-testid='stMain'] label,[data-testid='stMain'] p,"
+    f"[data-testid='stMain'] span,[data-testid='stWidgetLabel'] p,"
+    f"[data-testid='stSlider'] span,[data-testid='stSlider'] p,"
+    f".stRadio label div p{{color:{txt_dark}!important;}}"
     "</style>",
     unsafe_allow_html=True)
 
@@ -157,7 +168,8 @@ def sec_head(badge, h2):
         f'border:1px solid {C["teal"]}44;color:{C["teal"]};'
         f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
         f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
-        f'<div style="font-size:1.25rem;font-weight:700;color:{C["white"]};">{h2}</div>'
+        # ✅ FIX: was hard-coded C["white"] — now uses txt_dark
+        f'<div style="font-size:1.25rem;font-weight:700;color:{txt_dark};">{h2}</div>'
         f'</div>')
 
 def kpi_card(ico, lbl, val, sub, ck):
@@ -169,7 +181,8 @@ def kpi_card(ico, lbl, val, sub, ck):
         f'font-family:IBM Plex Mono,monospace;letter-spacing:-1px;line-height:1.1;">{val}</div>'
         f'<div style="font-size:.62rem;color:{C["grey"]};text-transform:uppercase;'
         f'letter-spacing:.8px;font-weight:600;margin:6px 0 4px;">{lbl}</div>'
-        f'<div style="font-size:.72rem;color:{C["grey"]};font-family:IBM Plex Mono,monospace;">{sub}</div>'
+        # ✅ FIX: was hard-coded C["grey"] (invisible in light) — now uses txt_dark
+        f'<div style="font-size:.72rem;color:{txt_dark};font-family:IBM Plex Mono,monospace;">{sub}</div>'
         f'</div>')
 
 def apply_layout(fig, height=340):
@@ -199,9 +212,10 @@ st.markdown(
     f'color:{C["blue"]};font-size:.57rem;font-weight:700;letter-spacing:2.5px;'
     f'text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:10px;">'
     f'OVERNIGHT STAYS · LENGTH OF STAY</div>'
-    f'<div style="font-size:1.85rem;font-weight:800;color:#F4F9F8;'
+    # ✅ FIX: was hard-coded #F4F9F8 — now uses header_txt (always light on dark navbar)
+    f'<div style="font-size:1.85rem;font-weight:800;color:{header_txt};'
     f'letter-spacing:-.5px;margin-bottom:5px;">{t["title"]}</div>'
-    f'<div style="font-size:.82rem;color:#A1A6B7;">{t["sub_pg"]}</div>'
+    f'<div style="font-size:.82rem;color:{subhead_txt};">{t["sub_pg"]}</div>'
     f'</div>',
     unsafe_allow_html=True)
 
@@ -350,7 +364,6 @@ with c3:
             fill='tozeroy', fillcolor="rgba(23,177,155,0.1)",
             marker=dict(size=7, color=C["teal"]),
             hovertemplate="<b>%{x}</b>: %{y:,}K<extra></extra>"))
-    # Peak annotations
     fig3.add_annotation(x="Mar" if LANG=="EN" else "مارس", y=22745,
         text="Inbound Peak" if LANG=="EN" else "ذروة الوافدين",
         showarrow=True, arrowhead=2,
@@ -398,46 +411,50 @@ with c4:
 with c5:
     st.markdown(sec_head(t["s5"], t["s5h"]), unsafe_allow_html=True)
 
-    # COVID comparison table
     covid_rows = [
         (t["inbound"],  "189,036K", "37,824K",  "560,227K", "-80.0%", "+1,663%"),
         (t["domestic"], "268,751K", "228,538K", "538,618K", "-15.0%",   "+136%"),
         (t["total"],    "457,787K", "266,362K","1,098,845K","-41.8%",   "+312%"),
     ]
-    th = (f'<th style="background:{C["sec_bg"]};color:{C["grey"]};padding:8px 10px;'
-          f'text-align:right;font-size:.68rem;text-transform:uppercase;'
-          f'letter-spacing:.8px;border-bottom:1px solid {C["border"]};">')
-    th_l = th.replace("text-align:right", "text-align:left")
+    th_style = (f'background:{C["sec_bg"]};color:{C["grey"]};padding:8px 10px;'
+                f'text-align:right;font-size:.68rem;text-transform:uppercase;'
+                f'letter-spacing:.8px;border-bottom:1px solid {C["border"]};')
+    th_l_style = th_style.replace("text-align:right", "text-align:left")
+
     tbl = (f'<table style="width:100%;border-collapse:collapse;font-size:.8rem;">'
            f'<thead><tr>'
-           f'{th_l}{t["f_type"]}</th>'
-           f'{th}{t["pre_covid"]}</th>'
-           f'{th}{t["covid_yr"]}</th>'
-           f'{th}{t["post_covid"]}</th>'
-           f'{th}{t["drop"]}</th>'
-           f'{th}{t["recovery"]}</th>'
+           f'<th style="{th_l_style}">{t["f_type"]}</th>'
+           f'<th style="{th_style}">{t["pre_covid"]}</th>'
+           f'<th style="{th_style}">{t["covid_yr"]}</th>'
+           f'<th style="{th_style}">{t["post_covid"]}</th>'
+           f'<th style="{th_style}">{t["drop"]}</th>'
+           f'<th style="{th_style}">{t["recovery"]}</th>'
            f'</tr></thead><tbody>')
+
     for row in covid_rows:
-        tbl += (f'<tr>'
-                f'<td style="padding:8px 10px;color:#F4F9F8;font-weight:700;'
-                f'border-bottom:1px solid {C["border"]};">{row[0]}</td>'
-                f'<td style="padding:8px 10px;color:{C["grey"]};text-align:right;'
-                f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[1]}</td>'
-                f'<td style="padding:8px 10px;color:{C["red"]};text-align:right;font-weight:700;'
-                f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[2]}</td>'
-                f'<td style="padding:8px 10px;color:{C["teal"]};text-align:right;font-weight:700;'
-                f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[3]}</td>'
-                f'<td style="padding:8px 10px;color:{C["red"]};text-align:right;font-weight:700;'
-                f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[4]}</td>'
-                f'<td style="padding:8px 10px;color:{C["green"]};text-align:right;font-weight:700;'
-                f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[5]}</td>'
-                f'</tr>')
+        tbl += (
+            f'<tr>'
+            # ✅ FIX: was hard-coded #F4F9F8 — now uses txt_dark
+            f'<td style="padding:8px 10px;color:{txt_dark};font-weight:700;'
+            f'border-bottom:1px solid {C["border"]};">{row[0]}</td>'
+            f'<td style="padding:8px 10px;color:{txt_dark};text-align:right;'
+            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[1]}</td>'
+            f'<td style="padding:8px 10px;color:{C["red"]};text-align:right;font-weight:700;'
+            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[2]}</td>'
+            f'<td style="padding:8px 10px;color:{C["teal"]};text-align:right;font-weight:700;'
+            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[3]}</td>'
+            f'<td style="padding:8px 10px;color:{C["red"]};text-align:right;font-weight:700;'
+            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[4]}</td>'
+            f'<td style="padding:8px 10px;color:{C["green"]};text-align:right;font-weight:700;'
+            f'font-family:IBM Plex Mono,monospace;border-bottom:1px solid {C["border"]};">{row[5]}</td>'
+            f'</tr>')
     tbl += '</tbody></table>'
     st.markdown(tbl, unsafe_allow_html=True)
 
-    # Recovery bar chart
+    # Recovery bar chart title
     st.markdown(
-        f'<div style="font-size:.84rem;font-weight:700;color:#F4F9F8;'
+        # ✅ FIX: was hard-coded #F4F9F8 — now uses txt_dark
+        f'<div style="font-size:.84rem;font-weight:700;color:{txt_dark};'
         f'margin:16px 0 8px;">🚀 {t["growth"]}</div>',
         unsafe_allow_html=True)
     rec_yrs = [2021, 2022, 2023, 2024]
@@ -474,7 +491,8 @@ for ico, txt, ck in t["ins"]:
         f'border-left:3px solid {clr(ck)};border-radius:10px;'
         f'padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">'
         f'<div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">{ico}</div>'
-        f'<div style="font-size:.83rem;color:{C["white"]};line-height:1.65;">{txt}</div>'
+        # ✅ FIX: was hard-coded C["white"] — now uses txt_dark
+        f'<div style="font-size:.83rem;color:{txt_dark};line-height:1.65;">{txt}</div>'
         f'</div>')
 ins_html += '</div></div>'
 st.markdown(ins_html, unsafe_allow_html=True)
@@ -489,11 +507,13 @@ st.markdown(
     f'<div style="display:flex;align-items:center;gap:14px;">{logo_img}'
     f'<div>'
     f'<div style="font-size:.88rem;font-weight:700;color:{C["teal"]};">Saudi Tourism Intelligence</div>'
-    f'<div style="font-size:.66rem;color:#B5B8B7;margin-top:2px;">🏨 Overnight Stays · Eng. Goda Emad</div>'
+    # ✅ FIX: was hard-coded #B5B8B7 — now uses footer_txt (theme-aware)
+    f'<div style="font-size:.66rem;color:{footer_txt};margin-top:2px;">🏨 Overnight Stays · Eng. Goda Emad</div>'
     f'</div></div>'
     f'<div style="display:flex;gap:20px;">'
     f'<a href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence" target="_blank" '
-    f'style="font-size:.75rem;color:#B5B8B7;text-decoration:none;">🐙 GitHub</a>'
+    # ✅ FIX: was hard-coded #B5B8B7 — now uses footer_txt
+    f'style="font-size:.75rem;color:{footer_txt};text-decoration:none;">🐙 GitHub</a>'
     f'<a href="https://datasaudi.sa" target="_blank" '
     f'style="font-size:.75rem;color:{C["teal"]};text-decoration:none;font-weight:600;">📊 DataSaudi</a>'
     f'</div></div>',
