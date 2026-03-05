@@ -186,9 +186,9 @@ st.markdown(
     f'color:{C["teal"]};font-size:.57rem;font-weight:700;letter-spacing:2.5px;'
     f'text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:10px;">'
     f'EXECUTIVE OVERVIEW · KPIs</div>'
-    f'<div style="font-size:1.85rem;font-weight:800;color:{C["white"]};'
+    f'<div style="font-size:1.85rem;font-weight:800;color:#F4F9F8;'
     f'letter-spacing:-.5px;margin-bottom:5px;">{t["title"]}</div>'
-    f'<div style="font-size:.82rem;color:{C["grey"]};">{t["sub_pg"]}</div>'
+    f'<div style="font-size:.82rem;color:#A1A6B7;">{t["sub_pg"]}</div>'
     f'</div>',
     unsafe_allow_html=True)
 
