@@ -23,25 +23,45 @@ for k, v in [("lang","EN"),("theme","dark")]:
 
 THEME, LANG = render_sidebar()
 
-# ── Colors ───────────────────────────────────────────────────────
+# ── Colors — v3 Professional Palette ────────────────────────────
 C = {
     "teal":"#17B19B","teal_act":"#149581","bg":"#1A1E1F",
     "sec_bg":"#161B1C","card_bg":"#1E2528","navbar":"#031414",
     "white":"#F4F9F8","grey":"#A1A6B7","foot_txt":"#B5B8B7",
-    "border":"#2A3235","orange":"#F4D044","gold":"#C9A84C",
-    "blue":"#3A86FF","green":"#22C55E","red":"#EF4444","purple":"#BB86FC",
+    "border":"#2A3235",
+    "blue":  "#4D9FFF",
+    "gold":  "#D4A843",
+    "green": "#2ECC71",
+    "red":   "#FF4757",
+    "orange":"#FF7F3F",
+    "purple":"#C67FFF",
+    "p_religious":"#E85D75",
+    "p_leisure":  "#17B19B",
+    "p_business": "#4D9FFF",
+    "p_vfr":      "#FF7F3F",
+    "p_other":    "#8B95A8",
 } if THEME=="dark" else {
     "teal":"#17B19B","teal_act":"#149581","bg":"#F0F5F4",
     "sec_bg":"#E4EDEB","card_bg":"#FFFFFF","navbar":"#172025",
-    # ✅ FIX: light mode palette (was white=#F4F9F8, grey=#9DBFBA, border=#2A3235)
-    "white":"#0D1A1E","grey":"#374151","foot_txt":"#6B7280",
-    "border":"#C8D8D5","orange":"#B45309","gold":"#92650A",
-    "blue":"#1565C0","green":"#16A34A","red":"#DC2626","purple":"#6A1B9A",
+    "white":"#0D1A1E","grey":"#4A5568","foot_txt":"#6B7280",
+    "border":"#CBD5E0",
+    "blue":  "#1565C0",
+    "gold":  "#B8892A",
+    "green": "#16A34A",
+    "red":   "#DC2626",
+    "orange":"#E06010",
+    "purple":"#6A1B9A",
+    "p_religious":"#C0304A",
+    "p_leisure":  "#17B19B",
+    "p_business": "#1565C0",
+    "p_vfr":      "#E06010",
+    "p_other":    "#6B7280",
 }
+
 def clr(k): return C.get(k, C["teal"])
 ff      = "Tajawal" if LANG=="AR" else "IBM Plex Sans"
 dir_val = "rtl"     if LANG=="AR" else "ltr"
-txt_col = C["white"]    # ✅ theme-aware body text (replaces txt_dark)
+txt_col = C["white"]
 
 accent_teal   = C["teal"]
 accent_gold   = C["gold"]
@@ -49,8 +69,15 @@ accent_blue   = C["blue"]
 accent_green  = C["green"]
 accent_red    = C["red"]
 accent_purple = C["purple"]
-bg_main = C["bg"]
-bg_card = C["card_bg"]
+bg_card       = C["card_bg"]
+
+purpose_colors = {
+    "Religious": C["p_religious"],
+    "Leisure":   C["p_leisure"],
+    "Business":  C["p_business"],
+    "VFR":       C["p_vfr"],
+    "Other":     C["p_other"],
+}
 
 def rgba(hex_color, alpha=0.15):
     h = hex_color.lstrip('#')
@@ -69,7 +96,6 @@ logo_src = "data:image/jpeg;base64,"+logo_b64 if logo_b64 else ""
 logo_img = (f'<img src="{logo_src}" style="height:42px;border-radius:8px;"/>'
             if logo_src else '<span style="font-size:2rem;">🇸🇦</span>')
 
-# ── Translations ─────────────────────────────────────────────────
 TR = {
 "EN":{
     "page_title":"📈 Tourist Trends 2015–2024",
@@ -88,7 +114,6 @@ TR = {
     "vfr":"VFR","other":"Other","year":"Year","tourists_m":"Tourists (Millions)",
     "filter_type":"Tourist Type","filter_year":"Year Range","all_types":"All",
     "insight_title":"Key Insights",
-    # ✅ FIX: i1 YoY corrected to +6.2% (was +8.1%)
     "i1":"2024 reached all-time high: 115.9M tourists — +6.2% YoY vs 2023",
     "i2":"Domestic tourism is 3× larger than Inbound (86.2M vs 29.7M)",
     "i3":"Leisure surpassed Religious as #1 purpose for Inbound tourists in 2024",
@@ -130,24 +155,18 @@ inbound_annual = [17.99,18.04,16.11,15.33,17.53,4.14,3.48,16.64,27.18,29.73]
 domestic_annual= [46.45,45.04,43.82,43.26,47.81,42.11,63.83,77.84,81.92,86.16]
 total_annual   = [a+b for a,b in zip(inbound_annual,domestic_annual)]
 
-# ✅ FIX: 2019 Religious scaled down from 9.80→8.37 (sum was 20.53M vs inbound 17.53M)
 purpose_data = {
-    "Religious": [8.00,7.50,7.00,6.80, 8.37,0.80,0.60,5.50,9.50,12.30],
-    "Leisure":   [3.00,3.20,2.80,2.60, 2.99,0.90,1.00,4.80,6.20, 7.50],
-    "Business":  [2.40,2.60,2.20,2.10, 2.13,0.60,0.50,1.80,2.50, 2.00],
-    "VFR":       [3.10,3.20,2.80,2.60, 2.82,1.20,1.00,3.20,5.00, 5.95],
-    "Other":     [1.49,1.54,1.31,1.23, 1.22,0.64,0.38,1.34,3.98, 2.00],
-}
-purpose_colors = {
-    "Religious":accent_gold,"Leisure":accent_teal,
-    "Business":accent_blue,"VFR":accent_purple,"Other":C["grey"],
+    "Religious": [8.00,7.50,7.00,6.80,8.37,0.80,0.60,5.50,9.50,12.30],
+    "Leisure":   [3.00,3.20,2.80,2.60,2.99,0.90,1.00,4.80,6.20, 7.50],
+    "Business":  [2.40,2.60,2.20,2.10,2.13,0.60,0.50,1.80,2.50, 2.00],
+    "VFR":       [3.10,3.20,2.80,2.60,2.82,1.20,1.00,3.20,5.00, 5.95],
+    "Other":     [1.49,1.54,1.31,1.23,1.22,0.64,0.38,1.34,3.98, 2.00],
 }
 
 MONTHS_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"]
 months    = MONTHS_AR if LANG=="AR" else MONTHS_EN
 
-# ✅ FIX: monthly values scaled to 2024 annual totals (INB 29.73M, DOM 86.16M)
 monthly_inbound  = [2.75,2.37,3.11,2.58,2.10,2.36,2.47,2.40,2.15,2.09,2.47,2.88]
 monthly_domestic = [7.48,5.72,6.14,5.73,5.14,8.44,10.32,8.58,6.22,5.77,7.90,8.72]
 
@@ -165,7 +184,7 @@ st.markdown(
     ".ds-card{transition:transform .22s,box-shadow .22s;}"
     ".ds-card:hover{transform:translateY(-3px);"
     "box-shadow:0 10px 28px rgba(23,177,155,.18)!important;}"
-    +f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
+    f"html,body,[data-testid='stAppViewContainer'],[data-testid='stMain']"
     f"{{background:{C['bg']}!important;direction:{dir_val};"
     f"font-family:'{ff}',sans-serif;color:{txt_col}!important;}}"
     f"[data-testid='stMain'] label,[data-testid='stMain'] p,"
@@ -187,8 +206,8 @@ st.markdown(
 def sec_head(badge, h2):
     return (
         f'<div style="margin-bottom:18px;">'
-        f'<div style="display:inline-block;background:{C["blue"]}15;'
-        f'border:1px solid {C["blue"]}44;color:{C["blue"]};'
+        f'<div style="display:inline-block;background:{C["blue"]}22;'
+        f'border:1px solid {C["blue"]}55;color:{C["blue"]};'
         f'font-size:.57rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;'
         f'padding:4px 12px;border-radius:4px;margin-bottom:10px;">{badge}</div>'
         f'<div style="font-size:1.25rem;font-weight:700;color:{txt_col};">{h2}</div>'
@@ -208,20 +227,19 @@ def kpi_card(ico,lbl,val,delta,ck,dc):
 
 def apply_layout(fig, height=340):
     fig.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=C["grey"],family=ff),
-        height=height,margin=dict(l=10,r=10,t=36,b=10),
-        legend=dict(bgcolor="rgba(0,0,0,0)",font=dict(size=11),
-                    orientation="h",y=-0.14),
-        # ✅ FIX: linecolor theme-aware C["border"] (was hardcoded #2A3235)
-        xaxis=dict(gridcolor="rgba(42,50,53,0.4)",linecolor=C["border"],
-                   tickfont=dict(size=10),showgrid=False),
-        yaxis=dict(gridcolor="rgba(42,50,53,0.4)",linecolor=C["border"],
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=C["grey"], family=ff),
+        height=height, margin=dict(l=10,r=10,t=36,b=10),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=11, color=txt_col),
+                    orientation="h", y=-0.14),
+        xaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
+                   tickfont=dict(size=10), showgrid=False),
+        yaxis=dict(gridcolor="rgba(42,50,53,0.4)", linecolor=C["border"],
                    tickfont=dict(size=10)))
     return fig
 
 def chart(fig):
-    st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False})
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
 
 def divider():
     st.markdown(f'<div style="height:1px;background:{C["border"]};margin:8px 40px 0;"></div>',
@@ -244,7 +262,7 @@ st.markdown(
     unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# KPI STRIP  ✅ FIX: +8.1%→+6.2%, +8.4%→+9.4% (actual YoY from data)
+# KPI STRIP
 # ════════════════════════════════════════════════════════════════════
 st.markdown(
     f'<div style="padding:20px 40px 0;">'
@@ -263,17 +281,17 @@ st.markdown(f'<div style="height:1px;background:{C["border"]};margin:20px 40px 0
 # ════════════════════════════════════════════════════════════════════
 # FILTERS
 # ════════════════════════════════════════════════════════════════════
-st.markdown('<div style="padding:16px 40px 0;">',unsafe_allow_html=True)
-fc,yc = st.columns([1,2])
+st.markdown('<div style="padding:16px 40px 0;">', unsafe_allow_html=True)
+fc, yc = st.columns([1,2])
 with fc:
     tourist_type = st.radio(t["filter_type"],
         [t["all_types"],t["inbound"],t["domestic"]],
-        horizontal=True,key="tt_tf")
+        horizontal=True, key="tt_tf")
 with yc:
-    year_range = st.slider(t["filter_year"],2015,2024,(2015,2024),key="tt_yr")
-st.markdown('</div>',unsafe_allow_html=True)
+    year_range = st.slider(t["filter_year"], 2015, 2024, (2015,2024), key="tt_yr")
+st.markdown('</div>', unsafe_allow_html=True)
 
-y_start,y_end = year_range
+y_start, y_end = year_range
 idx_s      = years.index(y_start)
 idx_e      = years.index(y_end)+1
 f_years    = years[idx_s:idx_e]
@@ -289,84 +307,84 @@ show_dom = tourist_type in [t["all_types"],t["domestic"]]
 # ════════════════════════════════════════════════════════════════════
 st.markdown(f'<div style="padding:24px 40px 0;">{sec_head("ANNUAL",t["annual_trend"])}</div>',
             unsafe_allow_html=True)
-st.markdown('<div style="padding:0 40px;">',unsafe_allow_html=True)
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
 fig_annual = go.Figure()
 
-if show_inb:
-    fig_annual.add_trace(go.Bar(
-        x=f_years,y=f_inbound,name=t["inbound"],
-        marker_color=accent_blue,opacity=0.85,
-        hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
 if show_dom:
     fig_annual.add_trace(go.Bar(
-        x=f_years,y=f_domestic,name=t["domestic"],
-        marker_color=accent_teal,opacity=0.85,
+        x=f_years, y=f_domestic, name=t["domestic"],
+        marker_color=accent_teal, opacity=0.90,
         hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
-if tourist_type==t["all_types"]:
+if show_inb:
+    fig_annual.add_trace(go.Bar(
+        x=f_years, y=f_inbound, name=t["inbound"],
+        marker_color=accent_blue, opacity=0.90,
+        hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
+if tourist_type == t["all_types"]:
     fig_annual.add_trace(go.Scatter(
-        x=f_years,y=f_total,name=t["total"],
-        line=dict(color=accent_gold,width=2.5,dash='dot'),
-        marker=dict(size=7,color=accent_gold),
+        x=f_years, y=f_total, name=t["total"],
+        line=dict(color=accent_gold, width=2.5, dash='dot'),
+        marker=dict(size=7, color=accent_gold,
+                    line=dict(color=C["bg"], width=1.5)),
         yaxis='y2',
         hovertemplate="<b>%{x}</b> Total: %{y:.2f}M<extra></extra>"))
 
-# ✅ FIX: COVID vrect conditional on year range (was always shown)
-if y_start<=2020<=y_end:
-    fig_annual.add_vrect(x0=2019.5,x1=2021.5,
-        fillcolor=rgba(accent_red,0.07),line_width=0,
+if y_start <= 2020 <= y_end:
+    fig_annual.add_vrect(x0=2019.5, x1=2021.5,
+        fillcolor=rgba(accent_red, 0.08), line_width=0,
         annotation_text="COVID-19",
-        annotation=dict(font_color=accent_red,font_size=11))
+        annotation=dict(font_color=accent_red, font_size=11))
 
-apply_layout(fig_annual,height=380)
+apply_layout(fig_annual, height=380)
 fig_annual.update_layout(
-    barmode='group',bargap=0.25,
-    yaxis=dict(title=t["tourists_m"],showgrid=True,
-               gridcolor="rgba(42,50,53,0.4)",tickfont=dict(size=10)),
-    yaxis2=dict(overlaying='y',side='right',showgrid=False,
-                title=f"{t['total']} (M)",tickfont=dict(size=10)))
+    barmode='group', bargap=0.22,
+    yaxis=dict(title=t["tourists_m"], showgrid=True,
+               gridcolor="rgba(42,50,53,0.4)", tickfont=dict(size=10)),
+    yaxis2=dict(overlaying='y', side='right', showgrid=False,
+                title=f"{t['total']} (M)", tickfont=dict(size=10)))
 chart(fig_annual)
-st.markdown('</div>',unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 divider()
 
 # ════════════════════════════════════════════════════════════════════
 # CHARTS 2+3 — Purpose | Split
 # ════════════════════════════════════════════════════════════════════
-st.markdown('<div style="padding:24px 40px 0;">',unsafe_allow_html=True)
-col_l,col_r = st.columns([3,2],gap="large")
+st.markdown('<div style="padding:24px 40px 0;">', unsafe_allow_html=True)
+col_l, col_r = st.columns([3,2], gap="large")
 
 with col_l:
-    st.markdown(sec_head("PURPOSE",t["by_purpose"]),unsafe_allow_html=True)
+    st.markdown(sec_head("PURPOSE",t["by_purpose"]), unsafe_allow_html=True)
     fig_purpose = go.Figure()
-    for purpose,values in purpose_data.items():
+    for purpose, values in purpose_data.items():
         fig_purpose.add_trace(go.Bar(
-            x=f_years,y=values[idx_s:idx_e],
+            x=f_years, y=values[idx_s:idx_e],
             name=t[purpose.lower()],
-            marker_color=purpose_colors[purpose],opacity=0.88,
+            marker_color=purpose_colors[purpose], opacity=0.92,
             hovertemplate=f"<b>{purpose}</b> %{{x}}: %{{y:.2f}}M<extra></extra>"))
-    apply_layout(fig_purpose,height=320)
-    fig_purpose.update_layout(barmode='stack',bargap=0.2)
+    apply_layout(fig_purpose, height=320)
+    fig_purpose.update_layout(barmode='stack', bargap=0.2)
     chart(fig_purpose)
 
 with col_r:
-    st.markdown(sec_head("SPLIT",t["inbound_vs_dom"]),unsafe_allow_html=True)
+    st.markdown(sec_head("SPLIT",t["inbound_vs_dom"]), unsafe_allow_html=True)
     total_f = [a+b for a,b in zip(f_inbound,f_domestic)]
     inb_pct = [round(a/c*100,1) for a,c in zip(f_inbound,total_f)]
     dom_pct = [round(b/c*100,1) for b,c in zip(f_domestic,total_f)]
     fig_split = go.Figure()
     fig_split.add_trace(go.Bar(
-        x=f_years,y=inb_pct,name=t["inbound"],
-        marker_color=accent_blue,opacity=0.88,
-        hovertemplate="<b>%{x}</b> Inbound: %{y:.1f}%<extra></extra>"))
-    fig_split.add_trace(go.Bar(
-        x=f_years,y=dom_pct,name=t["domestic"],
-        marker_color=accent_teal,opacity=0.88,
+        x=f_years, y=dom_pct, name=t["domestic"],
+        marker_color=accent_teal, opacity=0.90,
         hovertemplate="<b>%{x}</b> Domestic: %{y:.1f}%<extra></extra>"))
-    apply_layout(fig_split,height=320)
-    fig_split.update_layout(barmode='stack',bargap=0.2)
+    fig_split.add_trace(go.Bar(
+        x=f_years, y=inb_pct, name=t["inbound"],
+        marker_color=accent_blue, opacity=0.90,
+        hovertemplate="<b>%{x}</b> Inbound: %{y:.1f}%<extra></extra>"))
+    apply_layout(fig_split, height=320)
+    fig_split.update_layout(barmode='stack', bargap=0.2)
     fig_split.update_yaxes(ticksuffix="%")
     chart(fig_split)
 
-st.markdown('</div>',unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 divider()
 
 # ════════════════════════════════════════════════════════════════════
@@ -374,68 +392,79 @@ divider()
 # ════════════════════════════════════════════════════════════════════
 st.markdown(f'<div style="padding:24px 40px 0;">{sec_head("MONTHLY",t["monthly_trend"])}</div>',
             unsafe_allow_html=True)
-st.markdown('<div style="padding:0 40px;">',unsafe_allow_html=True)
+st.markdown('<div style="padding:0 40px;">', unsafe_allow_html=True)
 fig_monthly = go.Figure()
 fig_monthly.add_trace(go.Scatter(
-    x=months,y=monthly_inbound,name=t["inbound"],
-    line=dict(color=accent_blue,width=2.5),
-    fill='tozeroy',fillcolor=rgba(accent_blue,0.12),
-    marker=dict(size=8,color=accent_blue,line=dict(color=bg_card,width=2)),
+    x=months, y=monthly_domestic, name=t["domestic"],
+    line=dict(color=accent_teal, width=2.5),
+    fill='tozeroy', fillcolor=rgba(accent_teal, 0.13),
+    marker=dict(size=8, color=accent_teal,
+                line=dict(color=bg_card, width=2)),
     hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
 fig_monthly.add_trace(go.Scatter(
-    x=months,y=monthly_domestic,name=t["domestic"],
-    line=dict(color=accent_teal,width=2.5),
-    fill='tozeroy',fillcolor=rgba(accent_teal,0.12),
-    marker=dict(size=8,color=accent_teal,line=dict(color=bg_card,width=2)),
+    x=months, y=monthly_inbound, name=t["inbound"],
+    line=dict(color=accent_blue, width=2.5),
+    fill='tozeroy', fillcolor=rgba(accent_blue, 0.13),
+    marker=dict(size=8, color=accent_blue,
+                line=dict(color=bg_card, width=2)),
     hovertemplate="<b>%{x}</b>: %{y:.2f}M<extra></extra>"))
-# ✅ FIX: use months[index] for bilingual safety (was hardcoded "Mar"/"Jul")
-fig_monthly.add_annotation(x=months[2],y=max(monthly_inbound),
+fig_monthly.add_annotation(
+    x=months[2], y=max(monthly_inbound),
     text="Inbound Peak\nRamadan/Umrah" if LANG=="EN" else "ذروة الوافدين\nرمضان/عمرة",
-    showarrow=True,arrowhead=2,
-    font=dict(size=10,color=accent_blue),arrowcolor=accent_blue,ay=-40)
-fig_monthly.add_annotation(x=months[6],y=max(monthly_domestic),
+    showarrow=True, arrowhead=2,
+    font=dict(size=10, color=accent_blue), arrowcolor=accent_blue, ay=-40,
+    bgcolor=C["card_bg"], bordercolor=accent_blue, borderwidth=1, borderpad=3)
+fig_monthly.add_annotation(
+    x=months[6], y=max(monthly_domestic),
     text="Domestic Peak\nSummer" if LANG=="EN" else "ذروة المحليين\nالصيف",
-    showarrow=True,arrowhead=2,
-    font=dict(size=10,color=accent_teal),arrowcolor=accent_teal,ay=-40)
-apply_layout(fig_monthly,height=320)
+    showarrow=True, arrowhead=2,
+    font=dict(size=10, color=accent_teal), arrowcolor=accent_teal, ay=-40,
+    bgcolor=C["card_bg"], bordercolor=accent_teal, borderwidth=1, borderpad=3)
+apply_layout(fig_monthly, height=320)
 fig_monthly.update_yaxes(title_text=t["tourists_m"])
 chart(fig_monthly)
-st.markdown('</div>',unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 divider()
 
 # ════════════════════════════════════════════════════════════════════
 # CHART 5 + COVID TABLE
 # ════════════════════════════════════════════════════════════════════
-st.markdown('<div style="padding:24px 40px 0;">',unsafe_allow_html=True)
-heatmap_col,covid_col = st.columns([3,2],gap="large")
+st.markdown('<div style="padding:24px 40px 0;">', unsafe_allow_html=True)
+heatmap_col, covid_col = st.columns([3,2], gap="large")
 
 with heatmap_col:
-    st.markdown(sec_head("HEATMAP",t["purpose_heatmap"]),unsafe_allow_html=True)
+    st.markdown(sec_head("HEATMAP",t["purpose_heatmap"]), unsafe_allow_html=True)
     purposes_list = ["Religious","Leisure","Business","VFR","Other"]
     heat_data = [purpose_data[p] for p in purposes_list]
     fig_heat = go.Figure(go.Heatmap(
         z=heat_data,
         x=[str(y) for y in years],
         y=[t[p.lower()] for p in purposes_list],
-        colorscale=[[0,C["sec_bg"]],[0.5,accent_blue],[1,accent_teal]],
+        colorscale=[
+            [0.00, C["sec_bg"]],
+            [0.30, C["p_business"]],
+            [0.65, C["p_leisure"]],
+            [1.00, C["p_religious"]],
+        ],
         showscale=True,
+        xgap=3, ygap=3,
         text=[[f"{v:.1f}M" for v in row] for row in heat_data],
         texttemplate="%{text}",
-        textfont=dict(size=9,color=txt_col),
+        textfont=dict(size=9, color=txt_col),
         hovertemplate="<b>%{y}</b><br>%{x}: %{z:.2f}M<extra></extra>"))
-    apply_layout(fig_heat,height=280)
+    apply_layout(fig_heat, height=280)
     fig_heat.update_layout(
-        yaxis=dict(tickfont=dict(size=10,color=txt_col)),
-        xaxis=dict(tickfont=dict(size=10,color=txt_col)),
+        yaxis=dict(type="category", tickfont=dict(size=10, color=txt_col)),
+        xaxis=dict(tickfont=dict(size=10, color=txt_col)),
         margin=dict(l=10,r=10,t=10,b=10))
     chart(fig_heat)
 
 with covid_col:
-    st.markdown(sec_head("COVID",t["covid_analysis"]),unsafe_allow_html=True)
+    st.markdown(sec_head("COVID",t["covid_analysis"]), unsafe_allow_html=True)
     covid_rows = [
-        (t["inbound"],  "17.53M","4.14M", "29.73M","-76.4%","+618.6%"),
-        (t["domestic"], "47.81M","42.11M","86.16M", "-11.9%","+104.6%"),
-        (t["total"],    "65.34M","46.25M","115.89M","-29.2%","+150.6%"),
+        (t["inbound"],  "17.53M","4.14M", "29.73M","-76.4%", "+618.6%"),
+        (t["domestic"], "47.81M","42.11M","86.16M", "-11.9%", "+104.6%"),
+        (t["total"],    "65.34M","46.25M","115.89M","-29.2%", "+150.6%"),
     ]
     table_html = (
         f"<table class='covid-table'><thead><tr>"
@@ -455,9 +484,9 @@ with covid_col:
             f"<td style='color:{accent_green};font-weight:700;'>{row[5]}</td>"
             f"</tr>")
     table_html += "</tbody></table>"
-    st.markdown(table_html,unsafe_allow_html=True)
+    st.markdown(table_html, unsafe_allow_html=True)
 
-st.markdown('</div>',unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 divider()
 
 # ════════════════════════════════════════════════════════════════════
@@ -471,7 +500,7 @@ insights = [
 ]
 ins_html = (f'<div style="padding:24px 40px 40px;">{sec_head("INSIGHTS",t["insight_title"])}'
             f'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">')
-for ico,txt_i,ck in insights:
+for ico, txt_i, ck in insights:
     ins_html += (
         f'<div style="background:{C["card_bg"]};border:1px solid {C["border"]};'
         f'border-left:3px solid {clr(ck)};border-radius:12px;'
@@ -480,10 +509,10 @@ for ico,txt_i,ck in insights:
         f'<div style="font-size:.83rem;color:{txt_col};line-height:1.65;">{txt_i}</div>'
         f'</div>')
 ins_html += '</div></div>'
-st.markdown(ins_html,unsafe_allow_html=True)
+st.markdown(ins_html, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-# FOOTER  ✅ FIX: hardcoded #B5B8B7 → C["foot_txt"]
+# FOOTER
 # ════════════════════════════════════════════════════════════════════
 st.markdown(
     f'<div style="background:{C["navbar"]};border-top:2px solid {C["teal"]};'
