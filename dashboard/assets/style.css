@@ -1,23 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════
-   Saudi Tourism Intelligence — Global Stylesheet v2.0
+   Saudi Tourism Intelligence — Global Stylesheet v3.0
    DataSaudi Design System · Eng. Goda Emad
    github.com/Goda-Emad/Saudi-Tourism-Intelligence
 
-   HCI COLOR LOGIC:
+   HCI COLOR LOGIC — v3 (High-Contrast Professional Palette)
    ─────────────────────────────────────────────────────────────
-   🟢  --ds-green   → Growth / Positive / Up
-   🔴  --ds-red     → Decline / Negative / COVID / Warning
-   🔵  --ds-blue    → Inbound tourists (always)
-   🟦  --ds-teal    → Domestic tourists / Brand primary
-   🟡  --ds-gold    → ML / Forecast / Special metrics
-   🟣  --ds-purple  → Segmentation / Clusters
-   🟠  --ds-orange  → Spending / Revenue / Economic
+   🟢  --ds-green    → Growth / Positive / Up
+   🔴  --ds-red      → Decline / Negative / COVID / Warning
+   🔵  --ds-blue     → Inbound tourists (always)
+   🟦  --ds-teal     → Domestic tourists / Brand primary
+   🟡  --ds-gold     → ML / Forecast / Special metrics
+   🟣  --ds-purple   → Segmentation / Clusters
+   🟠  --ds-orange   → Spending / Revenue / Economic
+   🩷  --ds-pink     → Religious tourism
+   ── Chart Purpose Colors (NEW v3) ────────────────────────────
+   Religious → #E85D75  vivid pink-red
+   Leisure   → #17B19B  teal (brand)
+   Business  → #3A86FF  blue
+   VFR       → #F97316  orange
+   Other     → #A1A6B7  grey
    ═══════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Tajawal:wght@300;400;700;800&display=swap');
 
 /* ───────────────────────────────────────────────────────────────
-   CSS VARIABLES — DataSaudi Design System v2
+   CSS VARIABLES — DataSaudi Design System v3
    ─────────────────────────────────────────────────────────────── */
 :root {
   /* ── Backgrounds ──────────────────────────────────────────── */
@@ -34,26 +41,32 @@
   --ds-teal-glow:    rgba(23, 177, 155, 0.12);
   --ds-teal-border:  rgba(23, 177, 155, 0.35);
 
-  /* ── Semantic Colors (Chart Logic) ───────────────────────── */
-  --ds-blue:         #3A86FF;   /* Inbound tourists — always   */
-  --ds-blue-dark:    #1E5FAA;   /* Inbound dark variant        */
+  /* ── Core Chart Colors — HIGH CONTRAST v3 ────────────────── */
+  --ds-blue:         #4D9FFF;   /* Inbound tourists — vivid sky blue     */
+  --ds-blue-dark:    #1E6FCC;   /* Inbound dark variant                   */
 
-  --ds-gold:         #C9A84C;   /* ML / Forecast / KPIs        */
-  --ds-gold-bright:  #F4D044;   /* Highlights / Alerts         */
+  --ds-gold:         #D4A843;   /* ML / Forecast / KPIs — warm gold      */
+  --ds-gold-bright:  #F5C842;   /* Highlights / Alerts — bright yellow   */
 
-  --ds-green:        #22C55E;   /* Growth / Positive / Up ▲    */
-  --ds-green-dark:   #16A34A;   /* Green dark variant          */
+  --ds-green:        #2ECC71;   /* Growth / Positive / Up ▲ — emerald   */
+  --ds-green-dark:   #1A9E56;   /* Green dark variant                     */
 
-  --ds-red:          #EF4444;   /* Decline / COVID / Down ▼    */
-  --ds-red-dark:     #DC2626;   /* Red dark variant            */
+  --ds-red:          #FF4757;   /* Decline / COVID / Down ▼ — vivid red */
+  --ds-red-dark:     #CC2233;   /* Red dark variant                       */
 
-  --ds-orange:       #F97316;   /* Spending / Revenue          */
-  --ds-orange-gold:  #F4D044;   /* Economic highlights         */
+  --ds-orange:       #FF7F3F;   /* Spending / Revenue — vivid orange     */
+  --ds-orange-gold:  #F5C842;   /* Economic highlights                    */
 
-  --ds-purple:       #A855F7;   /* Segmentation / Clusters     */
-  --ds-purple-dark:  #620E8B;   /* Purple dark variant         */
+  --ds-purple:       #C67FFF;   /* Segmentation / Clusters — soft violet */
+  --ds-purple-dark:  #8833CC;   /* Purple dark variant                    */
 
-  --ds-pink:         #C50A5D;   /* Religious / Special         */
+  /* ── PURPOSE CHART COLORS (Tourist_Trends, Seasonality) ──── */
+  /*    MUST be used in Python purpose_colors dict              */
+  --ds-purpose-religious: #E85D75;  /* vivid pink-red  — Religious       */
+  --ds-purpose-leisure:   #17B19B;  /* teal brand      — Leisure         */
+  --ds-purpose-business:  #4D9FFF;  /* vivid blue      — Business        */
+  --ds-purpose-vfr:       #FF7F3F;  /* vivid orange    — VFR             */
+  --ds-purpose-other:     #8B95A8;  /* muted steel     — Other           */
 
   /* ── Text ─────────────────────────────────────────────────── */
   --ds-text:         #F4F9F8;
@@ -72,8 +85,8 @@
   --ds-shadow-sm:    0 2px 12px rgba(0, 0, 0, 0.30);
   --ds-shadow-md:    0 6px 28px rgba(0, 0, 0, 0.40);
   --ds-shadow-teal:  0 8px 32px rgba(23, 177, 155, 0.18);
-  --ds-shadow-blue:  0 8px 32px rgba(58, 134, 255, 0.15);
-  --ds-shadow-gold:  0 8px 32px rgba(201, 168, 76, 0.15);
+  --ds-shadow-blue:  0 8px 32px rgba(77, 159, 255, 0.15);
+  --ds-shadow-gold:  0 8px 32px rgba(212, 168, 67, 0.15);
 
   /* ── Spacing ──────────────────────────────────────────────── */
   --ds-page-x:       40px;
@@ -84,19 +97,50 @@
   --ds-font:         'IBM Plex Sans', sans-serif;
   --ds-font-ar:      'Tajawal', sans-serif;
   --ds-font-mono:    'IBM Plex Mono', monospace;
-
-  /* ── Plotly Chart Colors (reference in Python as C["..."]) ── */
-  /* Use these EXACT hex values in all Python chart files:
-     Inbound  → #3A86FF  (--ds-blue)
-     Domestic → #17B19B  (--ds-teal)
-     Total    → #C9A84C  (--ds-gold)
-     Growth   → #22C55E  (--ds-green)
-     Decline  → #EF4444  (--ds-red)
-     ML/Fore  → #F4D044  (--ds-gold-bright)
-     Segment  → #A855F7  (--ds-purple)
-     Spending → #F97316  (--ds-orange)
-  */
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PYTHON C DICT — Copy into EVERY page file
+   ══════════════════════════════════════════════════════════════
+   DARK MODE:
+   C = {
+     "teal":      "#17B19B",   # Domestic / Primary brand
+     "teal_act":  "#149581",
+     "bg":        "#1A1E1F",
+     "sec_bg":    "#161B1C",
+     "card_bg":   "#1E2528",
+     "navbar":    "#031414",
+     "white":     "#F4F9F8",
+     "grey":      "#A1A6B7",
+     "border":    "#2A3235",
+     "blue":      "#4D9FFF",   # Inbound tourists
+     "gold":      "#D4A843",   # Total / KPI
+     "green":     "#2ECC71",   # Growth ▲
+     "red":       "#FF4757",   # Decline / COVID ▼
+     "orange":    "#FF7F3F",   # Spending / VFR
+     "purple":    "#C67FFF",   # Segmentation
+     # PURPOSE CHART PALETTE (stacked bars)
+     "p_religious": "#E85D75",
+     "p_leisure":   "#17B19B",
+     "p_business":  "#4D9FFF",
+     "p_vfr":       "#FF7F3F",
+     "p_other":     "#8B95A8",
+   }
+
+   LIGHT MODE (replace dark-only values):
+   "bg":      "#F0F5F4"
+   "sec_bg":  "#E4EDEB"
+   "card_bg": "#FFFFFF"
+   "navbar":  "#172025"
+   "border":  "#CBD5E0"
+   "grey":    "#9DBFBA"
+   "blue":    "#1565C0"
+   "green":   "#16A34A"
+   "red":     "#DC2626"
+   "orange":  "#E06010"
+   "purple":  "#6A1B9A"
+   (purpose colors stay the same in light mode)
+   ══════════════════════════════════════════════════════════════ */
 
 /* ── Light Theme Overrides ───────────────────────────────────── */
 [data-theme="light"] {
@@ -112,10 +156,15 @@
   --ds-border-hover: rgba(23, 177, 155, 0.50);
   --ds-teal-glow:    rgba(23, 177, 155, 0.08);
   --ds-teal-border:  rgba(23, 177, 155, 0.40);
-
   --ds-shadow-sm:    0 2px 12px rgba(0, 0, 0, 0.08);
   --ds-shadow-md:    0 6px 28px rgba(0, 0, 0, 0.12);
   --ds-shadow-teal:  0 8px 32px rgba(23, 177, 155, 0.12);
+  --ds-blue:         #1565C0;
+  --ds-green:        #16A34A;
+  --ds-red:          #DC2626;
+  --ds-orange:       #E06010;
+  --ds-purple:       #6A1B9A;
+  --ds-gold:         #B8892A;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -141,7 +190,6 @@ html, body,
   text-align: right;
 }
 
-/* Hide Streamlit chrome */
 [data-testid="stHeader"],
 [data-testid="stToolbar"],
 [data-testid="stSidebarNav"],
@@ -173,7 +221,6 @@ section[data-testid="stMain"] > div:first-child {
   font-family: var(--ds-font) !important;
 }
 
-/* Sidebar nav buttons */
 [data-testid="stSidebar"] .stButton > button {
   background: transparent !important;
   border: 1px solid transparent !important;
@@ -194,73 +241,8 @@ section[data-testid="stMain"] > div:first-child {
   border-color: var(--ds-teal-border) !important;
 }
 
-/* Home button special style */
-.home-btn > button {
-  background: var(--ds-teal-glow) !important;
-  border: 1px solid var(--ds-teal-border) !important;
-  color: var(--ds-teal) !important;
-  font-weight: 700 !important;
-  margin-bottom: 6px !important;
-}
-
-.home-btn > button:hover {
-  background: rgba(23, 177, 155, 0.22) !important;
-  border-color: var(--ds-teal) !important;
-}
-
 /* ═══════════════════════════════════════════════════════════════
-   PAGE HEADER
-   ═══════════════════════════════════════════════════════════════ */
-.ds-page-header {
-  position: relative;
-  overflow: hidden;
-  background: var(--ds-navbar-bg);
-  border-bottom: 1px solid var(--ds-border);
-  padding: 24px var(--ds-page-x) 20px;
-  margin-bottom: 0;
-}
-
-.ds-page-header-tag {
-  display: inline-block;
-  font-size: .57rem;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  /* Color set per-page via inline style or modifier class */
-  background: var(--ds-teal-glow);
-  border: 1px solid var(--ds-teal-border);
-  color: var(--ds-teal);
-}
-
-.ds-page-header h1 {
-  font-size: 1.85rem;
-  font-weight: 800;
-  color: var(--ds-text);
-  letter-spacing: -0.5px;
-  margin-bottom: 5px;
-  line-height: 1.15;
-}
-
-.ds-page-header p {
-  font-size: .82rem;
-  color: var(--ds-text-sub);
-  font-weight: 400;
-  line-height: 1.5;
-}
-
-/* Color accent variants for page headers */
-.ds-page-header.blue   .ds-page-header-tag { background: rgba(58,134,255,.10); border-color: rgba(58,134,255,.35); color: var(--ds-blue); }
-.ds-page-header.gold   .ds-page-header-tag { background: rgba(201,168,76,.10); border-color: rgba(201,168,76,.35); color: var(--ds-gold); }
-.ds-page-header.orange .ds-page-header-tag { background: rgba(249,115,22,.10); border-color: rgba(249,115,22,.35); color: var(--ds-orange); }
-.ds-page-header.purple .ds-page-header-tag { background: rgba(168,85,247,.10); border-color: rgba(168,85,247,.35); color: var(--ds-purple); }
-.ds-page-header.green  .ds-page-header-tag { background: rgba(34,197,94,.10);  border-color: rgba(34,197,94,.35);  color: var(--ds-green); }
-.ds-page-header.red    .ds-page-header-tag { background: rgba(239,68,68,.10);  border-color: rgba(239,68,68,.35);  color: var(--ds-red); }
-
-/* ═══════════════════════════════════════════════════════════════
-   KPI CARDS — Improved HCI
+   KPI CARDS
    ═══════════════════════════════════════════════════════════════ */
 .ds-kpi-row {
   display: grid;
@@ -274,134 +256,51 @@ section[data-testid="stMain"] > div:first-child {
 .ds-kpi {
   background: var(--ds-card-bg);
   border: 1px solid var(--ds-border);
-  border-top: 3px solid var(--ds-teal); /* accent on TOP for visual hierarchy */
+  border-top: 3px solid var(--ds-teal);
   border-radius: var(--ds-radius-lg);
   padding: 20px 16px;
   text-align: center;
   transition: transform 0.22s, box-shadow 0.22s;
 }
-
 .ds-kpi:hover {
   transform: translateY(-3px);
   box-shadow: var(--ds-shadow-teal);
 }
-
-.ds-kpi-ico {
-  font-size: 1.4rem;
-  margin-bottom: 6px;
-  line-height: 1;
-}
-
-/* ✅ LARGER value for better readability */
-.ds-kpi-val {
-  font-size: 1.55rem;
-  font-weight: 800;
-  line-height: 1.1;
-  font-family: var(--ds-font-mono);
-  color: var(--ds-teal);
-  letter-spacing: -1px;
-}
-
-.ds-kpi-lbl {
-  font-size: .60rem;
-  color: var(--ds-text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  font-weight: 600;
-  margin: 5px 0 3px;
-}
-
-.ds-kpi-sub {
-  font-size: .72rem;
-  font-weight: 700;
-  font-family: var(--ds-font-mono);
-  color: var(--ds-text-sub); /* overridden by .up / .down */
-}
-
-/* Delta indicators — semantic color */
+.ds-kpi-ico  { font-size: 1.4rem; margin-bottom: 6px; line-height: 1; }
+.ds-kpi-val  { font-size: 1.55rem; font-weight: 800; line-height: 1.1; font-family: var(--ds-font-mono); color: var(--ds-teal); letter-spacing: -1px; }
+.ds-kpi-lbl  { font-size: .60rem; color: var(--ds-text-sub); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin: 5px 0 3px; }
+.ds-kpi-sub  { font-size: .72rem; font-weight: 700; font-family: var(--ds-font-mono); color: var(--ds-text-sub); }
 .ds-kpi-sub.up   { color: var(--ds-green); }
 .ds-kpi-sub.down { color: var(--ds-red);   }
 
-/* KPI top-border color variants */
-.ds-kpi.teal   { border-top-color: var(--ds-teal);   }
-.ds-kpi.blue   { border-top-color: var(--ds-blue);   }
-.ds-kpi.gold   { border-top-color: var(--ds-gold);   }
-.ds-kpi.green  { border-top-color: var(--ds-green);  }
-.ds-kpi.red    { border-top-color: var(--ds-red);    }
-.ds-kpi.orange { border-top-color: var(--ds-orange); }
-.ds-kpi.purple { border-top-color: var(--ds-purple); }
-
-/* KPI value color variants */
-.ds-kpi.teal   .ds-kpi-val { color: var(--ds-teal);   }
-.ds-kpi.blue   .ds-kpi-val { color: var(--ds-blue);   }
-.ds-kpi.gold   .ds-kpi-val { color: var(--ds-gold);   }
-.ds-kpi.green  .ds-kpi-val { color: var(--ds-green);  }
-.ds-kpi.red    .ds-kpi-val { color: var(--ds-red);    }
-.ds-kpi.orange .ds-kpi-val { color: var(--ds-orange); }
-.ds-kpi.purple .ds-kpi-val { color: var(--ds-purple); }
+.ds-kpi.teal   { border-top-color: var(--ds-teal);   } .ds-kpi.teal   .ds-kpi-val { color: var(--ds-teal);   }
+.ds-kpi.blue   { border-top-color: var(--ds-blue);   } .ds-kpi.blue   .ds-kpi-val { color: var(--ds-blue);   }
+.ds-kpi.gold   { border-top-color: var(--ds-gold);   } .ds-kpi.gold   .ds-kpi-val { color: var(--ds-gold);   }
+.ds-kpi.green  { border-top-color: var(--ds-green);  } .ds-kpi.green  .ds-kpi-val { color: var(--ds-green);  }
+.ds-kpi.red    { border-top-color: var(--ds-red);    } .ds-kpi.red    .ds-kpi-val { color: var(--ds-red);    }
+.ds-kpi.orange { border-top-color: var(--ds-orange); } .ds-kpi.orange .ds-kpi-val { color: var(--ds-orange); }
+.ds-kpi.purple { border-top-color: var(--ds-purple); } .ds-kpi.purple .ds-kpi-val { color: var(--ds-purple); }
 
 /* ═══════════════════════════════════════════════════════════════
-   SECTION HEADER (badge + title)
+   SECTION HEADER
    ═══════════════════════════════════════════════════════════════ */
-.ds-sec-head {
-  margin-bottom: 18px;
-}
-
+.ds-sec-head  { margin-bottom: 18px; }
 .ds-sec-badge {
   display: inline-block;
   background: var(--ds-teal-glow);
   border: 1px solid var(--ds-teal-border);
   color: var(--ds-teal);
-  font-size: .57rem;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 4px;
-  margin-bottom: 10px;
+  font-size: .57rem; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 4px; margin-bottom: 10px;
 }
-
-.ds-sec-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--ds-text);
-  line-height: 1.3;
-}
-
-.ds-sec-sub {
-  font-size: .78rem;
-  color: var(--ds-text-sub);
-  margin-top: 4px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CHART CONTAINERS
-   ═══════════════════════════════════════════════════════════════ */
-.ds-chart-wrap {
-  background: var(--ds-card-bg);
-  border: 1px solid var(--ds-border);
-  border-radius: var(--ds-radius-lg);
-  padding: 20px 16px 10px;
-  margin-bottom: var(--ds-gap);
-}
-
-/* Chart layout — used in Plotly via paper_bgcolor / plot_bgcolor */
-/* Always set these in Python:
-   paper_bgcolor = "rgba(0,0,0,0)"
-   plot_bgcolor  = "rgba(0,0,0,0)"
-   font color    = var(--ds-text-sub) = #A1A6B7
-   gridcolor     = "rgba(42,50,53,0.5)"
-   linecolor     = var(--ds-border) = #2A3235
-*/
+.ds-sec-title { font-size: 1.25rem; font-weight: 700; color: var(--ds-text); line-height: 1.3; }
+.ds-sec-sub   { font-size: .78rem; color: var(--ds-text-sub); margin-top: 4px; }
 
 /* ═══════════════════════════════════════════════════════════════
    STANDARD CARDS
    ═══════════════════════════════════════════════════════════════ */
-.ds-card-grid {
-  display: grid;
-  gap: var(--ds-gap);
-  margin-bottom: 24px;
-}
+.ds-card-grid { display: grid; gap: var(--ds-gap); margin-bottom: 24px; }
 .ds-card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
 .ds-card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
 .ds-card-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
@@ -411,30 +310,18 @@ section[data-testid="stMain"] > div:first-child {
   border: 1px solid var(--ds-border);
   border-radius: var(--ds-radius-lg);
   padding: 20px 18px;
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
   transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
 }
-
 .ds-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
   background: var(--ds-teal);
-  transform: scaleX(0);
-  transform-origin: left;
+  transform: scaleX(0); transform-origin: left;
   transition: transform 0.3s;
 }
-
-.ds-card:hover {
-  border-color: var(--ds-border-hover);
-  transform: translateY(-3px);
-  box-shadow: var(--ds-shadow-teal);
-}
-
+.ds-card:hover { border-color: var(--ds-border-hover); transform: translateY(-3px); box-shadow: var(--ds-shadow-teal); }
 .ds-card:hover::before { transform: scaleX(1); }
-
 .ds-card-ico   { font-size: 1.55rem; margin-bottom: 10px; }
 .ds-card-title { font-size: .87rem; font-weight: 600; color: var(--ds-text); margin-bottom: 5px; }
 .ds-card-desc  { font-size: .73rem; color: var(--ds-text-sub); line-height: 1.55; }
@@ -448,102 +335,35 @@ section[data-testid="stMain"] > div:first-child {
   border-left: 3px solid var(--ds-teal);
   border-radius: var(--ds-radius-lg);
   padding: 15px 18px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  transition: transform 0.2s;
-  margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 12px;
+  transition: transform 0.2s; margin-bottom: 10px;
 }
-
 .ds-insight:hover { transform: translateX(4px); }
-
-/* Insight left-border color variants */
 .ds-insight.blue   { border-left-color: var(--ds-blue);   }
 .ds-insight.gold   { border-left-color: var(--ds-gold);   }
 .ds-insight.green  { border-left-color: var(--ds-green);  }
 .ds-insight.red    { border-left-color: var(--ds-red);    }
 .ds-insight.orange { border-left-color: var(--ds-orange); }
 .ds-insight.purple { border-left-color: var(--ds-purple); }
-
 .ds-insight-ico { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
 .ds-insight-txt { font-size: .83rem; color: var(--ds-text); line-height: 1.65; }
 
 /* ═══════════════════════════════════════════════════════════════
-   ML / FEATURE CARDS
-   ═══════════════════════════════════════════════════════════════ */
-.ds-ml-card {
-  background: var(--ds-card-bg);
-  border: 1px solid var(--ds-border);
-  border-radius: var(--ds-radius-lg);
-  padding: 24px 20px;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.25s, box-shadow 0.25s;
-}
-
-.ds-ml-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--ds-shadow-md);
-}
-
-.ds-ml-accent {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--ds-teal);
-}
-
-.ds-ml-name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--ds-text);
-  font-family: var(--ds-font-mono);
-  margin-bottom: 4px;
-}
-
-.ds-ml-type {
-  font-size: .68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  margin-bottom: 12px;
-  color: var(--ds-teal);
-}
-
-.ds-ml-desc { font-size: .8rem; color: var(--ds-text-sub); line-height: 1.6; }
-
-/* ═══════════════════════════════════════════════════════════════
    TABLE
    ═══════════════════════════════════════════════════════════════ */
-.ds-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .81rem;
-}
-
+.ds-table { width: 100%; border-collapse: collapse; font-size: .81rem; }
 .ds-table th {
-  background: var(--ds-section-bg);
-  color: var(--ds-text-sub);
-  padding: 10px 14px;
-  text-align: left;
-  font-size: .67rem;
-  text-transform: uppercase;
-  letter-spacing: .8px;
+  background: var(--ds-section-bg); color: var(--ds-text-sub);
+  padding: 10px 14px; text-align: left;
+  font-size: .67rem; text-transform: uppercase; letter-spacing: .8px;
   border-bottom: 1px solid var(--ds-border);
 }
-
 .ds-table td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--ds-border);
-  font-family: var(--ds-font-mono);
-  font-size: .82rem;
-  color: var(--ds-text);
+  padding: 10px 14px; border-bottom: 1px solid var(--ds-border);
+  font-family: var(--ds-font-mono); font-size: .82rem; color: var(--ds-text);
 }
-
 .ds-table tr:last-child td { border-bottom: none; }
 .ds-table tr:hover td      { background: var(--ds-section-bg); }
-
-/* Semantic cell colors */
 .ds-table td.up     { color: var(--ds-green);  font-weight: 700; }
 .ds-table td.down   { color: var(--ds-red);    font-weight: 700; }
 .ds-table td.accent { color: var(--ds-teal);   font-weight: 700; }
@@ -554,167 +374,78 @@ section[data-testid="stMain"] > div:first-child {
    ═══════════════════════════════════════════════════════════════ */
 .ds-badge {
   display: inline-block;
-  background: var(--ds-teal-glow);
-  border: 1px solid var(--ds-teal-border);
-  color: var(--ds-teal);
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: var(--ds-radius-pill);
+  background: var(--ds-teal-glow); border: 1px solid var(--ds-teal-border);
+  color: var(--ds-teal); font-size: .68rem; font-weight: 700;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  padding: 4px 12px; border-radius: var(--ds-radius-pill);
 }
-
-.ds-badge.blue   { background: rgba(58,134,255,.10);  border-color: rgba(58,134,255,.35);  color: var(--ds-blue);   }
-.ds-badge.gold   { background: rgba(201,168,76,.10);  border-color: rgba(201,168,76,.35);  color: var(--ds-gold);   }
-.ds-badge.green  { background: rgba(34,197,94,.10);   border-color: rgba(34,197,94,.35);   color: var(--ds-green);  }
-.ds-badge.red    { background: rgba(239,68,68,.10);   border-color: rgba(239,68,68,.35);   color: var(--ds-red);    }
-.ds-badge.orange { background: rgba(249,115,22,.10);  border-color: rgba(249,115,22,.35);  color: var(--ds-orange); }
-.ds-badge.purple { background: rgba(168,85,247,.10);  border-color: rgba(168,85,247,.35);  color: var(--ds-purple); }
+.ds-badge.blue   { background: rgba(77,159,255,.10);  border-color: rgba(77,159,255,.35);  color: var(--ds-blue);   }
+.ds-badge.gold   { background: rgba(212,168,67,.10);  border-color: rgba(212,168,67,.35);  color: var(--ds-gold);   }
+.ds-badge.green  { background: rgba(46,204,113,.10);  border-color: rgba(46,204,113,.35);  color: var(--ds-green);  }
+.ds-badge.red    { background: rgba(255,71,87,.10);   border-color: rgba(255,71,87,.35);   color: var(--ds-red);    }
+.ds-badge.orange { background: rgba(255,127,63,.10);  border-color: rgba(255,127,63,.35);  color: var(--ds-orange); }
+.ds-badge.purple { background: rgba(198,127,255,.10); border-color: rgba(198,127,255,.35); color: var(--ds-purple); }
 
 /* ═══════════════════════════════════════════════════════════════
-   PROGRESS BAR (Vision 2030)
+   PROGRESS BAR
    ═══════════════════════════════════════════════════════════════ */
-.ds-progress-wrap { margin-bottom: 16px; }
-
-.ds-progress-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: .78rem;
-  color: var(--ds-text);
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.ds-progress-val {
-  font-family: var(--ds-font-mono);
-  color: var(--ds-teal);
-  font-weight: 700;
-}
-
-.ds-progress-bg {
-  background: var(--ds-section-bg);
-  border: 1px solid var(--ds-border);
-  border-radius: 6px;
-  height: 9px;
-  overflow: hidden;
-}
-
-.ds-progress-fill {
-  height: 100%;
-  border-radius: 6px;
-  background: linear-gradient(90deg, var(--ds-teal-active), var(--ds-teal));
-  transition: width 0.6s ease;
-}
-
-.ds-progress-note {
-  font-size: .70rem;
-  color: var(--ds-text-sub);
-  margin-top: 4px;
-}
+.ds-progress-wrap  { margin-bottom: 16px; }
+.ds-progress-label { display: flex; justify-content: space-between; font-size: .78rem; color: var(--ds-text); font-weight: 600; margin-bottom: 6px; }
+.ds-progress-val   { font-family: var(--ds-font-mono); color: var(--ds-teal); font-weight: 700; }
+.ds-progress-bg    { background: var(--ds-section-bg); border: 1px solid var(--ds-border); border-radius: 6px; height: 9px; overflow: hidden; }
+.ds-progress-fill  { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--ds-teal-active), var(--ds-teal)); transition: width 0.6s ease; }
+.ds-progress-note  { font-size: .70rem; color: var(--ds-text-sub); margin-top: 4px; }
 
 /* ═══════════════════════════════════════════════════════════════
    DIVIDER
    ═══════════════════════════════════════════════════════════════ */
-.ds-divider {
-  height: 1px;
-  background: var(--ds-border);
-  margin: 20px 0;
-}
-
+.ds-divider { height: 1px; background: var(--ds-border); margin: 20px 0; }
 .ds-divider.gradient {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--ds-teal) 25%,
-    var(--ds-border) 70%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg, transparent 0%, var(--ds-teal) 25%, var(--ds-border) 70%, transparent 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════════ */
 .ds-footer {
-  background: var(--ds-navbar-bg);
-  border-top: 2px solid var(--ds-teal);
+  background: var(--ds-navbar-bg); border-top: 2px solid var(--ds-teal);
   padding: 22px var(--ds-page-x);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
 }
-
-.ds-footer-name {
-  font-size: .88rem;
-  font-weight: 700;
-  color: var(--ds-teal);
-}
-
-.ds-footer-sub {
-  font-size: .66rem;
-  color: var(--ds-footer-text);
-  margin-top: 2px;
-}
-
-.ds-footer-links { display: flex; gap: 20px; }
-
-.ds-footer-links a {
-  font-size: .75rem;
-  color: var(--ds-footer-text);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
+.ds-footer-name   { font-size: .88rem; font-weight: 700; color: var(--ds-teal); }
+.ds-footer-sub    { font-size: .66rem; color: var(--ds-footer-text); margin-top: 2px; }
+.ds-footer-links  { display: flex; gap: 20px; }
+.ds-footer-links a { font-size: .75rem; color: var(--ds-footer-text); text-decoration: none; font-weight: 500; transition: color 0.2s; }
 .ds-footer-links a:hover { color: var(--ds-teal); }
 
 /* ═══════════════════════════════════════════════════════════════
    STREAMLIT WIDGET OVERRIDES
    ═══════════════════════════════════════════════════════════════ */
-
-/* Labels & text */
 [data-testid="stMain"] label,
 [data-testid="stMain"] p,
 [data-testid="stMain"] span,
 [data-testid="stWidgetLabel"] p,
+[data-testid="stSlider"] span,
+[data-testid="stSlider"] p,
 .stRadio label div p {
   color: var(--ds-text) !important;
   font-family: var(--ds-font) !important;
 }
 
-/* Buttons */
 .stButton > button {
   background: var(--ds-card-bg) !important;
   border: 1px solid var(--ds-border) !important;
   color: var(--ds-text) !important;
   border-radius: var(--ds-radius) !important;
-  font-size: .78rem !important;
-  font-weight: 600 !important;
+  font-size: .78rem !important; font-weight: 600 !important;
   font-family: var(--ds-font) !important;
   transition: border-color 0.2s, color 0.2s !important;
 }
+.stButton > button:hover { border-color: var(--ds-teal) !important; color: var(--ds-teal) !important; }
+.stButton > button[kind="primary"] { background: var(--ds-teal) !important; border-color: var(--ds-teal) !important; color: #FFFFFF !important; }
+.stButton > button[kind="primary"]:hover { background: var(--ds-teal-active) !important; border-color: var(--ds-teal-active) !important; color: #FFFFFF !important; }
 
-.stButton > button:hover {
-  border-color: var(--ds-teal) !important;
-  color: var(--ds-teal) !important;
-}
-
-/* Primary button */
-.stButton > button[kind="primary"] {
-  background: var(--ds-teal) !important;
-  border-color: var(--ds-teal) !important;
-  color: #FFFFFF !important;
-}
-
-.stButton > button[kind="primary"]:hover {
-  background: var(--ds-teal-active) !important;
-  border-color: var(--ds-teal-active) !important;
-  color: #FFFFFF !important;
-}
-
-/* Selectbox */
 [data-baseweb="select"] > div {
   background: var(--ds-card-bg) !important;
   border-color: var(--ds-border) !important;
@@ -722,22 +453,13 @@ section[data-testid="stMain"] > div:first-child {
   color: var(--ds-text) !important;
 }
 
-/* Radio */
-[data-testid="stRadio"] > div {
-  gap: 8px !important;
-}
-
-/* Slider */
 [data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
   background: var(--ds-teal) !important;
   border-color: var(--ds-teal) !important;
 }
 
-/* Plotly chart container — remove default white bg */
 .js-plotly-plot .plotly,
-.js-plotly-plot .plotly .svg-container {
-  background: transparent !important;
-}
+.js-plotly-plot .plotly .svg-container { background: transparent !important; }
 
 /* ═══════════════════════════════════════════════════════════════
    ANIMATIONS
@@ -746,64 +468,48 @@ section[data-testid="stMain"] > div:first-child {
   0%, 100% { box-shadow: 0 0 0 0 rgba(23, 177, 155, 0.6); }
   50%       { box-shadow: 0 0 0 14px rgba(23, 177, 155, 0); }
 }
-
 @keyframes ds-fade-in {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-.ds-fade-in {
-  animation: ds-fade-in 0.4s ease forwards;
-}
-
-/* CTA pulse button */
-.ds-cta-btn {
-  background: var(--ds-teal);
-  color: #FFFFFF;
-  font-size: .92rem;
-  font-weight: 700;
-  padding: 13px 32px;
-  border-radius: 7px;
-  border: none;
-  cursor: pointer;
-  letter-spacing: .3px;
-  box-shadow: 0 6px 28px rgba(23, 177, 155, 0.55);
-  animation: ds-pulse 2.6s ease-in-out infinite;
-  transition: background 0.2s, transform 0.2s;
-  font-family: var(--ds-font);
-}
-
-.ds-cta-btn:hover {
-  background: var(--ds-teal-active);
-  animation: none;
-  transform: translateX(4px);
-}
+.ds-fade-in { animation: ds-fade-in 0.4s ease forwards; }
 
 /* ═══════════════════════════════════════════════════════════════
-   CHART COLOR REFERENCE TABLE
-   (Copy these into Python C dict for every page)
+   COMPLETE PYTHON C DICT — Use in ALL pages
    ═══════════════════════════════════════════════════════════════
 
+   DARK:
    C = {
-     "teal":    "#17B19B",   # Domestic / Primary brand
-     "blue":    "#3A86FF",   # Inbound tourists
-     "gold":    "#C9A84C",   # Total / ML forecast
-     "green":   "#22C55E",   # Growth / Positive ▲
-     "red":     "#EF4444",   # Decline / COVID / Negative ▼
-     "orange":  "#F97316",   # Spending / Revenue
-     "purple":  "#A855F7",   # Segmentation / Clusters
-     "yellow":  "#F4D044",   # Highlights / Alerts
-     "grey":    "#A1A6B7",   # Gridlines / Secondary text
-     "border":  "#2A3235",   # Chart borders
+     "teal":"#17B19B", "teal_act":"#149581",
+     "bg":"#1A1E1F",   "sec_bg":"#161B1C",
+     "card_bg":"#1E2528", "navbar":"#031414",
+     "white":"#F4F9F8", "grey":"#A1A6B7",
+     "border":"#2A3235",
+     "blue":"#4D9FFF",     # Inbound
+     "gold":"#D4A843",     # Total / KPI
+     "green":"#2ECC71",    # Growth ▲
+     "red":"#FF4757",      # Decline ▼
+     "orange":"#FF7F3F",   # Spending / VFR
+     "purple":"#C67FFF",   # Segmentation
+     # Purpose palette — stacked bars
+     "p_religious":"#E85D75",
+     "p_leisure":  "#17B19B",
+     "p_business": "#4D9FFF",
+     "p_vfr":      "#FF7F3F",
+     "p_other":    "#8B95A8",
    }
 
-   Plotly layout defaults:
+   LIGHT (override only):
+   "bg":"#F0F5F4", "sec_bg":"#E4EDEB",
+   "card_bg":"#FFFFFF", "border":"#CBD5E0",
+   "blue":"#1565C0", "green":"#16A34A",
+   "red":"#DC2626",  "orange":"#E06010",
+   "purple":"#6A1B9A", "gold":"#B8892A"
+
+   Plotly defaults (all pages):
    paper_bgcolor = "rgba(0,0,0,0)"
    plot_bgcolor  = "rgba(0,0,0,0)"
-   font.color    = "#A1A6B7"
-   xaxis.gridcolor = "rgba(42,50,53,0.5)"
-   yaxis.gridcolor = "rgba(42,50,53,0.5)"
-   xaxis.linecolor = "#2A3235"
-   yaxis.linecolor = "#2A3235"
-
+   font.color    = C["grey"]
+   gridcolor     = "rgba(42,50,53,0.5)"
+   linecolor     = C["border"]
    ═══════════════════════════════════════════════════════════════ */
