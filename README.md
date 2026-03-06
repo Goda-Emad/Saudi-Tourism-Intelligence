@@ -1,211 +1,211 @@
-# 🇸🇦 Saudi Tourism Intelligence
-
 <div align="center">
 
-![Saudi Tourism Intelligence](https://img.shields.io/badge/Saudi%20Tourism-Intelligence-17B19B?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNWwtNS01IDEuNDEtMS40MUwxMCAxNC4xN2w3LjU5LTcuNTlMMTkgOGwtOSA5eiIvPjwvc3ZnPg==)
-![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
-![Prophet](https://img.shields.io/badge/Prophet%20ML-17B19B?style=for-the-badge)
+<img src="https://capsule-render.vercel.app/api?type=waving&color=17B19B&height=200&section=header&text=Saudi%20Tourism%20Intelligence&fontSize=40&fontColor=ffffff&fontAlignY=35&desc=منصة%20تحليل%20السياحة%20السعودية%20·%202015%20—%202024&descAlignY=55&descSize=16&descColor=ffffff" width="100%"/>
 
-**AI-powered analytics platform built on 10 years of official Saudi government tourism data**
+<br/>
 
-[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-Open%20App-17B19B?style=for-the-badge)](https://saudi-tourism-intelligence-zyayphbqpoqx623bg5neme.streamlit.app/)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Goda%20Emad-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/goda-emad/)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/Goda-Emad/Saudi-Tourism-Intelligence)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Streamlit-FF4B4B?style=for-the-badge&logoColor=white)](https://saudi-tourism-intelligence-zyayphbqpoqx623bg5neme.streamlit.app/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Goda_Emad-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/goda-emad/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Goda-Emad/Saudi-Tourism-Intelligence/tree/main)
+
+<br/>
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)
+![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=flat-square&logo=plotly&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-189C3E?style=flat-square&logoColor=white)
 
 </div>
 
 ---
 
-## 📌 Overview
+## ✦ نظرة عامة
 
-**Saudi Tourism Intelligence** is a comprehensive, interactive analytics dashboard that transforms 10 years (2015–2024) of official Saudi government tourism data into actionable intelligence. Built with Python and Streamlit, it combines statistical analysis, machine learning forecasting, and ESG sustainability metrics — all in one platform.
+**Saudi Tourism Intelligence** منصة تحليلية تفاعلية ثنائية اللغة **(عربي / إنجليزي)** تغطي عشر سنوات من بيانات السياحة السعودية (2015–2024)، وتقيس التقدم نحو أهداف **رؤية 2030**.
 
-> 🏆 Achieved **98.6% R²** accuracy using Prophet ML on 2024 holdout validation data.
-
----
-
-## 🌐 Live Application
-
-| Link | Description |
-|------|-------------|
-| 🚀 [**Live App**](https://saudi-tourism-intelligence-zyayphbqpoqx623bg5neme.streamlit.app/) | Interactive Streamlit dashboard |
-| 💼 [**LinkedIn**](https://www.linkedin.com/in/goda-emad/) | Author profile |
-| 🐙 [**GitHub**](https://github.com/Goda-Emad/Saudi-Tourism-Intelligence) | Source code repository |
+تجمع المنصة بين التحليل الوصفي والتنبؤي وتقنيات **Machine Learning** في 9 صفحات تفاعلية تدعم الوضع الداكن والفاتح.
 
 ---
 
-## ✨ Key Features
+## ✦ إحصائيات سريعة
 
-| Feature | Details |
-|---------|---------|
-| 📊 **8 Interactive Pages** | Full coverage of every tourism dimension |
-| 🤖 **Prophet ML Forecasting** | 98.6% R² · 2025–2026 demand predictions |
-| 🎯 **K-Means Segmentation** | Silhouette Score: 0.630 · High/Mid/Budget clusters |
-| 🌱 **Carbon Impact** | CO₂ index & ESG sustainability tracking |
-| 🌐 **Bilingual** | Full Arabic 🇸🇦 & English 🇬🇧 support |
-| 🌙 **Dark / Light Mode** | Fully themed UI |
-| 📅 **10 Years of Data** | 2015–2024 official government records |
-| 📁 **7 Datasets** | CSV files from Ministry of Economy & Planning |
+<div align="center">
+
+| 🌍 إجمالي السياح 2024 | ✈️ وافدون | 🏠 محليون | 📈 نمو سنوي |
+|:---:|:---:|:---:|:---:|
+| **115.9M** | **29.7M** | **86.2M** | **+6.2%** |
+
+</div>
 
 ---
 
-## 📈 Dashboard Pages
+## ✦ صفحات المنصة
+
+| # | الصفحة | الوصف |
+|---|---|---|
+| 🏠 | **Executive Overview** | ملخص تنفيذي — KPIs، الاتجاه السنوي، التوزيع الجغرافي |
+| 📈 | **Tourist Trends** | تحليل سنوي وشهري — وافد مقابل محلي — تأثير كوفيد |
+| 📅 | **Seasonality** | Heatmap موسمي — رادار — تحليل ربعي — ذروة رمضان والصيف |
+| 🛌 | **Overnight Stays** | ليالي الإقامة — مقارنة 2024 vs 2023 — تعافي ما بعد الجائحة |
+| 💰 | **Spending Analysis** | إنفاق لكل رحلة وليلة — 649.5B SAR — مقارنات تاريخية |
+| 🎯 | **Segmentation** | K-Means (k=3) — خريطة Cluster — استراتيجية الاستهداف |
+| 🔮 | **Forecasting** | XGBoost — توقعات 2025–2026 — 3 سيناريوهات — فترات ثقة 90% |
+| 🌿 | **Carbon Impact** | البصمة الكربونية — مقارنة دولية — مؤشرات الاستدامة |
+| 🏆 | **Vision 2030** | Gauge charts — قياس التقدم نحو أهداف الرؤية |
+
+---
+
+## ✦ المميزات التقنية
 
 ```
-📱 Saudi Tourism Intelligence
-├── 🏠  Executive Overview      → KPIs, trends & strategic insights
-├── 📈  Tourist Trends          → Annual & monthly analysis 2015–2024
-├── 📅  Seasonality             → Ramadan & summer peak detection
-├── 💰  Spending Analysis       → Per trip, per night, by purpose
-├── 🏨  Overnight Stays         → Length of stay & COVID-19 recovery
-├── 🔮  Demand Forecasting      → Prophet ML · 2025–2026 predictions
-├── 🎯  Segmentation            → K-Means tourist clustering
-└── 🌱  Carbon Impact           → CO₂ index & ESG sustainability
+✅ ثنائي اللغة كامل     —  عربي RTL  /  إنجليزي LTR
+✅ ثيم داكن وفاتح        —  تحويل فوري بدون إعادة تحميل
+✅ فلاتر تفاعلية         —  Slider · Radio · Multi-select
+✅ 40+ مخطط تفاعلي      —  Bar · Scatter · Heatmap · Radar · Gauge
+✅ Machine Learning       —  K-Means Clustering + XGBoost Forecasting
+✅ بيانات محققة           —  مصادر رسمية: SCTA · DataSaudi · UNWTO
+✅ مستجيب للشاشات        —  Mobile-friendly layout
 ```
 
 ---
 
-## 📊 Key Statistics (2024)
+## ✦ نماذج الـ Machine Learning
 
-| Metric | Value | YoY Change |
-|--------|-------|-----------|
-| 🌍 Total Tourists | **115.8M** | ▲ +23% |
-| 🌙 Overnight Stays | **1.10B** | ▲ +41% |
-| 💰 Avg Spend (SAR) | **5,622** | ▲ +8% |
-| ✈️ Inbound Tourists | **29.7M** | ▲ +8.4% |
-| 🏠 Domestic Tourists | **86.2M** | ▲ +5.2% |
-| 🤖 ML Accuracy R² | **98.6%** | — |
+<table>
+<tr>
+<td width="50%">
+
+### 🎯 K-Means Clustering
+```
+Algorithm   :  K-Means (k=3)
+Scaler      :  StandardScaler
+Silhouette  :  0.630
+Features    :  5 variables
+───────────────────────────────
+💎 High-Value   →  SAR 5,512/trip
+🌟 Mid-Value    →  SAR 4,791/trip
+🏠 Budget       →  SAR 1,242/trip
+───────────────────────────────
+Revenue Ratio   :  4.4× High vs Budget
+```
+
+</td>
+<td width="50%">
+
+### 🔮 XGBoost Forecasting
+```
+Algorithm   :  XGBoost Regressor
+Horizon     :  2025 – 2026
+Confidence  :  90% intervals
+Scenarios   :  3 (Base · Opt · Cons)
+───────────────────────────────
+2025 Base   →  ~128M tourists
+2026 Base   →  ~140M tourists
+───────────────────────────────
+Target      :  Annual arrivals (M)
+```
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🏗️ Project Structure
+## ✦ Tech Stack
+
+<div align="center">
+
+| Layer | Technologies |
+|---|---|
+| **Framework** | Streamlit ≥ 1.32 |
+| **Visualization** | Plotly 5.x — Graph Objects + Express |
+| **Data** | Pandas 2.x · NumPy |
+| **ML** | scikit-learn (KMeans, StandardScaler) · XGBoost |
+| **Fonts** | IBM Plex Mono · IBM Plex Sans · Tajawal |
+| **Deployment** | Streamlit Community Cloud |
+
+</div>
+
+---
+
+## ✦ هيكل المشروع
 
 ```
-dashboard/
-├── app.py                    # 🏠 Home page & hero section
+Saudi-Tourism-Intelligence/
+│
+├── app.py                        # Main entry — navigation & shared state
+│
+├── dashboard/
+│   ├── Overview.py
+│   ├── Tourist_Trends.py
+│   ├── Seasonality.py
+│   ├── Overnight_Stays.py
+│   ├── Spending.py
+│   ├── Segmentation.py
+│   ├── Forecasting.py
+│   ├── Carbon_Impact.py
+│   └── Vision_2030.py
+│
+├── utils/
+│   └── sidebar.py                # Shared sidebar — theme + language toggle
+│
 ├── assets/
-│   ├── logo.jpg              # Platform logo
-│   └── hero.jpg              # Hero background image
-├── pages/
-│   ├── Overview.py           # Executive overview
-│   ├── Tourist_Trends.py     # Tourist trends analysis
-│   ├── Seasonality.py        # Seasonality patterns
-│   ├── Spending.py           # Spending analysis
-│   ├── Overnight_Stays.py    # Overnight stays
-│   ├── Forecasting.py        # ML demand forecasting
-│   ├── Segmentation.py       # Tourist segmentation
-│   └── Carbon_Impact.py      # Carbon & ESG
-└── utils/
-    ├── __init__.py
-    ├── sidebar.py            # Shared navigation sidebar
-    ├── kpis.py               # KPI & progress bar components
-    ├── charts.py             # Reusable chart helpers
-    └── data_loader.py        # Data loading utilities
+│   └── logo.jpg
+│
+└── requirements.txt
 ```
 
 ---
 
-## 🛠️ Tech Stack
-
-| Technology | Usage |
-|-----------|-------|
-| **Python 3.10+** | Core language |
-| **Streamlit** | Web application framework |
-| **Plotly** | Interactive charts & heatmaps |
-| **Prophet (Meta)** | Time-series ML forecasting |
-| **scikit-learn** | K-Means clustering & segmentation |
-| **Pandas / NumPy** | Data processing & analysis |
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-```bash
-Python 3.10+
-pip
-```
-
-### Installation
+## ✦ تشغيل المشروع محلياً
 
 ```bash
-# 1. Clone the repository
+# 1. استنساخ المستودع
 git clone https://github.com/Goda-Emad/Saudi-Tourism-Intelligence.git
-cd Saudi-Tourism-Intelligence/dashboard
+cd Saudi-Tourism-Intelligence
 
-# 2. Install dependencies
+# 2. تثبيت المكتبات
 pip install -r requirements.txt
 
-# 3. Run the application
+# 3. تشغيل التطبيق
 streamlit run app.py
 ```
 
-### Dependencies (`requirements.txt`)
-```
-streamlit
-plotly
-pandas
-numpy
-prophet
-scikit-learn
-```
+---
+
+## ✦ مصادر البيانات
+
+| المصدر | البيانات |
+|---|---|
+| **هيئة السياحة السعودية (SCTA)** | الأعداد السنوية · الإنفاق · أغراض الزيارة |
+| **DataSaudi** | البيانات الشهرية · ليالي الإقامة |
+| **World Bank / UNWTO** | مقارنات دولية · معدلات الكربون |
+| **التقارير الرسمية 2015–2024** | مؤشرات رؤية 2030 |
 
 ---
 
-## 🎯 Vision 2030 Alignment
-
-This platform tracks Saudi Arabia's progress toward **Vision 2030** tourism targets:
-
-| Target | Current | Goal | Progress |
-|--------|---------|------|---------|
-| Inbound Tourists | 30.1M | 150M | 20% |
-| Tourism GDP % | 11.5% | 10% | ✅ Exceeded |
-| Hotel Capacity | 550K rooms | 650K | 85% |
-| Carbon Reduction | 18% | 30% | In Progress |
-
----
-
-## 🔮 ML Forecasting Highlights
-
-- **Model:** Facebook Prophet with yearly & weekly seasonality
-- **Training Data:** 2015–2023 (9 years)
-- **Validation:** 2024 holdout test set
-- **Accuracy:** R² = **0.986** · MAPE < 4%
-- **Forecast Horizon:** 2025–2026 with confidence intervals
-
----
-
-## 👩‍💻 Author
+## ✦ المطوّرة
 
 <div align="center">
 
-**Eng. Goda Emad**
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0B1416&height=120&text=Eng.%20Goda%20Emad&fontSize=30&fontColor=17B19B&fontAlignY=45&desc=Data%20Scientist%20·%20BI%20Developer%20·%20Saudi%20Tourism%20Intelligence&descSize=13&descColor=A1A6B7&descAlignY=68" width="100%"/>
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/goda-emad/)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat-square&logo=github)](https://github.com/Goda-Emad/Saudi-Tourism-Intelligence)
+<br/>
 
-*Data Scientist & Analytics Engineer*
-*Design: DataSaudi*
+[![LinkedIn](https://img.shields.io/badge/Connect_on_LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/goda-emad/)
+[![GitHub](https://img.shields.io/badge/Follow_on_GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Goda-Emad)
+[![Demo](https://img.shields.io/badge/🚀_Live_Dashboard-FF4B4B?style=for-the-badge)](https://saudi-tourism-intelligence-zyayphbqpoqx623bg5neme.streamlit.app/)
 
 </div>
 
 ---
 
-## 📄 License
-
-This project uses official data from the **Ministry of Economy & Planning, Saudi Arabia**.
-All analytics, visualizations, and ML models are original work by Eng. Goda Emad.
-
----
-
 <div align="center">
 
-**© 2025 Saudi Tourism Intelligence · Eng. Goda Emad**
+<img src="https://capsule-render.vercel.app/api?type=waving&color=17B19B&height=100&section=footer&fontSize=14&fontColor=ffffff" width="100%"/>
 
-[![Live App](https://img.shields.io/badge/🚀%20Try%20the%20Live%20App-17B19B?style=for-the-badge)](https://saudi-tourism-intelligence-zyayphbqpoqx623bg5neme.streamlit.app/)
-
-*Built with ❤️ for Saudi Vision 2030*
+*Built with ❤️ · Saudi Tourism Intelligence · Vision 2030 Data Initiative*
 
 </div>
