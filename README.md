@@ -186,7 +186,7 @@ streamlit run app.py
 
 ---
 
-## ✦ المطوّرة
+## ✦ المطوّر
 
 <div align="center">
 
