@@ -523,6 +523,54 @@ footer{
 .stagger > *:nth-child(8){transition-delay:.56s}
 .stagger > *:nth-child(9){transition-delay:.64s}
 
+/* ── TRANSLATE BUTTON ── */
+.lang-toggle{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 16px;border-radius:999px;
+  font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  background:rgba(201,168,76,.15);
+  border:1.5px solid rgba(201,168,76,.4);
+  color:var(--gold);cursor:pointer;
+  transition:all .22s;font-family:var(--display);
+}
+.lang-toggle:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+
+/* ── CV BUTTON ── */
+.pill-link.cv{
+  background:rgba(23,177,155,.12);
+  border-color:rgba(23,177,155,.4);
+  color:var(--teal);
+}
+.pill-link.cv:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* ── CONTACT SECTION ── */
+.contact-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+}
+.contact-card{
+  background:var(--ink);border-radius:16px;padding:32px 28px;
+  display:flex;flex-direction:column;align-items:center;
+  gap:14px;text-align:center;text-decoration:none;
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.contact-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(23,177,155,.08),transparent);
+  opacity:0;transition:opacity .25s;
+}
+.contact-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(11,15,14,.3)}
+.contact-card:hover::before{opacity:1}
+.contact-icon{
+  width:52px;height:52px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+}
+.contact-label{font-size:.6rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.contact-val{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8);font-family:var(--mono);word-break:break-all}
+.contact-arrow{font-size:.75rem;color:var(--teal);font-weight:700;margin-top:4px;opacity:0;transform:translateX(-4px);transition:all .2s}
+.contact-card:hover .contact-arrow{opacity:1;transform:translateX(0)}
+
+@media(max-width:768px){.contact-grid{grid-template-columns:1fr}}
+
 /* ── CORNER ACCENT ── */
 .corner-accent{
   position:absolute;top:0;right:0;
@@ -561,6 +609,8 @@ footer{
       Saudi Tourism Intelligence
     </div>
     <div class="topbar-links">
+      <button class="lang-toggle" onclick="toggleLang()" id="langBtn">🌐 عربي</button>
+      <a class="pill-link cv" href="GODA-EMAD-ELSAYED-EL-TAWEIL-CV.pdf" download>⬇ CV</a>
       <a class="pill-link" href="https://www.linkedin.com/in/goda-emad/" target="_blank">LinkedIn</a>
       <a class="pill-link" href="https://github.com/Goda-Emad/Saudi-Tourism-Intelligence/tree/main" target="_blank">GitHub</a>
       <a class="pill-link accent" href="https://saudi-tourism-intelligence-zyayphbqpoqx623bg5neme.streamlit.app/" target="_blank">↗ Live Demo</a>
@@ -856,6 +906,35 @@ footer{
 
 <div class="divider"></div>
 
+<div class="divider"></div>
+
+<!-- ══ CONTACT ═══════════════════════════════════════════════════ -->
+<section>
+  <div class="section-eyebrow reveal">Get In Touch</div>
+  <h2 class="section-title reveal">تواصلي معي</h2>
+
+  <div class="contact-grid reveal stagger">
+    <a class="contact-card" href="mailto:goda.emade2001@gmail.com">
+      <div class="contact-icon" style="background:rgba(234,67,53,.15);">📧</div>
+      <div class="contact-label">Email</div>
+      <div class="contact-val">goda.emade2001@gmail.com</div>
+      <div class="contact-arrow">Send email →</div>
+    </a>
+    <a class="contact-card" href="https://www.linkedin.com/in/goda-emad/" target="_blank">
+      <div class="contact-icon" style="background:rgba(10,102,194,.18);">💼</div>
+      <div class="contact-label">LinkedIn</div>
+      <div class="contact-val">linkedin.com/in/goda-emad</div>
+      <div class="contact-arrow">Connect →</div>
+    </a>
+    <a class="contact-card" href="tel:+201126242932">
+      <div class="contact-icon" style="background:rgba(23,177,155,.15);">📱</div>
+      <div class="contact-label">Phone / WhatsApp</div>
+      <div class="contact-val">+20 112 624 2932</div>
+      <div class="contact-arrow">Call →</div>
+    </a>
+  </div>
+</section>
+
 <!-- ══ AUTHOR ════════════════════════════════════════════════════ -->
 <section>
   <div class="author-block reveal">
@@ -879,12 +958,116 @@ footer{
 </footer>
 
 <script>
+// ── LANGUAGE TOGGLE ──────────────────────────────────────────────
+const translations = {
+  en: {
+    langBtn:      '🌐 عربي',
+    eyebrow:      'Data Science · Business Intelligence · Vision 2030',
+    h1:           'Saudi Tourism<br/><span class="teal">Intelligence</span>',
+    subtitle:     'منصة تحليل السياحة السعودية · 2015 — 2024',
+    desc:         'An interactive bilingual analytics platform covering a decade of Saudi tourism data. From K-Means segmentation to XGBoost forecasting — built to track Vision 2030 progress with production-grade Streamlit dashboards.',
+    btnPrimary:   '↗ Launch Dashboard',
+    btnOutline:   'View Source',
+    stat0lbl:     'Tourists 2024',
+    stat1lbl:     'Dashboard Modules',
+    stat2lbl:     'Interactive Charts',
+    stat3lbl:     'AR · EN',
+    secEyebrow1:  'Dashboard Modules',
+    secTitle1:    '9 Pages.<br/>One Platform.',
+    secEyebrow2:  'Platform Features',
+    secTitle2:    'Built for analysts.<br/>Designed for everyone.',
+    secEyebrow3:  'Stack',
+    secTitle3:    'Tech Stack',
+    secEyebrow4:  'Machine Learning',
+    secTitle4:    'Models Under the Hood',
+    secEyebrow5:  'Architecture',
+    secTitle5:    'Project Structure',
+    secEyebrow6:  'Quick Start',
+    secTitle6:    'Run Locally',
+    secEyebrow7:  'Data',
+    secTitle7:    'Data Sources',
+    secEyebrow8:  'Get In Touch',
+    secTitle8:    'تواصلي معي',
+    contactTitle: 'تواصلي معي',
+    dir:          'ltr',
+  },
+  ar: {
+    langBtn:      '🌐 English',
+    eyebrow:      'علوم البيانات · ذكاء الأعمال · رؤية 2030',
+    h1:           'السياحة السعودية<br/><span class="teal">الذكية</span>',
+    subtitle:     'Saudi Tourism Intelligence · 2015 — 2024',
+    desc:         'منصة تحليلية تفاعلية ثنائية اللغة تغطي عشر سنوات من بيانات السياحة السعودية. من K-Means Segmentation إلى XGBoost Forecasting — مبنية لقياس التقدم نحو رؤية 2030.',
+    btnPrimary:   '↗ تشغيل اللوحة',
+    btnOutline:   'عرض الكود',
+    stat0lbl:     'سائح في 2024',
+    stat1lbl:     'صفحات اللوحة',
+    stat2lbl:     'مخطط تفاعلي',
+    stat3lbl:     'عربي · إنجليزي',
+    secEyebrow1:  'وحدات اللوحة',
+    secTitle1:    '9 صفحات.<br/>منصة واحدة.',
+    secEyebrow2:  'مميزات المنصة',
+    secTitle2:    'مصممة للمحللين.<br/>سهلة للجميع.',
+    secEyebrow3:  'التقنيات',
+    secTitle3:    'التقنيات المستخدمة',
+    secEyebrow4:  'تعلم الآلة',
+    secTitle4:    'النماذج المستخدمة',
+    secEyebrow5:  'البنية',
+    secTitle5:    'هيكل المشروع',
+    secEyebrow6:  'البداية السريعة',
+    secTitle6:    'تشغيل محلياً',
+    secEyebrow7:  'البيانات',
+    secTitle7:    'مصادر البيانات',
+    secEyebrow8:  'تواصل',
+    secTitle8:    'تواصلي معي',
+    contactTitle: 'تواصلي معي',
+    dir:          'rtl',
+  }
+};
+
+let currentLang = 'en';
+
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'ar' : 'en';
+  const T = translations[currentLang];
+  const isAr = currentLang === 'ar';
+
+  // direction
+  document.documentElement.setAttribute('dir', T.dir);
+  document.documentElement.setAttribute('lang', currentLang);
+  document.body.style.fontFamily = isAr ? "'Tajawal', sans-serif" : "'Syne', sans-serif";
+
+  // topbar button
+  document.getElementById('langBtn').textContent = T.langBtn;
+
+  // hero
+  document.querySelector('.eyebrow').textContent = T.eyebrow;
+  document.querySelector('h1').innerHTML = T.h1;
+  document.querySelector('.arabic-subtitle').textContent = T.subtitle;
+  document.querySelector('.hero-desc').textContent = T.desc;
+  document.querySelector('.btn-primary').textContent = T.btnPrimary;
+  document.querySelector('.btn-outline').textContent = T.btnOutline;
+
+  // stats labels
+  const statLbls = document.querySelectorAll('.stat-lbl');
+  statLbls[0].textContent = T.stat0lbl;
+  statLbls[1].textContent = T.stat1lbl;
+  statLbls[2].textContent = T.stat2lbl;
+  statLbls[3].textContent = T.stat3lbl;
+
+  // section eyebrows & titles
+  const eyebrows = document.querySelectorAll('.section-eyebrow');
+  const titles   = document.querySelectorAll('.section-title');
+  const eKeys = ['secEyebrow1','secEyebrow2','secEyebrow3','secEyebrow4','secEyebrow5','secEyebrow6','secEyebrow7','secEyebrow8'];
+  const tKeys = ['secTitle1','secTitle2','secTitle3','secTitle4','secTitle5','secTitle6','secTitle7','secTitle8'];
+  eyebrows.forEach((el,i) => { if(eKeys[i]) el.textContent = T[eKeys[i]] });
+  titles.forEach((el,i)   => { if(tKeys[i]) el.innerHTML  = T[tKeys[i]] });
+}
+
 // scroll reveal
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if(e.isIntersecting){
       e.target.classList.add('visible');
-      // stagger children
       if(e.target.classList.contains('stagger')){
         [...e.target.children].forEach((c,i) => {
           c.style.transitionDelay = (i * 0.07) + 's';
