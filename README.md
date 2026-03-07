@@ -4,7 +4,7 @@
 
 <br/>
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Streamlit-FF4B4B?style=for-the-badge&logoColor=white)](https://saudi-tourism-intelligence-zyayphbqpoqx623bg5neme.streamlit.app/)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Streamlit-FF4B4B?style=for-the-badge&logoColor=white)](https://saudi-tourism-intelligence-8guy9xbxvft92gxs3fxhq3.streamlit.app/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Goda_Emad-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/goda-emad/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Goda-Emad/Saudi-Tourism-Intelligence/tree/main)
 
